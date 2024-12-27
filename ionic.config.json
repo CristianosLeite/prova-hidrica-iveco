@@ -1,0 +1,7 @@
+{
+  "name": "Prova Hídrica IVECO",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
