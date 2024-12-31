@@ -1,0 +1,42 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Configurações do servidor</ion-title>
+    <ion-buttons id="save-button" slot="end">
+      <ion-button (click)="updateServer()">
+        <ion-alert
+          trigger="save-button"
+          header="Atenção!"
+          subHeader="Necessário reiniciar o aplicativo."
+          message="Para que as alterações tenham efeito, é necessário reiniciar o aplicativo. Deseja continuar?"
+          [buttons]="alertButtons"
+        ></ion-alert>
+        <ion-icon slot="icon-only" [ios]="saveOutline" [md]="saveSharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Servidor local</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-list>
+      <ion-item>
+        <ion-label>Protocolo</ion-label>
+        <ion-select slot="end" [(ngModel)]="protocol">
+          <ion-select-option value="http">HTTP</ion-select-option>
+          <ion-select-option value="https">HTTPS</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <ion-item>
+        <ion-label>Endereço IP / Host</ion-label>
+        <ion-input slot="end" placeholder="Ip do servidor" [(ngModel)]="host"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label>Porta</ion-label>
+        <ion-input slot="end" placeholder="Porta do servidor" [(ngModel)]="port"></ion-input>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

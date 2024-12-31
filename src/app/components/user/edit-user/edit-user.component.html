@@ -1,0 +1,64 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ userId ? 'Editar Usuário' : 'Criar Usuário' }}</ion-title>
+    @if(userId) {
+    <ion-buttons slot="end">
+      <ion-button id="delete-button">
+        <ion-icon [ios]="trashOutline" [md]="trashSharp"></ion-icon>
+        <ion-alert
+          trigger="delete-button"
+          header="Atenção!"
+          subHeader="Deseja excluir este usuário?"
+          message="Esta ação não poderá ser desfeita."
+          [buttons]="alertButtons"
+        ></ion-alert>
+      </ion-button>
+    </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form (ngSubmit)="saveUser()">
+    <ion-item>
+      <ion-label position="floating">Nome</ion-label>
+      <ion-input [(ngModel)]="user.name" name="name" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Origem</ion-label>
+      <ion-input [(ngModel)]="user.origin" name="origin" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Empresa</ion-label>
+      <ion-input [(ngModel)]="user.company" name="company" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Matrícula</ion-label>
+      <ion-input [(ngModel)]="user.badge_number" name="badge_number" type="number" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Planta</ion-label>
+      <ion-input [(ngModel)]="user.plant" name="plant" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">Permissões</ion-label>
+      <ion-select [(ngModel)]="user.permissions" name="permissions" multiple="true">
+        <ion-select-option value="create_users">Cadastrar usuários</ion-select-option>
+        <ion-select-option value="view_users">Visualizar usuários cadastrados</ion-select-option>
+        <ion-select-option value="edit_users">Editar usuários</ion-select-option>
+        <ion-select-option value="view_history">Visualizar histórico de atividades</ion-select-option>
+        <ion-select-option value="create_checklist">Realizar checklist</ion-select-option>
+        <ion-select-option value="create_activity">Cadastrar nova atividade</ion-select-option>
+        <ion-select-option value="list_activity">Visualizar atividades cadastradas</ion-select-option>
+        <ion-select-option value="reports">Exportar Relatórios</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button expand="full" type="submit">{{ userId ? 'Atualizar' : 'Criar' }} Usuário</ion-button>
+  </form>
+</ion-content>

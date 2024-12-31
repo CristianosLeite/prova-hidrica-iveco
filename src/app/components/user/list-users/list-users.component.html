@@ -1,0 +1,46 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionChange)="search($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content></ion-refresher-content>
+</ion-refresher>
+
+@if (dataSource.users.length > 0) {
+<ion-list class="users-list">
+  <!-- Usuários -->
+  @for(user of dataSource.users; track user.user_id; let index = $index) {
+  <ion-item [routerLink]="['/', 'main', 'edit-user', user.user_id]">
+    <ion-avatar slot="start">
+      <img [src]="'https://picsum.photos/80/80?random=' + index" alt="avatar" />
+      <ion-icon slot="start" [ios]="personOutline" [md]="personSharp"></ion-icon>
+    </ion-avatar>
+    <ion-label>{{ user.name }}</ion-label>
+
+    <!-- Permissões -->
+    <ion-label class="permissions">
+      @for (permission of user.permissions; track permission) {
+      <span [appCaption]="permission" [showText]="false" [tooltip]="handlePermissions(permission)">{{ permission
+        }}</span>
+      }
+    </ion-label>
+
+  </ion-item>
+  }
+</ion-list>
+
+<!-- Legenda -->
+<ion-label class="permissions fixed">
+  @for(permission of getALLPermissions(); track permission) {
+  <span [appCaption]="permission">{{ handlePermissions(permission) }}</span>
+  }
+</ion-label>
+} @else {
+<ion-list class="users-list">
+  <ion-item>
+    <ion-label class="ion-text-center">Nenhum usuário encontrado</ion-label>
+  </ion-item>
+</ion-list>
+}

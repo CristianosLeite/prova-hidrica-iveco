@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Preferências</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Configurações</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-list>
+      <ion-item>
+        <ion-label>Modo escuro</ion-label>
+        <ion-toggle slot="end" [(ngModel)]="darkMode" (ionChange)="setTheme()"></ion-toggle>
+      </ion-item>
+      <ion-item>
+        <ion-label>Notificações</ion-label>
+        <ion-toggle slot="end" [(ngModel)]="notifications" (ionChange)="savePreferences()"></ion-toggle>
+      </ion-item>
+    </ion-list>
+  </ion-card-content>
+</ion-card>

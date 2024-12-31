@@ -1,0 +1,32 @@
+services:
+  # backend:
+  #   container_name: prova-hidrica-backend
+  #   restart: always
+  #   build:
+  #     context: ./src/api/
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - '4000:4000'
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - app-network
+
+  frontend:
+    container_name: prova-hidrica-frontend
+    restart: always
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - '80:80'
+    env_file:
+      - .env
+    networks:
+      - app-network
+    # depends_on:
+    #   - backend
+
+networks:
+  app-network:
+    driver: bridge

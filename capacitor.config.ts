@@ -1,9 +1,9 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'io.ionic.starter',
+  appId: 'com.conecsa.provahidrica',
   appName: 'Prova Hídrica IVECO',
-  webDir: 'www'
+  webDir: 'www/browser'
 };
 
 export default config;

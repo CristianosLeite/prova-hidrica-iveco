@@ -1,0 +1,21 @@
+.permissions {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.permissions span {
+  align-items: center;
+}
+
+.fixed {
+  position: fixed;
+  bottom: 0;
+  padding: 10px;
+  gap: 10px;
+  background-color: var(--ion-background-color);
+  box-sizing: border-box;
+}
+
+.users-list {
+  padding-bottom: calc(30vh - 5vw);
+}

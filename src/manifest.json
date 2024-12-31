@@ -1,0 +1,15 @@
+{
+  "name": "Prova Hídrica IVECO",
+  "short_name": "Prova Hídrica",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "icons": [
+    {
+      "src": "assets/icon/favicon.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    }
+  ]
+}
