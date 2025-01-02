@@ -1,0 +1,52 @@
+ion-header {
+  ion-toolbar {
+    --background: white; 
+  }
+}
+
+ion-item {
+  ion-label {
+    font-size: 1.3rem;
+    font-weight: bold;
+    p {
+      margin-top: 5px;
+      font-size: 0.9rem;
+      font-weight: normal;
+    }
+  }
+  ion-thumbnail {
+    img {
+      border-radius: 10px;
+    }
+  }
+}
+ion-list-header {
+  font-size: 1.1rem;
+  font-weight: normal;
+}
+
+ion-card {
+  box-shadow: none;
+  margin: 10px 5px;
+  height: 15vh;
+  flex-direction: column;
+  ion-thumbnail {
+    border-radius: 10px;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1.3vh;
+    ion-icon {
+      font-size: 2rem;
+    }
+  }
+  ion-label {
+    font-size:1rem;
+    font-weight: 500;
+  }
+}
+
+ion-card, ion-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

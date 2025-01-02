@@ -1,0 +1,86 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list-header>
+    Teste
+  </ion-list-header>
+
+  <ion-row class="ion-margin">
+    <ion-col size="6" class="ion-text-center">
+      <ion-card (click)="scanBarCode()" color="light">
+        <ion-thumbnail [style.background]="'rgba(240,94,112, 0.2)'">
+        <ion-icon name="scan-outline"></ion-icon>
+        </ion-thumbnail>
+        <ion-label>
+          Scan barcode
+        </ion-label>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="6" class="ion-text-center">
+      <ion-card color="light">
+        <ion-thumbnail [style.background]="'rgba(240,94,112, 0.2)'">
+        <ion-icon name="scan-outline"></ion-icon>
+        </ion-thumbnail>
+        <ion-label>
+          Futuras opções
+        </ion-label>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="6" class="ion-text-center">
+      <ion-card color="light">
+        <ion-thumbnail [style.background]="'rgba(240,94,112, 0.2)'">
+        <ion-icon name="scan-outline"></ion-icon>
+        </ion-thumbnail>
+        <ion-label>
+          Futuras opções
+        </ion-label>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="6" class="ion-text-center">
+      <ion-card color="light">
+        <ion-thumbnail [style.background]="'rgba(240,94,112, 0.2)'">
+        <ion-icon name="scan-outline"></ion-icon>
+        </ion-thumbnail>
+        <ion-label>
+          Futuras opções
+        </ion-label>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="6" class="ion-text-center">
+      <ion-card size="6" (click)="scanBarCode()" color="light">
+        <ion-thumbnail [style.background]="'rgba(240,94,112, 0.2)'">
+        <ion-icon name="scan-outline"></ion-icon>
+        </ion-thumbnail>
+        <ion-label>
+          Futuras opções
+        </ion-label>
+      </ion-card>
+    </ion-col>
+
+    <ion-col size="6" class="ion-text-center">
+      <ion-card color="light">
+        <ion-thumbnail [style.background]="'rgba(240,94,112, 0.2)'">
+        <ion-icon name="scan-outline"></ion-icon>
+        </ion-thumbnail>
+        <ion-label>
+          Futuras opções
+        </ion-label>
+      </ion-card>
+    </ion-col>
+  </ion-row>
+
+  <ion-toast
+    [isOpen]="isToast"
+    [message]="toastData?.toastMessage"
+    [position]="'bottom'"
+    [color]="toastData?.color"
+    [duration]="3000"
+    (onDidDismiss)="isToast = false">
+  </ion-toast>
+</ion-content>
