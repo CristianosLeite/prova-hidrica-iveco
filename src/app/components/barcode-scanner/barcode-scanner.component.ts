@@ -10,28 +10,25 @@ import { BarcodeScannerService } from 'src/app/services/scan/barcode-scanner.ser
   styleUrls: ['./barcode-scanner.component.scss']
 })
 export class BarcodeScannerComponent implements OnInit {
-  ngOnInit() {}
-
-  isToast = false;
-  toastData: any = {};
+  scannedCode?: string; 
 
   constructor(private barcodeService: BarcodeScannerService) {}
 
-  async scanBarCode() {
-    try {
-      const code = await this.barcodeService.startScan(2);
-      if (!code) {
-        this.isToast = true;
-        this.toastData = {
-          message: 'Nenhum código de barras encontrado',
-          color: 'danger'
-        };
-        return;
-      }
-      console.log(code); 
-    } catch (error) {
-      console.error(error);
-    }
+  ngOnInit() {
+    this.scanBarCode();
   }
 
+  async scanBarCode() {
+    try {
+      const code = await this.barcodeService.startScan(17, 1);
+      if (code) {
+        this.scannedCode = code;
+      } else {
+        this.scannedCode = 'teste pra ser se essa poha funciona';
+      }
+    } catch (error) {
+      console.error('Erro ao escanear código de barras:', error);
+      this.scannedCode = 'teste pra ser se essa poha funciona';
+    }
+  }
 }
