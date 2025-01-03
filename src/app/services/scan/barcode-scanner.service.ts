@@ -7,17 +7,26 @@ import { CapacitorBarcodeScanner } from '@capacitor/barcode-scanner';
 export class BarcodeScannerService {
   constructor() { }
 
-  async startScan(val?: number) {
+  async startScan(hint: number = 17, cameraDirection: number = 1, scanOrientation: number = 3): Promise<string | null> {
     try {
-      const result = await CapacitorBarcodeScanner.scanBarcode({
-        hint: val || 17,
-        cameraDirection: 1
-      });
-      console.log(result);
-      return result.ScanResult;
-      
+      const options = {
+        hint: hint,
+        cameraDirection: cameraDirection,
+        scanOrientation: scanOrientation,
+      };
+
+      const result = await CapacitorBarcodeScanner.scanBarcode(options);
+
+      if (result && result.ScanResult) {
+        console.log('Código de barras escaneado:', result.ScanResult);
+        return result.ScanResult;
+      } else {
+        console.log('Nenhum código de barras escaneado ou resultado inválido');
+        return null;
+      }
     } catch (error) {
-      throw error;
+      console.error('Erro ao escanear o código de barras:', error);
+      throw new Error('Erro ao escanear o código de barras');
+    }
   }
-}
 }

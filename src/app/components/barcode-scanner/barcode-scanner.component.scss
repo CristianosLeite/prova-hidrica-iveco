@@ -1,28 +1,6 @@
-ion-header {
-  ion-toolbar {
-    --background: white; 
-  }
-}
-
-ion-item {
-  ion-label {
-    font-size: 1.3rem;
-    font-weight: bold;
-    p {
-      margin-top: 5px;
-      font-size: 0.9rem;
-      font-weight: normal;
-    }
-  }
-  ion-thumbnail {
-    img {
-      border-radius: 10px;
-    }
-  }
-}
-ion-list-header {
-  font-size: 1.1rem;
-  font-weight: normal;
+.title {
+  background-color: bisque;
+  border-radius: 10px;
 }
 
 ion-card {
