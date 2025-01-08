@@ -1,7 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { Server: HttpServer } = require("http");
+const { Server: HttpsServer } = require("https");
+const fs = require("fs");
 const { connect, createTables } = require("./database/database");
 const { OperationController } = require("./controllers/operation.controller");
 const { UsersController } = require("./controllers/users.controller");
@@ -9,7 +10,6 @@ const { ActivityController } = require("./controllers/activities.controller");
 const { SettingsController } = require("./controllers/settings.controller");
 // const { plcConnect, listenAndProcess } = require("./services/snap7-service");
 
-// The Express app is exported so that it can be used by serverless Functions.
 function app() {
   const server = express();
   server.use(cors());
@@ -28,9 +28,6 @@ function app() {
     // Create tables after successful connection
     createTables();
   });
-
-  // Connect to plc
-  // plcConnect('192.168.0.1');
 
   // Handle operation
   const operationController = new OperationController();
@@ -57,14 +54,23 @@ function run() {
   // Start up the Express server
   const { app: expressApp } = app();
 
-  // Create a HTTP server instance with the Express app
-  const server = new HttpServer(expressApp);
+  // Load SSL certificate and key
+  const privateKey = fs.readFileSync("/usr/src/app/cert/client.key");
+  const certificate = fs.readFileSync("/usr/src/app/cert/client.crt");
+
+  const credentials = {
+    key: privateKey,
+    cert: certificate
+  };
+
+  // Create a HTTPS server instance with the Express app
+  const server = new HttpsServer(credentials, expressApp);
   server.listen(port, () => {
-    console.log(`Node Express server listening on http://localhost:${port}`);
+    console.log(`Node Express server listening on https://localhost:${port}`);
   });
 
-    // Start listening and processing PLC data
-    // listenAndProcess();
+  // Start listening and processing PLC data
+  // listenAndProcess();
 }
 
 run();
