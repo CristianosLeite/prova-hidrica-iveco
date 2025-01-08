@@ -1,0 +1,30 @@
+.title {
+  background-color: bisque;
+  border-radius: 10px;
+}
+
+ion-card {
+  box-shadow: none;
+  margin: 10px 5px;
+  height: 15vh;
+  flex-direction: column;
+  ion-thumbnail {
+    border-radius: 10px;
+    width: 3rem;
+    height: 3rem;
+    margin-bottom: 1.3vh;
+    ion-icon {
+      font-size: 2rem;
+    }
+  }
+  ion-label {
+    font-size:1rem;
+    font-weight: 500;
+  }
+}
+
+ion-card, ion-thumbnail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

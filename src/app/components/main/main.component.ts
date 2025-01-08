@@ -7,6 +7,7 @@ import { EditUserComponent } from '../user/edit-user/edit-user.component';
 import { SettingsComponent } from '../settings/settings.component';
 import { ServerComponent } from '../settings/server/server.component';
 import { PreferencesComponent } from '../settings/preferences/preferences.component';
+import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
 
 @Component({
   standalone: true,
@@ -18,7 +19,8 @@ import { PreferencesComponent } from '../settings/preferences/preferences.compon
     SettingsComponent,
     ServerComponent,
     PreferencesComponent,
-  ],
+    BarcodeScannerComponent,
+],
   selector: 'app-main',
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.scss'],

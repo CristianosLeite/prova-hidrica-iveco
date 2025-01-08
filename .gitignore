@@ -73,3 +73,8 @@ Thumbs.db
 .env
 
 resources/android/**/*
+
+# Certs
+*.pem
+*.key
+*.crt
