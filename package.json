@@ -26,6 +26,7 @@
     "@capacitor/app": "6.0.2",
     "@capacitor/barcode-scanner": "^1.0.4",
     "@capacitor/core": "6.2.0",
+    "@capacitor/device": "^6.0.2",
     "@capacitor/haptics": "6.0.2",
     "@capacitor/keyboard": "6.0.3",
     "@capacitor/splash-screen": "^6.0.3",

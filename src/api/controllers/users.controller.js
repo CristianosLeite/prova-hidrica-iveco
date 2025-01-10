@@ -32,9 +32,15 @@ class UsersController {
   }
 
   async all(req, res) {
-    await User.findAll().then((users) => {
-      res.json(users);
-    });
+    try {
+      await User.findAll().then((users) => {
+        res.json(users);
+      });
+      console.log("Users retrieved successfully");
+    } catch (error) {
+      res.status(500).send("Error retrieving users");
+      console.error(error);
+    }
   }
 
   async retrieve(req, res) {

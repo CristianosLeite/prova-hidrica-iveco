@@ -1,0 +1,54 @@
+
+.icon-overlay {
+  position: relative;
+}
+
+.battery-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 24px;
+}
+
+.flash-icon {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  z-index: 2;
+  color: green;
+  font-weight: bold;
+}
+
+.half {
+  color: orange;
+}
+
+.dead {
+  color: red;
+}
+
+.wifi-icon {
+  position: relative;
+  z-index: 1;
+  font-size: 18px;
+}
+
+.alert-icon {
+  position: absolute;
+  top: 4px;
+  right: -5px;
+  z-index: 2;
+  color: yellow;
+  font-weight: bold;
+}
+
+.cross {
+  position: absolute;
+  top: 4px;
+  right: -5px;
+  z-index: 2;
+  transform: rotate(45deg);
+}
+
+.dynamic-icon {
+  margin: 5px;
+}

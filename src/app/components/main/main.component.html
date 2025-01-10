@@ -14,12 +14,16 @@
   <app-user></app-user>
   } @else if (page === 'add-new-user' || page === 'edit-user') {
     <app-edit-user></app-edit-user>
+  } @else if (page === 'devices') {
+    <app-devices></app-devices>
   } @else if (page === 'settings') {
     <app-settings></app-settings>
   } @else if (page === 'server-config') {
     <app-server></app-server>
   } @else if (page === 'preferences') {
     <app-preferences></app-preferences>
+  } @else if (page === 'device') {
+    <app-device-config></app-device-config>
   } @else if (page === 'barcode-scanner') {
     <app-barcode-scanner></app-barcode-scanner>
   }

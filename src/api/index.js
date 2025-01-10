@@ -12,7 +12,15 @@ const { SettingsController } = require("./controllers/settings.controller");
 
 function app() {
   const server = express();
-  server.use(cors());
+  server.use(
+    cors({
+      origin: "*",
+      methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+      preflightContinue: true,
+      optionsSuccessStatus: 204,
+      allowedHeaders: ["Content-Type", "Authorization"],
+    })
+  );
   server.use(express.json({ limit: "50mb" }));
   server.use(express.urlencoded({ limit: "50mb", extended: true }));
   server.use(bodyParser.json());
@@ -60,13 +68,25 @@ function run() {
 
   const credentials = {
     key: privateKey,
-    cert: certificate
+    cert: certificate,
   };
 
   // Create a HTTPS server instance with the Express app
   const server = new HttpsServer(credentials, expressApp);
   server.listen(port, () => {
     console.log(`Node Express server listening on https://localhost:${port}`);
+  });
+
+  server.on("error", (error) => {
+    console.error("Error starting server: ", error);
+  });
+
+  server.on("close", () => {
+    console.log("Server closed");
+  });
+
+  server.on("request", (req, res) => {
+    console.log("Request received");
   });
 
   // Start listening and processing PLC data

@@ -8,6 +8,8 @@ import { SettingsComponent } from '../settings/settings.component';
 import { ServerComponent } from '../settings/server/server.component';
 import { PreferencesComponent } from '../settings/preferences/preferences.component';
 import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
+import { DevicesComponent } from '../devices/devices.component';
+import { DeviceConfigComponent } from '../settings/device-config/device-config.component';
 
 @Component({
   standalone: true,
@@ -20,6 +22,8 @@ import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.comp
     ServerComponent,
     PreferencesComponent,
     BarcodeScannerComponent,
+    DevicesComponent,
+    DeviceConfigComponent,
 ],
   selector: 'app-main',
   templateUrl: './main.component.html',

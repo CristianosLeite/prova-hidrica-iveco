@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Dispositivo</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-toast trigger="copy" message="Id do dispositivo copiado para a área de transferência." [duration]="5000"></ion-toast>
+
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Informações do dispositivo</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <ion-label>Id do dispositivo</ion-label>
+    <div style="display: flex;">
+      <ion-input type="text" [(ngModel)]="deviceId" disabled="true"></ion-input>
+      <ion-button id="copy" expand="block" (click)="copyToClipboard()">
+        <ion-icon slot="icon-only" ios="copy-outline" md="copy-sharp"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-card-content>
+</ion-card>
