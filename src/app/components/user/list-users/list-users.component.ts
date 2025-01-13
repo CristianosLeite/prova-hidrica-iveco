@@ -27,13 +27,18 @@ export class ListUsersComponent implements OnInit {
   public personSharp = 'person-sharp';
   public dataSource: { users: User[] } = { users: [] };
   public searchTerm: string = '';
+  public hasError = false;
+  public errorMessage = '';
 
   constructor(
     private userService: UserService,
   ) { }
 
   ngOnInit() {
-    this.userService.retrieveAllUsers();
+    this.userService.retrieveAllUsers().catch((error: Error) => {
+      this.hasError = true;
+      this.errorMessage = error.message;
+    });
     this.userService.usersChanged.subscribe((users: User[]) => {
       this.dataSource.users = users;
     });

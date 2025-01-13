@@ -4,6 +4,8 @@
   </ion-toolbar>
 </ion-header>
 
+<ion-toast [isOpen]="hasError" message="Erro ao buscar usuários" [duration]="5000"></ion-toast>
+
 <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
   <ion-refresher-content></ion-refresher-content>
 </ion-refresher>
