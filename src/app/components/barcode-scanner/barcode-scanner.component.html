@@ -1,19 +1,14 @@
-<ion-header class="ion-no-border">
-  <ion-toolbar>
-  </ion-toolbar>
-</ion-header>
+<ion-toast [isOpen]="hasError" message="Erro ao ler código de barras" [duration]="5000"></ion-toast>
 
-<ion-content>
-  <ion-row class="ion-margin">
-    <ion-col size="12" class="ion-text-center">
-      <ion-card class="title">
-        <ion-card-header>
-          <ion-card-title>Código de Barras</ion-card-title>
-        </ion-card-header>
-      </ion-card>
-      <ion-card-content>
-        <p>{{ scannedCode }}</p>
-      </ion-card-content>
-    </ion-col>
-  </ion-row>
-</ion-content>
+<ion-row class="ion-margin">
+  <ion-col size="12" class="ion-text-center">
+    <ion-card class="title">
+      <ion-card-header>
+        <ion-card-title>Código de Barras</ion-card-title>
+      </ion-card-header>
+    </ion-card>
+    <ion-card-content>
+      <p>{{ scannedCode }}</p>
+    </ion-card-content>
+  </ion-col>
+</ion-row>

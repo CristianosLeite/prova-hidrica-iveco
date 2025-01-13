@@ -10,9 +10,10 @@ import { BarcodeScannerService } from 'src/app/services/scan/barcode-scanner.ser
   styleUrls: ['./barcode-scanner.component.scss']
 })
 export class BarcodeScannerComponent implements OnInit {
-  scannedCode?: string; 
+  public scannedCode?: string;
+  public hasError = false;
 
-  constructor(private barcodeService: BarcodeScannerService) {}
+  constructor(private readonly barcodeService: BarcodeScannerService) {}
 
   ngOnInit() {
     this.scanBarCode();
@@ -23,12 +24,10 @@ export class BarcodeScannerComponent implements OnInit {
       const code = await this.barcodeService.startScan(17, 1);
       if (code) {
         this.scannedCode = code;
-      } else {
-        this.scannedCode = 'teste pra ser se essa poha funciona';
       }
     } catch (error) {
       console.error('Erro ao escanear código de barras:', error);
-      this.scannedCode = 'teste pra ser se essa poha funciona';
+      this.hasError = true;
     }
   }
 }
