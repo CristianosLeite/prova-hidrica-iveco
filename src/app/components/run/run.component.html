@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{vp}}</ion-title>
+    <ion-buttons id="cancel-test-button" slot="end">
+      <ion-button>
+        <ion-alert
+          trigger="cancel-test-button"
+          header="Atenção!"
+          subHeader="Todos os dados do teste serão perdidos."
+          message="Deseja realmente cancelar o teste?"
+          [buttons]="alertButtons"
+        ></ion-alert>
+        Cancelar teste
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<app-tests></app-tests>

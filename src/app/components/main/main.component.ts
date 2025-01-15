@@ -10,12 +10,20 @@ import { PreferencesComponent } from '../settings/preferences/preferences.compon
 import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
 import { DevicesComponent } from '../devices/devices.component';
 import { DeviceConfigComponent } from '../settings/device-config/device-config.component';
+import { RunComponent } from '../run/run.component';
+import { FrontsideTestComponent } from '../frontside-test/frontside-test.component';
+import { UpsideTestComponent } from '../upside-test/upside-test.component';
+import { BacksideTestComponent } from '../backside-test/backside-test.component';
+import { LeftsideTestComponent } from '../leftside-test/leftside-test.component';
+import { RightsideTestComponent } from '../rightside-test/rightside-test.component';
+import { TestsComponent } from '../tests/tests.component';
 
 @Component({
   standalone: true,
   imports: [
     FormsModule,
     IonicModule,
+    RunComponent,
     UserComponent,
     EditUserComponent,
     SettingsComponent,
@@ -24,6 +32,12 @@ import { DeviceConfigComponent } from '../settings/device-config/device-config.c
     BarcodeScannerComponent,
     DevicesComponent,
     DeviceConfigComponent,
+    TestsComponent,
+    UpsideTestComponent,
+    FrontsideTestComponent,
+    BacksideTestComponent,
+    LeftsideTestComponent,
+    RightsideTestComponent,
 ],
   selector: 'app-main',
   templateUrl: './main.component.html',

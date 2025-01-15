@@ -1,0 +1,48 @@
+.title {
+  display: flex;
+  font-weight: bold;
+  text-align: center;
+  justify-content: center;
+  background-color: #b7f399;
+  color: black;
+  padding: 10px;
+}
+
+img {
+  width: 100%;
+}
+
+.test {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: 500px;
+}
+
+.content {
+  position: relative;
+  background-color: white;
+  min-height: max-content;
+  height: 100vh;
+}
+
+.image-container {
+  position: relative;
+  width: 100%;
+}
+
+.rounded {
+  position: absolute;
+  width: 50px;
+  transform: scale(0.8);
+  margin: 0;
+}
+
+.selected {
+  --background: red;
+}
+
+#finish-upside-test-button {
+  display: flex;
+  padding: 10px;
+}

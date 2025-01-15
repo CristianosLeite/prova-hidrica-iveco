@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { BarcodeScannerService } from 'src/app/services/scan/barcode-scanner.service';
+import { ScannerService } from 'src/app/services/scan/barcode-scanner.service';
 
 @Component({
   standalone: true,
@@ -13,7 +13,7 @@ export class BarcodeScannerComponent implements OnInit {
   public scannedCode?: string;
   public hasError = false;
 
-  constructor(private readonly barcodeService: BarcodeScannerService) {}
+  constructor(private readonly scanner: ScannerService) {}
 
   ngOnInit() {
     this.scanBarCode();
@@ -21,7 +21,7 @@ export class BarcodeScannerComponent implements OnInit {
 
   async scanBarCode() {
     try {
-      const code = await this.barcodeService.startScan(17, 1);
+      const code = await this.scanner.startScan();
       if (code) {
         this.scannedCode = code;
       }

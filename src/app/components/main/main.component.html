@@ -10,8 +10,10 @@
 </ion-header>
 
 <ion-content>
-  @if (page === 'users') {
-  <app-user></app-user>
+  @if (page === 'run') {
+    <app-run></app-run>
+  } @else if(page === 'users') {
+    <app-user></app-user>
   } @else if (page === 'add-new-user' || page === 'edit-user') {
     <app-edit-user></app-edit-user>
   } @else if (page === 'devices') {
@@ -26,6 +28,18 @@
     <app-device-config></app-device-config>
   } @else if (page === 'barcode-scanner') {
     <app-barcode-scanner></app-barcode-scanner>
+  } @else if (page === 'tests') {
+    <app-tests></app-tests>
+  } @else if (page === 'upside-test') {
+    <app-upside-test></app-upside-test>
+  } @else if (page === 'frontside-test') {
+    <app-frontside-test></app-frontside-test>
+  } @else if (page === 'backside-test') {
+    <app-backside-test></app-backside-test>
+  } @else if (page === 'leftside-test') {
+    <app-leftside-test></app-leftside-test>
+  } @else if (page === 'rightside-test') {
+    <app-rightside-test></app-rightside-test>
   }
 
   @else {

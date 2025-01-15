@@ -1,0 +1,16 @@
+@for (t of tests; track t; let i = $index ) {
+<ion-card>
+  <img [alt]="t.altImg" [src]="t.img" />
+  <ion-card-header>
+    <ion-card-title>{{t.title}}</ion-card-title>
+  </ion-card-header>
+
+  <ion-card-content>
+    {{t.content}}
+  </ion-card-content>
+
+  <div class="buttons">
+    <ion-button id="next" [routerLink]="[t.url]">{{t.status === 'pending' ? 'Iniciar': t.status }}</ion-button>
+  </div>
+</ion-card>
+}
