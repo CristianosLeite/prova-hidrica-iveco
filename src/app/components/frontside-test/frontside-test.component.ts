@@ -1,5 +1,6 @@
-import { Component, OnInit, Output } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
+import { MainService } from 'src/app/services/main/main.service';
 
 @Component({
   imports: [
@@ -24,7 +25,7 @@ export class FrontsideTestComponent implements OnInit {
   public selected32: boolean = false;
   public selected33: boolean = false;
 
-  @Output() public testResult = {
+  public testResult = {
     22: this.selected22,
     23: this.selected23,
     24: this.selected24,
@@ -39,7 +40,9 @@ export class FrontsideTestComponent implements OnInit {
     33: this.selected33
   };
 
-  constructor() { }
+  constructor(
+    private mainService: MainService,
+  ) { }
 
   ngOnInit() { }
 
@@ -47,44 +50,56 @@ export class FrontsideTestComponent implements OnInit {
     switch (button) {
       case 0:
         this.selected22 = !this.selected22;
+        this.testResult[22] = this.selected22;
         break;
       case 1:
         this.selected23 = !this.selected23;
+        this.testResult[23] = this.selected23;
         break;
       case 2:
         this.selected24 = !this.selected24;
+        this.testResult[24] = this.selected24;
         break;
       case 3:
         this.selected25 = !this.selected25;
+        this.testResult[25] = this.selected25;
         break;
       case 4:
         this.selected26 = !this.selected26;
+        this.testResult[26] = this.selected26;
         break;
       case 5:
         this.selected27 = !this.selected27;
+        this.testResult[27] = this.selected27;
         break;
       case 6:
         this.selected28 = !this.selected28;
+        this.testResult[28] = this.selected28;
         break;
       case 7:
         this.selected29 = !this.selected29;
+        this.testResult[29] = this.selected29;
         break;
       case 8:
         this.selected30 = !this.selected30;
+        this.testResult[30] = this.selected30;
         break;
       case 9:
         this.selected31 = !this.selected31;
+        this.testResult[31] = this.selected31;
         break;
       case 10:
         this.selected32 = !this.selected32;
+        this.testResult[32] = this.selected32;
         break;
       case 11:
         this.selected33 = !this.selected33;
+        this.testResult[33] = this.selected33;
         break;
     }
   }
 
-  finishTest() {
-
+  confirm() {
+    this.mainService.processVerification(this.testResult);
   }
 }

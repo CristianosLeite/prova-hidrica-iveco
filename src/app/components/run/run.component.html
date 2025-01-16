@@ -1,19 +1,18 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>{{vp}}</ion-title>
+    <ion-title class="title">{{qtyVerifications + '/' + qtyTests + ' verificações concluídas'}}</ion-title>
     <ion-buttons id="cancel-test-button" slot="end">
       <ion-button>
-        <ion-alert
-          trigger="cancel-test-button"
-          header="Atenção!"
-          subHeader="Todos os dados do teste serão perdidos."
-          message="Deseja realmente cancelar o teste?"
-          [buttons]="alertButtons"
-        ></ion-alert>
-        Cancelar teste
+        <ion-alert trigger="cancel-test-button" header="Atenção!"
+          subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
+          message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
+        Finalizar teste
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
+<div class="sub-header">
+  <p id="vp">{{'VP: ' + vp}}</p>
+</div>
 <app-tests></app-tests>
