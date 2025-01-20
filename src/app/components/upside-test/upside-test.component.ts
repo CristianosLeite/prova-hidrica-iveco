@@ -1,6 +1,7 @@
 import { Component, OnInit, Output } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { MainService } from 'src/app/services/main/main.service';
+import { IPosPrinter } from 'ipos-printer';
 
 @Component({
   imports: [
@@ -58,5 +59,19 @@ export class UpsideTestComponent  implements OnInit {
 
   confirm() {
     this.mainService.processVerification(this.testResult);
+    this.printText();
+  }
+
+  async printText() {
+    try {
+      const result = await IPosPrinter.print({"value": "Teste de impressão"});
+      if (result && result.value) {
+        console.log(result.value);
+      } else {
+        console.error('Error printing text app: result is undefined or does not contain value');
+      }
+    } catch (error) {
+      console.error('Error printing text app:', error);
+    }
   }
 }
