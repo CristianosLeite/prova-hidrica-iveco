@@ -16,7 +16,6 @@ import android.widget.Toast;
 
 public class MainActivity extends BridgeActivity {
   private static final int REQUEST_WRITE_STORAGE = 112;
-  private static final int REQUEST_BLUETOOTH = 114;
   private static final String TAG = "MainActivity";
 
   @Override
@@ -27,18 +26,12 @@ public class MainActivity extends BridgeActivity {
     if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
       ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_WRITE_STORAGE);
     }
-
-    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
-      ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.BLUETOOTH}, REQUEST_BLUETOOTH);
-    }
-
-    registerPlugin(com.conecsa.ipos.printer.service.IPosPrinterPlugin.class);
   }
 
   @Override
   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    if (requestCode == REQUEST_WRITE_STORAGE || requestCode == REQUEST_BLUETOOTH) {
+    if (requestCode == REQUEST_WRITE_STORAGE) {
       if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
         Toast.makeText(this, "Permissão concedida", Toast.LENGTH_SHORT).show();
       } else {

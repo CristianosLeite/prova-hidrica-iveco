@@ -64,12 +64,7 @@ export class UpsideTestComponent  implements OnInit {
 
   async printText() {
     try {
-      const result = await IPosPrinter.print({"value": "Teste de impressão"});
-      if (result && result.value) {
-        console.log(result.value);
-      } else {
-        console.error('Error printing text app: result is undefined or does not contain value');
-      }
+      await IPosPrinter.printText({"text": "Teste de impressão"});
     } catch (error) {
       console.error('Error printing text app:', error);
     }
