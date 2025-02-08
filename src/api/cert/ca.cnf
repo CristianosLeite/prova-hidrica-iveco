@@ -38,11 +38,10 @@ extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 
 [ alt_names ]
-DNS.1 = localhost
-DNS.2 = cristiano-conecsa
-IP.1 = 127.0.0.1
-IP.2 = 192.168.68.101
-IP.3 = 192.168.100.164
+DNS.1 = PROVA-HIDRICA
+DNS.2 = localhost
+IP.1 = 172.29.104.156
+IP.2 = 127.0.0.1
 
 [ CA_default ]
 dir             = ./demoCA              # Where everything is kept
