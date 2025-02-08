@@ -20,7 +20,7 @@ COPY . /usr/src/app
 #     openssl genrsa -out /usr/src/app/cert/client.key 4096 && \
 #     openssl req -new -x509 -key /usr/src/app/cert/client.key -out /usr/src/app/cert/client.crt -days 3650 -config /usr/src/app/cert/ca.cnf
 
-# In case of generate the certfiles inside the container, the following command should be used to copy the certfiles to the host machine
+# In case of generate the certfiles inside the container, the following command should be used in your terminal to copy the certfiles to the host machine
 
 # docker cp prova-hidrica-backend:/usr/src/app/cert/client.crt ./client.crt
 # docker cp prova-hidrica-backend:/usr/src/app/cert/client.key ./client.key

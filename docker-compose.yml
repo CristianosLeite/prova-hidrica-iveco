@@ -35,8 +35,11 @@ services:
       dockerfile: Dockerfile
     ports:
       - '80:80'
+      - '443:443'
     env_file:
       - .env
+    volumes:
+      - cert:/usr/src/app/cert
     networks:
       - app-network
     depends_on:
@@ -62,3 +65,4 @@ networks:
 
 volumes:
   postgres-data:
+  cert:
