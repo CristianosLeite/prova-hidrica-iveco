@@ -1,3 +1,4 @@
+import { ApiService } from './../../../services/api/api.service';
 import { NgStyle } from '@angular/common';
 import { Component, Input, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
@@ -33,6 +34,7 @@ export class PointSelectionComponent implements OnInit {
   constructor(
     private mainService: MainService,
     private storage: StorageService,
+    private apiService: ApiService,
     private router: Router
   ) { }
 
@@ -73,7 +75,7 @@ export class PointSelectionComponent implements OnInit {
   async confirm() {
     this.test.status = 'completed';
     this.test.testResult = this.testResult;
-    await this.storage.set(this.testId, this.test).then(() => { console.log('Verification completed') }).then(() => {
+    await this.apiService.verficationCompleted(this.test).then(() => {
       this.mainService.processVerification(this.testResult);
       this.router.navigate(['main/run']);
     });

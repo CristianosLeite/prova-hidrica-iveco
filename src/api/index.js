@@ -97,6 +97,11 @@ function run() {
       console.log("User created: ", user);
     });
 
+    socket.on("verificationCompleted", (data) => {
+      io.emit("verificationCompleted", data);
+      console.log("Verification completed: ", data);
+    })
+
     socket.on("disconnect", () => {
       console.log("Client disconnected");
     });
