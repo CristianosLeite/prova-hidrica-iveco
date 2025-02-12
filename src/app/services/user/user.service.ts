@@ -4,6 +4,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { User } from '../../types/user.type';
 import { IUserService } from '../../interfaces/IUserService.interface';
 import { StorageService } from '../storage/storage.service';
+import { ApiService } from '../api/api.service';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +24,9 @@ export class UserService implements IUserService {
 
   constructor(
     private storageService: StorageService,
-    private http: HttpClient
+    private http: HttpClient,
+    private apiService: ApiService,
+    private router: Router
   ) {
     this.storageService.storageCreated.subscribe(async () => {
       this.init();
@@ -36,8 +40,18 @@ export class UserService implements IUserService {
     this.baseUrl = `${this.protocol}://${this.serverIp}:${this.serverPort}/api/users`;
   }
 
-  async createUser(user: User): Promise<User> {
-    return await lastValueFrom(this.http.post<User>(`${this.baseUrl}/create`, { heders: this.headers, body: user }));
+  createUser(user: User): void {
+    // return await lastValueFrom(this.http.post<User>(`${this.baseUrl}/create`, { heders: this.headers, body: user }));
+
+    // User must be send to the background service to get the badge number.
+    this.apiService.createUser(user).then((response) => {
+      if (response.type === 'success') {
+        this.retrieveAllUsers().then(() => this.router.navigate(['main/users']))
+
+      } else {
+        console.error('Error creating user:', response.payload.message);
+      }
+    });
   }
 
   async retrieveUser(id: string): Promise<User> {

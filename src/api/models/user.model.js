@@ -6,20 +6,11 @@ class User extends Model {}
 
 User.init(
   {
-    user_id: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4,
+    id: {
+      type: DataTypes.STRING,
       primaryKey: true,
     },
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    origin: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    company: {
+    user_name: {
       type: DataTypes.STRING,
       allowNull: false,
     },
@@ -28,15 +19,14 @@ User.init(
       allowNull: false,
       unique: true,
     },
-    plant: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    skills: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-    },
     permissions: {
       type: DataTypes.ARRAY(DataTypes.STRING),
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
     },
   },
   {
@@ -49,12 +39,12 @@ User.init(
 );
 
 User.hasMany(Activity, {
-  foreignKey: "user_id",
+  foreignKey: "id",
   as: "activities",
 });
 
 Activity.belongsTo(User, {
-  foreignKey: "user_id",
+  foreignKey: "id",
   as: "user",
 });
 

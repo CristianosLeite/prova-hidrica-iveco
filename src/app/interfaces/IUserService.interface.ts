@@ -1,7 +1,7 @@
 import { User } from '../types/user.type';
 
 export interface IUserService {
-    createUser(user: User): Promise<User>;
+    createUser(user: User): void;
 
     retrieveUser(id: string): Promise<User>;
 

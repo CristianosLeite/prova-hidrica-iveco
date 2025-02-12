@@ -47,7 +47,7 @@ export class ListUsersComponent implements OnInit {
   search(e: Event) {
     this.userService.retrieveAllUsers().then((users: User[]) => {
       this.dataSource.users = users.filter((user) => {
-        return user.name.toLowerCase().includes(this.searchTerm.toLowerCase());
+        return user.user_name.toLowerCase().includes(this.searchTerm.toLowerCase());
       });
     });
   }

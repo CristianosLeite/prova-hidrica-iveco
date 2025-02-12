@@ -62,9 +62,7 @@ export class EditUserComponent implements OnInit {
   }
 
   async createUser() {
-    await this.userService.createUser(this.user);
-    this.router.navigate(['/main/users']);
-    this.userService.retrieveAllUsers();
+    this.userService.createUser(this.user);
   }
 
   async updateUser() {
@@ -74,7 +72,8 @@ export class EditUserComponent implements OnInit {
   }
 
   async deleteUser() {
-    await this.userService.deleteUser(this.user.user_id);
+    if (!this.user.id) return;
+    await this.userService.deleteUser(this.user.id);
     this.router.navigate(['/main/users']);
     this.userService.retrieveAllUsers();
   }
