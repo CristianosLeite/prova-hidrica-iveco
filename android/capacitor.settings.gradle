@@ -24,4 +24,4 @@ include ':capacitor-status-bar'
 project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacitor/status-bar/android')
 
 include ':ipos-printer'
-project(':ipos-printer').projectDir = new File('../../../ipos-printer/android')
+project(':ipos-printer').projectDir = new File('../node_modules/ipos-printer/android')
