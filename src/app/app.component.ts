@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { SettingsService } from './services/settings/settings.service';
+import { ApiService } from './services/api/api.service';
 
 @Component({
   standalone: true,
@@ -29,7 +30,10 @@ export class AppComponent implements OnInit {
 
   constructor(
     private settingsService: SettingsService,
-  ) { }
+    private apiService: ApiService,
+  ) {
+    this.apiService.init();
+  }
 
   async ngOnInit() {
     this.settingsService.themeChanged.subscribe((isDark: boolean) => {

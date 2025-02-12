@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const { Server: HttpsServer } = require("https");
+const { Server: SocketIOServer } = require("socket.io");
 const fs = require("fs");
 const { connect, createTables } = require("./database/database");
 const { OperationController } = require("./controllers/operation.controller");
@@ -12,6 +13,7 @@ const { SettingsController } = require("./controllers/settings.controller");
 
 function app() {
   const server = express();
+
   server.use(
     cors({
       origin: "*",
@@ -31,27 +33,16 @@ function app() {
   server.use(express.json());
   server.use(express.urlencoded({ extended: true }));
 
+  // Set the prefix for the API
+  server.use("/api", (req, res, next) => {
+    next();
+  });
+
   // Database connection
   connect().then(() => {
     // Create tables after successful connection
     createTables();
   });
-
-  // Handle operation
-  const operationController = new OperationController();
-  server.use("/api/operations", operationController.getRouter());
-
-  // Handle users
-  const usersController = new UsersController();
-  server.use("/api/users", usersController.getRouter());
-
-  // Handle activities
-  const activityController = new ActivityController();
-  server.use("/api/activities", activityController.getRouter());
-
-  // Handle settings
-  const settingsController = new SettingsController();
-  server.use("/api/settings", settingsController.getRouter());
 
   return { app: server };
 }
@@ -73,8 +64,50 @@ function run() {
 
   // Create a HTTPS server instance with the Express app
   const server = new HttpsServer(credentials, expressApp);
+  const io = new SocketIOServer(server);
+
+  // Create controllers
+
+  // Handle operation
+  const operationController = new OperationController();
+  expressApp.use("/api/operations", operationController.getRouter());
+
+  // Handle users
+  const usersController = new UsersController(io);
+  expressApp.use("/api/users", usersController.getRouter());
+
+  // Handle activities
+  const activityController = new ActivityController();
+  expressApp.use("/api/activities", activityController.getRouter());
+
+  // Handle settings
+  const settingsController = new SettingsController();
+  expressApp.use("/api/settings", settingsController.getRouter());
+
+  io.on("connection", (socket) => {
+    console.log("Client connected");
+
+    socket.on("createUser", (user) => {
+      io.emit("createUser", user);
+      console.log("Creating user: ", user);
+    });
+
+    socket.on("userCreated", (user) => {
+      io.emit("userCreated", user);
+      console.log("User created: ", user);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected");
+    });
+
+    socket.on("error", (error) => {
+      console.error("Socket error: ", error);
+    });
+  });
+
   server.listen(port, () => {
-    console.log(`Node Express server listening on https://localhost:${port}`);
+    console.log(`Node Express server listening on https://localhost:${port}/api`);
   });
 
   server.on("error", (error) => {
