@@ -73,7 +73,7 @@ export class PointSelectionComponent implements OnInit {
   async confirm() {
     this.test.status = 'completed';
     this.test.testResult = this.testResult;
-    await this.storage.set(this.testId, this.test).then(() => { console.log('Test saved') }).then(() => {
+    await this.storage.set(this.testId, this.test).then(() => { console.log('Verification completed') }).then(() => {
       this.mainService.processVerification(this.testResult);
       this.router.navigate(['main/run']);
     });
