@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
-import { TestsComponent } from '../tests/tests.component';
+import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
 import { MainService } from 'src/app/services/main/main.service';
 
 @Component({
   imports: [
     IonicModule,
     FormsModule,
-    TestsComponent,
+    InfiltrationPointsComponent
   ],
   selector: 'app-run',
   templateUrl: './run.component.html',
@@ -19,7 +19,11 @@ export class RunComponent  implements OnInit {
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
   public qtyVerifications: number = 0;
-  public qtyTests: number = 5;
+  public qtyTests: number = this.mainService.qtyTests;
+
+  public progress = 0;
+  public buffer = 0.06;
+  public isLoading = false;
 
   public alertButtons = [
     {
@@ -39,7 +43,7 @@ export class RunComponent  implements OnInit {
   ];
 
   constructor(
-    private mainService: MainService,
+    private mainService: MainService
   ) { }
 
   ngOnInit() {
@@ -48,5 +52,28 @@ export class RunComponent  implements OnInit {
     });
   }
 
-  cancelTest() {}
+  finishTest() {
+    if (this.qtyVerifications < this.qtyTests) {
+      // this.mainService.finish();
+      return;
+    }
+    setInterval(() => {
+      this.progress += 0.01;
+
+      // Reset the progress bar when it reaches 100%
+      // to continuously show the demo
+      if (this.progress > 1) {
+        setTimeout(() => {
+          this.progress = 0;
+        }, 1000);
+      }
+    }, 50);
+
+    this.isLoading = true;
+    this.mainService.finish();
+  }
+
+  cancelTest() {
+    this.mainService.cancelTest();
+  }
 }

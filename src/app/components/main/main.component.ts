@@ -11,12 +11,8 @@ import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.comp
 import { DevicesComponent } from '../devices/devices.component';
 import { DeviceConfigComponent } from '../settings/device-config/device-config.component';
 import { RunComponent } from '../run/run.component';
-import { FrontsideTestComponent } from '../frontside-test/frontside-test.component';
-import { UpsideTestComponent } from '../upside-test/upside-test.component';
-import { BacksideTestComponent } from '../backside-test/backside-test.component';
-import { LeftsideTestComponent } from '../leftside-test/leftside-test.component';
-import { RightsideTestComponent } from '../rightside-test/rightside-test.component';
-import { TestsComponent } from '../tests/tests.component';
+import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
+import { PointSelectionComponent } from '../infiltration-points/point-selection/point-selection.component';
 
 @Component({
   standalone: true,
@@ -32,12 +28,8 @@ import { TestsComponent } from '../tests/tests.component';
     BarcodeScannerComponent,
     DevicesComponent,
     DeviceConfigComponent,
-    TestsComponent,
-    UpsideTestComponent,
-    FrontsideTestComponent,
-    BacksideTestComponent,
-    LeftsideTestComponent,
-    RightsideTestComponent,
+    InfiltrationPointsComponent,
+    PointSelectionComponent,
 ],
   selector: 'app-main',
   templateUrl: './main.component.html',

@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { UpsideTestComponent } from './upside-test.component';
+import { InfiltrationPointsComponent } from './infiltration-points.component';
 
-describe('UpsideTestComponent', () => {
-  let component: UpsideTestComponent;
-  let fixture: ComponentFixture<UpsideTestComponent>;
+describe('InfiltrationPointsComponent', () => {
+  let component: InfiltrationPointsComponent;
+  let fixture: ComponentFixture<InfiltrationPointsComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ UpsideTestComponent ],
+      declarations: [ InfiltrationPointsComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(UpsideTestComponent);
+    fixture = TestBed.createComponent(InfiltrationPointsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

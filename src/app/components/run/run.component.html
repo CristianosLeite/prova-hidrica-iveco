@@ -1,11 +1,16 @@
-<ion-header>
+<ion-header style="position: fixed;">
+  @if(isLoading){
+    <ion-progress-bar [buffer]="buffer" [value]="progress" color="success"></ion-progress-bar>
+  }
   <ion-toolbar>
     <ion-title class="title">{{qtyVerifications + '/' + qtyTests + ' verificações concluídas'}}</ion-title>
-    <ion-buttons id="cancel-test-button" slot="end">
-      <ion-button>
+    <ion-buttons id="cancel-test-button" slot="end" [class.disabled]="isLoading">
+      <ion-button (click)="finishTest()">
+        @if (qtyVerifications < qtyTests && !isLoading) {
         <ion-alert trigger="cancel-test-button" header="Atenção!"
           subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
           message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
+        }
         Finalizar teste
       </ion-button>
     </ion-buttons>
@@ -15,4 +20,4 @@
 <div class="sub-header">
   <p id="vp">{{'VP: ' + vp}}</p>
 </div>
-<app-tests></app-tests>
+<app-infiltration-points></app-infiltration-points>

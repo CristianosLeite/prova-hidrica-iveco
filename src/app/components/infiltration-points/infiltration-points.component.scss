@@ -20,3 +20,18 @@ img {
   display: flex;
   flex-direction: row;
 }
+
+.title {
+  display: flex;
+  align-items: center;
+  & .success-icon {
+    margin-left: 10px;
+    font-size: 24px;
+    color: green;
+  }
+  & .pending-icon {
+    margin-left: 10px;
+    font-size: 24px;
+    color: orange;
+  }
+}

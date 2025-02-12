@@ -1,0 +1,15 @@
+<div class="content">
+  <ion-label class="title">{{ testTitle }}</ion-label>
+  <div class="test">
+    <div class="image-container">
+      <img [src]="test.testImg" [alt]="test.altImg">
+      @for(point of testPoints; track point) {
+        <ion-button [class.selected]="selectedSignals[point.id]()" class="rounded"
+          [ngStyle]="{top: point.position.top, left: point.position.left}" (click)="select(point.id)">
+          {{ point.id }}
+        </ion-button>
+      }
+    </div>
+  </div>
+  <ion-button slot="end" id="finish-upside-test-button" (click)="confirm()">Confirmar</ion-button>
+</div>
