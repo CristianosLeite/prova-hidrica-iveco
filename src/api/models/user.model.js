@@ -15,7 +15,7 @@ User.init(
       allowNull: false,
     },
     badge_number: {
-      type: DataTypes.BIGINT,
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
