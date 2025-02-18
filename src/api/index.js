@@ -119,11 +119,17 @@ function run() {
       console.log("Verification completed: ", data);
     });
 
+    socket.on("codeBarsData", (data) => {
+      io.emit("codeBarsData", data);
+      console.log("Code bars reader", data);
+    });
+
     socket.on("disconnect", () => {
       console.log("Client disconnected");
     });
 
     socket.on("error", (error) => {
+      io.emit("error", error);
       console.error("Socket error: ", error);
     });
   });
