@@ -1,36 +1,69 @@
 import { InfiltrationTest } from './../../types/infiltrationTest.type';
-import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { User } from 'src/app/types/user.type';
 import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { StorageService } from '../storage/storage.service';
+import { AuthService } from '../auth/auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
   private socket: Socket | undefined;
-  @Output() public userAuthenticated = new EventEmitter<User>();
+  private protocol = '';
+  private serverIp = '';
+  private serverPort = '';
+  private url = '';
 
-  constructor(private storage: StorageService) {}
+  constructor(
+    private storage: StorageService,
+    private authService: AuthService
+  ) { }
 
-  public init() {
+  public async init() {
     try {
-      this.socket = io('https://localhost:4000', {
-        transports: ['websocket'],
-        withCredentials: true,
-      });
-      this.socket.on('connect', () => {
-        console.log('Connected to API service');
-      });
-      this.socket.on('userAuthenticated', (user: User) => {
-        console.log('User authenticated:', user);
+      this.storage.storageCreated.subscribe(async () => {
+        Promise.all([
+          await this.storage.get('serverProtocol'),
+          await this.storage.get('serverIp'),
+          await this.storage.get('serverPort')
+        ]).then(([protocol, serverIp, serverPort]) => {
+          this.protocol = protocol;
+          this.serverIp = serverIp;
+          this.serverPort = serverPort;
+          this.url = `${this.protocol}://${this.serverIp}:${this.serverPort}`;
+
+          this.socket = io(this.url, {
+            transports: ['websocket'],
+            withCredentials: true,
+          });
+
+          this.socket.on('connect', () => {
+            console.log('Connected to API service');
+          });
+        });
       });
     } catch (error) {
       console.error('Error initializing API service:', error);
     }
 
     console.log('API service initialized');
+  }
+
+  public authenticate(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('authenticate');
+      this.socket?.on('authenticated', (user: User) => {
+        resolve({ type: 'success', payload: { message: 'Authenticated successfully', user } });
+        this.authService.userAuthenticated.emit(user);
+        this.authService.isAuthenticating.emit(false);
+        this.authService.authenticationChanged.emit(true);
+      });
+      this.socket?.on('error', (error: any) => {
+        reject({ type: 'error', payload: { message: 'Authentication failed', error } });
+      });
+    });
   }
 
   public createUser(user: User): Promise<SocketResponse> {
