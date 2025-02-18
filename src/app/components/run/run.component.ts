@@ -3,19 +3,22 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
 import { MainService } from 'src/app/services/main/main.service';
+import { CodebarComponent } from '../codebar/codebar.component';
+import { Recipe } from 'src/app/types/recipe.type';
 
 @Component({
   imports: [
     IonicModule,
     FormsModule,
-    InfiltrationPointsComponent
+    InfiltrationPointsComponent,
+    CodebarComponent
   ],
   selector: 'app-run',
   templateUrl: './run.component.html',
   styleUrls: ['./run.component.scss'],
 })
 export class RunComponent  implements OnInit {
-  public vp: string = '12345678901234';
+  public vp: string | null = null;
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
   public qtyVerifications: number = 0;
@@ -49,6 +52,10 @@ export class RunComponent  implements OnInit {
   ngOnInit() {
     this.mainService.qtyVerificationsChanged.subscribe((qty: number) => {
       this.qtyVerifications = qty;
+    });
+    this.mainService.recipeChanged.subscribe((recipe: Recipe) => {
+      this.vp = recipe.vp;
+      console.log('Recipe changed', recipe);
     });
   }
 

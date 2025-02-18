@@ -3,6 +3,7 @@ import { IMainApplication } from 'src/app/interfaces/IMainApplication.inteface';
 import { InfiltrationPoints } from 'src/app/types/infiltrationPoints.type';
 import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
 import { Storage } from '@ionic/storage';
+import { Recipe } from 'src/app/types/recipe.type';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +20,7 @@ export class MainService implements IMainApplication {
   infiltrationPoints: InfiltrationPoints = {};
 
   @Output() qtyVerificationsChanged: EventEmitter<number> = new EventEmitter();
+  @Output() recipeChanged: EventEmitter<Recipe> = new EventEmitter();
 
   constructor(
     private storage: Storage
@@ -100,5 +102,10 @@ export class MainService implements IMainApplication {
       this.addInfiltrationPoint(Number(key), value || false);
     });
     this.updateQtyTestsCompleted();
+  }
+
+  public handleCodeBarsData(data: Recipe): void {
+    console.log('Data read:', data);
+    this.recipeChanged.emit(data);
   }
 }
