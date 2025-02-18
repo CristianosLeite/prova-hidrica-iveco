@@ -1,0 +1,14 @@
+<ion-content class="ion-padding">
+  <div class="content">
+    <ion-card>
+      <img [src]="logo" alt="logo" class="logo">
+      <ion-card-header>
+        <ion-card-title>Seja bem-vindo!</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Para acessar o sistema, faça login.</p>
+        <ion-button (click)="login()" class="login-button" routerLink="/login" expand="block">Login</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

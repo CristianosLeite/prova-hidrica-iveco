@@ -1,0 +1,25 @@
+.logo {
+  width: 500px;
+  padding: 10px;
+}
+
+.login-button {
+  display: flex;
+  max-width: 210px;
+}
+
+.content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 95vh;
+}
+
+ion-card {
+  width: 90vw;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
