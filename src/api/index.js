@@ -64,7 +64,14 @@ function run() {
 
   // Create a HTTPS server instance with the Express app
   const server = new HttpsServer(credentials, expressApp);
-  const io = new SocketIOServer(server);
+  const io = new SocketIOServer(server, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    },
+    transports: ["websocket", "polling"],
+  });
 
   // Create controllers
 
@@ -87,6 +94,16 @@ function run() {
   io.on("connection", (socket) => {
     console.log("Client connected");
 
+    socket.on("authenticate", () => {
+      io.emit("authenticate");
+      console.log("Authenticating");
+    });
+
+    socket.on("authenticated", (data) => {
+      io.emit("authenticated", data);
+      console.log("Authenticated: ", data);
+    });
+
     socket.on("createUser", (user) => {
       io.emit("createUser", user);
       console.log("Creating user: ", user);
@@ -100,7 +117,7 @@ function run() {
     socket.on("verificationCompleted", (data) => {
       io.emit("verificationCompleted", data);
       console.log("Verification completed: ", data);
-    })
+    });
 
     socket.on("disconnect", () => {
       console.log("Client disconnected");
@@ -112,7 +129,9 @@ function run() {
   });
 
   server.listen(port, () => {
-    console.log(`Node Express server listening on https://localhost:${port}/api`);
+    console.log(
+      `Node Express server listening on https://localhost:${port}/api`
+    );
   });
 
   server.on("error", (error) => {
