@@ -57,11 +57,12 @@ export class ListUsersComponent implements OnInit {
       create_users: 'Cadastrar usuários',
       view_users: 'Visualizar usuários cadastrados',
       edit_users: 'Editar usuários',
+      operate: 'Operar no automático',
+      set_manual: 'Operar no manual',
       view_history: 'Visualizar histórico de atividades',
-      create_checklist: 'Realizar checklist',
+      view_logs: 'Visualizar logs',
       create_activity: 'Cadastrar nova atividade',
-      list_activity: 'Visualizar atividades cadastradas',
-      reports: 'Exportar Relatórios',
+      export_reports: 'Exportar relatórios',
     };
 
     return value[permission];
