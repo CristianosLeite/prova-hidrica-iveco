@@ -5,11 +5,14 @@ import { UserService } from 'src/app/services/user/user.service';
 import { User } from 'src/app/types/user.type';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { RfidComponent } from '../../rfid/rfid.component';
+import { Context } from 'src/app/types/context.type';
 
 @Component({
   imports: [
     IonicModule,
     FormsModule,
+    RfidComponent
   ],
   selector: 'app-edit-user',
   templateUrl: './edit-user.component.html',
@@ -38,6 +41,12 @@ export class EditUserComponent implements OnInit {
       },
     },
   ];
+  public IsAwaitingRFID = false;
+  public context: Context = 'create';
+  public IsPermissionNotSelected = false;
+  public alertHeader: string | undefined = undefined;
+  public alertSubHeader: string | undefined = undefined;
+  public alertMessage: string | undefined = undefined;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -51,14 +60,22 @@ export class EditUserComponent implements OnInit {
     if (this.userId) {
       this.userService.retrieveUser(this.userId).then((user: User) => {
         this.user = user;
+        this.context = 'edit';
       });
     }
   }
 
   async saveUser() {
-    ! this.userId ?
-      await this.createUser() :
-      await this.updateUser();
+    if (!this.user.badge_number || !this.user.user_name) {
+      this.showAlert('Atenção!', 'Campos obrigatórios não preenchidos.', 'Por favor, preencha os campos obrigatórios.');
+      return;
+    }
+    if (!this.user.permissions) {
+      this.showAlert('Atenção!', 'Nenhuma permissão foi selecionada.', 'Por favor, selecione ao menos uma permissão.');
+      return;
+    }
+    this.IsAwaitingRFID = true;
+    this.userId ? await this.updateUser() : await this.createUser();
   }
 
   async createUser() {
@@ -76,5 +93,11 @@ export class EditUserComponent implements OnInit {
     await this.userService.deleteUser(this.user.id);
     this.router.navigate(['/main/users']);
     this.userService.retrieveAllUsers();
+  }
+
+  private showAlert(header: string, subHeader: string, message: string) {
+    this.alertHeader = header;
+    this.alertSubHeader = subHeader;
+    this.alertMessage = message;
   }
 }

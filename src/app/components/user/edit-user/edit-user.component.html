@@ -5,13 +5,8 @@
     <ion-buttons slot="end">
       <ion-button id="delete-button">
         <ion-icon [ios]="trashOutline" [md]="trashSharp"></ion-icon>
-        <ion-alert
-          trigger="delete-button"
-          header="Atenção!"
-          subHeader="Deseja excluir este usuário?"
-          message="Esta ação não poderá ser desfeita."
-          [buttons]="alertButtons"
-        ></ion-alert>
+        <ion-alert trigger="delete-button" header="Atenção!" subHeader="Deseja excluir este usuário?"
+          message="Esta ação não poderá ser desfeita." [buttons]="alertButtons"></ion-alert>
       </ion-button>
     </ion-buttons>
     }
@@ -19,12 +14,13 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  @if(! IsAwaitingRFID) {
   <form (ngSubmit)="saveUser()">
     <ion-item>
       <ion-label position="floating">Matrícula</ion-label>
       <ion-input [(ngModel)]="user.badge_number" name="badge_number" required></ion-input>
     </ion-item>
-    
+
     <ion-item>
       <ion-label position="floating">Nome</ion-label>
       <ion-input [(ngModel)]="user.user_name" name="name" required></ion-input>
@@ -44,6 +40,11 @@
       </ion-select>
     </ion-item>
 
-    <ion-button expand="full" type="submit">{{ userId ? 'Atualizar' : 'Criar' }} Usuário</ion-button>
+    <ion-button id="submit" expand="full" type="submit">{{ userId ? 'Atualizar' : 'Criar' }} Usuário</ion-button>
+    <ion-alert trigger="submit" [header]="alertHeader!" [subHeader]="alertSubHeader"
+    [message]="alertMessage" [buttons]="[{ text: 'OK', role: 'confirm' }]"></ion-alert>
   </form>
+  } @else {
+  <app-rfid [context]="context"></app-rfid>
+  }
 </ion-content>
