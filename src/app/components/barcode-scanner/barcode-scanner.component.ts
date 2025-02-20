@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, Input, signal, WritableSignal } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Context } from 'src/app/types/context.type';
 import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { ScannerPlugin } from 'q2i-scanner-plugin';
+import { MainService } from 'src/app/services/main/main.service';
 
 @Component({
   standalone: true,
@@ -12,44 +13,36 @@ import { ScannerPlugin } from 'q2i-scanner-plugin';
   templateUrl: './barcode-scanner.component.html',
   styleUrls: ['./barcode-scanner.component.scss']
 })
-export class BarcodeScannerComponent implements OnInit {
+export class BarcodeScannerComponent {
   @Input() context: Context | undefined;
-  public title: string = 'Aguardando leitura do VP';
-  public subtitle: string = 'Utilize o leitor de código de barras.';
-  public content: string = 'Aguardando leitura...';
-  public scannedCode?: string;
-  public hasError = false;
+  public title: WritableSignal<string> = signal('Aguardando leitura do VP');
+  public subtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
+  public content: WritableSignal<string> = signal('Aguardando leitura...');
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private mainService: MainService
   ) { }
 
-  ngOnInit() {
-    this.apiService.codeBarsReader().then((response: SocketResponse) => {
-      console.log('Codebar response', response);
-      this.content = response.payload.message;
-    }).catch((data: any) => {
-      console.error('Error reading code bars:', data['payload']['message']);
-      this.title = 'Erro ao ler o código de barras.';
-      this.subtitle = data['payload']['message'];
-      this.content = '';
-
-      setTimeout(() => {
-        this.title = 'Aguardando leitura do VP';
-        this.subtitle = 'Utilize o leitor de código de barras.';
-        this.content = 'Aguardando leitura...';
-      }, 5000);
-    });
-  }
-
   async scan() {
-    try {
-      ScannerPlugin.scanBarcode().then((result) => {
-        console.log('Código de barras escaneado:', result.value);
+    ScannerPlugin.scanBarcode().then((result) => {
+      this.apiService.sendBarcodeData(result.value).then((response: SocketResponse) => {
+        this.mainService.setRecipe(response.payload.recipe);
+        this.title.set('VP lido com sucesso');
+        this.subtitle.set('Receita carregada!');
+        this.content.set(response.payload.message);
+      }).catch((error) => {
+        console.error('Erro ao escanear código de barras:', error);
+        this.title.set('Erro ao ler o código de barras.');
+        this.subtitle.set(error.payload.message);
+        this.content.set('');
       });
-    } catch (error) {
-      console.error('Erro ao escanear código de barras:', error);
-      this.hasError = true;
-    }
+    });
+
+    setTimeout(() => {
+      this.title.set('Aguardando leitura do VP');
+      this.subtitle.set('Utilize o leitor de código de barras.');
+      this.content.set('Aguardando leitura...');
+    }, 5000);
   }
 }

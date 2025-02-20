@@ -119,9 +119,19 @@ function run() {
       console.log("Verification completed: ", data);
     });
 
-    socket.on("codeBarsData", (data) => {
-      io.emit("codeBarsData", data);
-      console.log("Code bars reader", data);
+    socket.on("sendingBarcode", (data) => {
+      io.emit("sendingBarcode", data);
+      console.log("Sending barcode: ", data);
+    });
+
+    socket.on("barcodeData", (data) => {
+      io.emit("barcodeData", data);
+      console.log("Barcode reader", data);
+    });
+
+    socket.on("recipeLoaded", (data) => {
+      io.emit("recipeLoaded", data);
+      console.log("Recipe loaded: ", data);
     });
 
     socket.on("disconnect", () => {

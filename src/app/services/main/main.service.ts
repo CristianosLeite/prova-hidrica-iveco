@@ -26,6 +26,10 @@ export class MainService implements IMainApplication {
     private storage: Storage
   ) { }
 
+  public setRecipe(recipe: Recipe): void {
+    this.recipeChanged.emit(recipe);
+  }
+
   async initializeTests() {
     const testKeys = ['upside', 'frontside', 'backside', 'leftside', 'rightside'];
     try {

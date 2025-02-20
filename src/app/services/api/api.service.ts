@@ -94,13 +94,26 @@ export class ApiService {
     });
   }
 
-  public codeBarsReader(): Promise<SocketResponse> {
+  public BarcodeReader(): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
-      this.socket?.on('codeBarsData', (recipe: Recipe) => {
+      this.socket?.on('barcodeData', (recipe: Recipe) => {
         resolve({ type: 'success', payload: { message: 'Data read successfully', recipe } });
       });
       this.socket?.on('error', (error: any) => {
-        console.log('CodeBarsReader error:', error);
+        console.log('barcodeReader error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
+
+  public sendBarcodeData(barcode: string): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('sendingBarcode', barcode);
+      this.socket?.on('recipeLoaded', (response: SocketResponse) => {
+        resolve({ type: 'success', payload: { message: 'Recipe loaded successfully', response } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('sendBarcodeData error:', error);
         reject({ type: 'error', payload: { message: error['message'] } });
       });
     });
