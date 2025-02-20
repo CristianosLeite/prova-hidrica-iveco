@@ -1,0 +1,38 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionChange)="search($event)"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-toast [isOpen]="hasError" message="Erro ao buscar usuários" [duration]="5000"></ion-toast>
+
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content></ion-refresher-content>
+</ion-refresher>
+
+@if (dataSource.recipes.length > 0) {
+<ion-list class="users-list">
+  <!-- Usuários -->
+  @for(recipe of dataSource.recipes; track recipe.recipe_id; let index = $index) {
+  <ion-item [routerLink]="['/', 'main', 'edit-recipe', recipe.recipe_id]">
+    <ion-icon slot="start" [ios]="documentOutline" [md]="documentSharp"></ion-icon>
+
+    <!-- Descrição -->
+    <ion-label>{{ recipe.description }}</ion-label>
+
+    <!-- Vp -->
+    <ion-label>{{ recipe.vp }}</ion-label>
+
+    <!-- Altura dos aspersores -->
+    <ion-label>{{ recipe.sprinklerHeight }}</ion-label>
+
+  </ion-item>
+  }
+</ion-list>
+} @else {
+<ion-list class="users-list">
+  <ion-item>
+    <ion-label class="ion-text-center">Nenhum receita encontrada</ion-label>
+  </ion-item>
+</ion-list>
+}

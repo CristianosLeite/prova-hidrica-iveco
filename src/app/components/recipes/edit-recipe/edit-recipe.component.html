@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>{{ recipeId ? 'Editar receita' : 'Cadastrar receita' }}</ion-title>
+    @if(recipeId) {
+    <ion-buttons slot="end">
+      <ion-button id="delete-button">
+        <ion-icon [ios]="trashOutline" [md]="trashSharp"></ion-icon>
+        <ion-alert trigger="delete-button" header="Atenção!" subHeader="Deseja excluir este usuário?"
+          message="Esta ação não poderá ser desfeita." [buttons]="alertButtons"></ion-alert>
+      </ion-button>
+    </ion-buttons>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <form (ngSubmit)="saveRecipe()">
+    <ion-item>
+      <ion-label position="floating">Descrição</ion-label>
+      <ion-input [(ngModel)]="recipe.description" name="description" required></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="floating">VP</ion-label>
+      <ion-input [(ngModel)]="recipe.vp" name="vp" required [counter]="true"
+      maxlength="14"
+      [counterFormatter]="customCounterFormatter"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-select placeholder="Selecione a altura dos aspersores" [(ngModel)]="recipe.sprinklerHeight"
+        name="sprinklerHeight" required>
+        <div slot="label">Altura do aspersores</div>
+        <ion-select-option value="1">1 (baixo)</ion-select-option>
+        <ion-select-option value="2">2 (médio)</ion-select-option>
+        <ion-select-option value="3">3 (alto)</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-button id="submit" expand="full" type="submit">{{ recipeId ? 'Atualizar' : 'Cadastrar' }} Receita</ion-button>
+    <ion-alert trigger="submit" [header]="alertHeader!" [subHeader]="alertSubHeader" [message]="alertMessage"
+      [buttons]="[{ text: 'OK', role: 'confirm' }]"></ion-alert>
+  </form>
+</ion-content>

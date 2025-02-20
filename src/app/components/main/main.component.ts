@@ -13,6 +13,8 @@ import { DeviceConfigComponent } from '../settings/device-config/device-config.c
 import { RunComponent } from '../run/run.component';
 import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
 import { PointSelectionComponent } from '../infiltration-points/point-selection/point-selection.component';
+import { RecipesComponent } from '../recipes/recipes.component';
+import { EditRecipeComponent } from '../recipes/edit-recipe/edit-recipe.component';
 
 @Component({
   standalone: true,
@@ -22,6 +24,8 @@ import { PointSelectionComponent } from '../infiltration-points/point-selection/
     RunComponent,
     UserComponent,
     EditUserComponent,
+    RecipesComponent,
+    EditRecipeComponent,
     SettingsComponent,
     ServerComponent,
     PreferencesComponent,

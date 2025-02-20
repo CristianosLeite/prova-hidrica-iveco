@@ -1,0 +1,9 @@
+<!-- Nova receita -->
+<ion-item [routerLink]="['/', 'main', 'add-new-recipe']">
+  <ion-icon slot="start" [ios]="documentOutline" [md]="documentSharp"></ion-icon>
+  <ion-label>Cadastrar nova receita</ion-label>
+  <ion-button slot="end" fill="clear">
+    <ion-icon [ios]="addOutline" [md]="addSharp"></ion-icon>
+  </ion-button>
+</ion-item>
+<app-list-recipes></app-list-recipes>

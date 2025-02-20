@@ -29,8 +29,8 @@ export class AppComponent implements OnInit {
     { title: 'Iniciar', url: '/main/run', icon: 'play' },
     { title: 'Registros', url: '/main/records', icon: 'server' },
     { title: 'Usuários', url: '/main/users', icon: 'people' },
+    { title: 'Receitas', url: '/main/recipes', icon: 'cube' },
     { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
-    { title: 'Leitor de código', url: '/main/barcode-scanner', icon: 'barcode' },
     { title: 'Configurações', url: '/main/settings', icon: 'settings' },
   ];
   public labels = ['28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído'];
