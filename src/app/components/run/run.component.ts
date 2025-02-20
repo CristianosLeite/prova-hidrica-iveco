@@ -3,15 +3,15 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
 import { MainService } from 'src/app/services/main/main.service';
-import { CodebarComponent } from '../codebar/codebar.component';
 import { Recipe } from 'src/app/types/recipe.type';
+import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
 
 @Component({
   imports: [
     IonicModule,
     FormsModule,
     InfiltrationPointsComponent,
-    CodebarComponent
+    BarcodeScannerComponent,
   ],
   selector: 'app-run',
   templateUrl: './run.component.html',

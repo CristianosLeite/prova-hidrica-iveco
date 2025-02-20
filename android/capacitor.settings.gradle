@@ -5,9 +5,6 @@ project(':capacitor-android').projectDir = new File('../node_modules/@capacitor/
 include ':capacitor-app'
 project(':capacitor-app').projectDir = new File('../node_modules/@capacitor/app/android')
 
-include ':capacitor-barcode-scanner'
-project(':capacitor-barcode-scanner').projectDir = new File('../node_modules/@capacitor/barcode-scanner/android')
-
 include ':capacitor-device'
 project(':capacitor-device').projectDir = new File('../node_modules/@capacitor/device/android')
 
@@ -25,3 +22,6 @@ project(':capacitor-status-bar').projectDir = new File('../node_modules/@capacit
 
 include ':ipos-printer'
 project(':ipos-printer').projectDir = new File('../node_modules/ipos-printer/android')
+
+include ':q2i-scanner-plugin'
+project(':q2i-scanner-plugin').projectDir = new File('../node_modules/q2i-scanner-plugin/android')

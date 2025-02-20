@@ -1,6 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
-import { ScannerService } from 'src/app/services/scan/barcode-scanner.service';
+import { ApiService } from 'src/app/services/api/api.service';
+import { Context } from 'src/app/types/context.type';
+import { SocketResponse } from 'src/app/types/socketResponse.type';
+import { ScannerPlugin } from 'q2i-scanner-plugin';
 
 @Component({
   standalone: true,
@@ -10,21 +13,40 @@ import { ScannerService } from 'src/app/services/scan/barcode-scanner.service';
   styleUrls: ['./barcode-scanner.component.scss']
 })
 export class BarcodeScannerComponent implements OnInit {
+  @Input() context: Context | undefined;
+  public title: string = 'Aguardando leitura do VP';
+  public subtitle: string = 'Utilize o leitor de código de barras.';
+  public content: string = 'Aguardando leitura...';
   public scannedCode?: string;
   public hasError = false;
 
-  constructor(private readonly scanner: ScannerService) {}
+  constructor(
+    private apiService: ApiService
+  ) { }
 
   ngOnInit() {
-    this.scanBarCode();
+    this.apiService.codeBarsReader().then((response: SocketResponse) => {
+      console.log('Codebar response', response);
+      this.content = response.payload.message;
+    }).catch((data: any) => {
+      console.error('Error reading code bars:', data['payload']['message']);
+      this.title = 'Erro ao ler o código de barras.';
+      this.subtitle = data['payload']['message'];
+      this.content = '';
+
+      setTimeout(() => {
+        this.title = 'Aguardando leitura do VP';
+        this.subtitle = 'Utilize o leitor de código de barras.';
+        this.content = 'Aguardando leitura...';
+      }, 5000);
+    });
   }
 
-  async scanBarCode() {
+  async scan() {
     try {
-      const code = await this.scanner.startScan();
-      if (code) {
-        this.scannedCode = code;
-      }
+      ScannerPlugin.scanBarcode().then((result) => {
+        console.log('Código de barras escaneado:', result.value);
+      });
     } catch (error) {
       console.error('Erro ao escanear código de barras:', error);
       this.hasError = true;
