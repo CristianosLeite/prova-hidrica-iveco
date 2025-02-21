@@ -48,21 +48,31 @@ export class RecipeService implements IRecipeService {
   }
 
   async retrieveRecipeByVp(vp: string): Promise<Recipe> {
-    const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/one?recipe_vp=${vp}`, { headers: this.headers }));
+    const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/one?vp=${vp}`, { headers: this.headers }));
     this.recipeChanged.emit(data);
     return data;
   }
 
   async createRecipe(recipe: Recipe): Promise<Recipe> {
-    return await lastValueFrom(this.http.post<Recipe>(`${this.baseUrl}/create`, { heders: this.headers, body: recipe }));
+    if (!recipe.createdBy) {
+      throw new Error('Recipe must have a createdBy field');
+    }
+
+    return await this.init().then(async () => {
+      return await lastValueFrom(this.http.post<Recipe>(`${this.baseUrl}/create`, recipe, { headers: this.headers }));
+    });
   }
 
   async updateRecipe(recipe: Recipe): Promise<Recipe> {
-    return await lastValueFrom(this.http.put<Recipe>(`${this.baseUrl}/update`, { headers: this.headers, body: recipe }));
+    return await this.init().then(async () => {
+      return await lastValueFrom(this.http.put<Recipe>(`${this.baseUrl}/update`, recipe, { headers: this.headers}));
+    });
   }
 
   async deleteRecipe(id: number): Promise<void> {
-    await lastValueFrom(this.http.delete(`${this.baseUrl}/delete?recipe_id=${id}`, { headers: this.headers }));
+    await this.init().then(async () => {
+      await lastValueFrom(this.http.delete(`${this.baseUrl}/delete?recipe_id=${id}`, { headers: this.headers }));
     this.router.navigate(['/recipes']);
+    });
   }
 }
