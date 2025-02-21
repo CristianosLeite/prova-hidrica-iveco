@@ -59,9 +59,7 @@ export class ApiService {
       this.socket?.emit('authenticate');
       this.socket?.on('authenticated', (user: User) => {
         resolve({ type: 'success', payload: { message: 'Authenticated successfully', user } });
-        this.authService.userAuthenticated.emit(user);
-        this.authService.isAuthenticating.emit(false);
-        this.authService.authenticationChanged.emit(true);
+        this.authService.setLoggedUser(user);
       });
       this.socket?.on('error', (error: any) => {
         reject({ type: 'error', payload: { message: 'Authentication failed', error } });
