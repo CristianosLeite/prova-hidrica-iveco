@@ -6,46 +6,42 @@ class User extends Model {}
 
 User.init(
   {
-    id: {
+    Id: {
       type: DataTypes.STRING,
-      primaryKey: true,
+      field: "id",
+      primaryKey: true
     },
-    user_name: {
+    UserName: {
       type: DataTypes.STRING,
+      field: "user_name",
+      allowNull: false
+    },
+    BadgeNumber: {
+      type: DataTypes.STRING,
+      field: "badge_number",
       allowNull: false,
+      unique: true
     },
-    badge_number: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-    },
-    permissions: {
-      type: DataTypes.ARRAY(DataTypes.STRING),
-    },
-    createdAt: {
-      type: DataTypes.DATE,
-    },
-    updatedAt: {
-      type: DataTypes.DATE,
-    },
+    Permissions: {
+      field: "permissions",
+      type: DataTypes.ARRAY(DataTypes.STRING)
+    }
   },
   {
     sequelize,
     modelName: "User",
-    tableName: "users",
-    createdAt: true,
-    updatedAt: true,
+    tableName: "users"
   }
 );
 
 User.hasMany(Recipe, {
   foreignKey: "createdBy",
-  as: "recipes",
+  as: "recipes"
 });
 
 Recipe.belongsTo(User, {
-  foreignKey: "id",
-  as: "user",
+  foreignKey: "createdBy",
+  as: "user"
 });
 
 module.exports = User;
