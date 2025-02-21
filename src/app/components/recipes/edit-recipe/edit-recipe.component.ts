@@ -5,7 +5,8 @@ import { Recipe } from 'src/app/types/recipe.type';
 import { Context } from 'src/app/types/context.type';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RecipeService } from 'src/app/services/recipe/recipe.service';
-import  { AuthService } from 'src/app/services/auth/auth.service';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { AlertController } from '@ionic/angular';
 
 @Component({
   imports: [
@@ -39,16 +40,21 @@ export class EditRecipeComponent  implements OnInit {
       },
     },
   ];
+  public alertHandler = () => {
+    this.hasError = false;
+  };
   public context: Context = 'create';
   public alertHeader: string | undefined = undefined;
   public alertSubHeader: string | undefined = undefined;
   public alertMessage: string | undefined = undefined;
+  public hasError = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private recipeService: RecipeService,
     private authService: AuthService,
     private router: Router,
+    private alertController: AlertController
   ) {
     this.recipeId = this.activatedRoute.snapshot.paramMap.get('id') as string;
   }
@@ -76,8 +82,8 @@ export class EditRecipeComponent  implements OnInit {
 
   private async createRecipe() {
     this.recipe.createdBy = this.authService.getLoggedUser().Id!;
-    console.log(this.recipe);
     await this.recipeService.createRecipe(this.recipe).then(() => {
+      this.recipeService.retrieveAllRecipes();
       this.router.navigate(['/main/recipes']);
     }).catch((error) => {
       this.showAlert('Erro!', 'Erro ao criar receita.', error.message);
@@ -96,10 +102,14 @@ export class EditRecipeComponent  implements OnInit {
     this.recipeService.retrieveAllRecipes();
   }
 
-  private showAlert(header: string, subHeader: string, message: string) {
-    this.alertHeader = header;
-    this.alertSubHeader = subHeader;
-    this.alertMessage = message;
+  private async showAlert(header: string, subHeader: string, message: string) {
+    const alert = await this.alertController.create({
+      header,
+      subHeader,
+      message,
+      buttons: ['OK']
+    });
+    await alert.present();
   }
 
   customCounterFormatter(inputLength: number, maxLength: number) {

@@ -31,14 +31,12 @@
       <ion-select placeholder="Selecione a altura dos aspersores" [(ngModel)]="recipe.sprinkler_height"
         name="sprinklerHeight" required>
         <div slot="label">Altura do aspersores</div>
-        <ion-select-option value="1">1 (baixo)</ion-select-option>
-        <ion-select-option value="2">2 (médio)</ion-select-option>
-        <ion-select-option value="3">3 (alto)</ion-select-option>
+        <ion-select-option value="1">1 (baixa)</ion-select-option>
+        <ion-select-option value="2">2 (média)</ion-select-option>
+        <ion-select-option value="3">3 (alta)</ion-select-option>
       </ion-select>
     </ion-item>
 
     <ion-button id="submit" expand="full" type="submit">{{ recipeId ? 'Atualizar' : 'Cadastrar' }} Receita</ion-button>
-    <ion-alert trigger="submit" [header]="alertHeader!" [subHeader]="alertSubHeader" [message]="alertMessage"
-      [buttons]="[{ text: 'OK', role: 'confirm' }]"></ion-alert>
   </form>
 </ion-content>

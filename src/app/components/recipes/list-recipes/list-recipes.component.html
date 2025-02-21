@@ -4,33 +4,44 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-toast [isOpen]="hasError" message="Erro ao buscar usuários" [duration]="5000"></ion-toast>
+<ion-toast [isOpen]="hasError" message="Erro ao buscar receitas" [duration]="5000"></ion-toast>
 
 <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
   <ion-refresher-content></ion-refresher-content>
 </ion-refresher>
 
-@if (dataSource.recipes.length > 0) {
-<ion-list class="users-list">
-  <!-- Usuários -->
-  @for(recipe of dataSource.recipes; track recipe.recipe_id; let index = $index) {
-  <ion-item [routerLink]="['/', 'main', 'edit-recipe', recipe.recipe_id]">
-    <ion-icon slot="start" [ios]="documentOutline" [md]="documentSharp"></ion-icon>
+@if (paginatedRecipes.length > 0) {
+<div class="content-header">
+  <ion-label>Descrição</ion-label>
+  <ion-label>VP</ion-label>
+  <ion-label>Altura dos aspersores</ion-label>
+</div>
+
+<ion-list>
+  <!-- Receitas -->
+  @for(recipe of paginatedRecipes; track recipe.recipe_id; let index = $index) {
+  <ion-item [routerLink]="['/', 'main', 'edit-recipe', recipe.vp]">
 
     <!-- Descrição -->
-    <ion-label>{{ recipe.description }}</ion-label>
+    <ion-label style="min-width: 110px;">{{ recipe.description }}</ion-label>
 
     <!-- Vp -->
     <ion-label>{{ recipe.vp }}</ion-label>
 
     <!-- Altura dos aspersores -->
-    <ion-label>{{ recipe.sprinkler_height }}</ion-label>
+    <ion-label style="margin: 0 20px 0 20px;">{{ handleSprinklerHeight(recipe.sprinkler_height) }}</ion-label>
 
   </ion-item>
   }
 </ion-list>
+
+<div class="pagination-controls">
+  <ion-button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</ion-button>
+  <ion-button (click)="nextPage()"
+    [disabled]="(currentPage * itemsPerPage) >= dataSource.recipes.length">Próximo</ion-button>
+</div>
 } @else {
-<ion-list class="users-list">
+<ion-list>
   <ion-item>
     <ion-label class="ion-text-center">Nenhum receita encontrada</ion-label>
   </ion-item>

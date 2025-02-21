@@ -23,6 +23,9 @@ export class ListRecipesComponent implements OnInit {
   public searchTerm: string = '';
   public hasError = false;
   public errorMessage = '';
+  public currentPage = 1;
+  public itemsPerPage = 5;
+  public paginatedRecipes: Recipe[] = [];
 
   constructor(
     private recipeService: RecipeService
@@ -35,7 +38,28 @@ export class ListRecipesComponent implements OnInit {
     });
     this.recipeService.recipesChanged.subscribe((recipes: Recipe[]) => {
       this.dataSource.recipes = recipes;
+      this.updatePaginatedRecipes();
     });
+  }
+
+  updatePaginatedRecipes() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedRecipes = this.dataSource.recipes.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if ((this.currentPage * this.itemsPerPage) < this.dataSource.recipes.length) {
+      this.currentPage++;
+      this.updatePaginatedRecipes();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedRecipes();
+    }
   }
 
   search(e: Event) {
@@ -55,5 +79,9 @@ export class ListRecipesComponent implements OnInit {
         event.target.complete();
       });
     }, 2000);
+  }
+
+  handleSprinklerHeight(height: number): string {
+    return height === 0 ? 'Baixa' : height === 1 ? 'Média' : 'Alta';
   }
 }
