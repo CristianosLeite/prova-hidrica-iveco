@@ -4,7 +4,6 @@ import { IRecipeService } from 'src/app/interfaces/IRecipeService.interface';
 import { Recipe } from 'src/app/types/recipe.type';
 import { StorageService } from '../storage/storage.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ApiService } from '../api/api.service';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -23,12 +22,9 @@ export class RecipeService implements IRecipeService {
     'Accept': 'application/json',
   });
 
-  private recipes: Recipe[] = [];
-
   constructor(
     private storageService: StorageService,
     private http: HttpClient,
-    private apiService: ApiService,
     private router: Router
   ) {
     this.storageService.storageCreated.subscribe(async () => {
