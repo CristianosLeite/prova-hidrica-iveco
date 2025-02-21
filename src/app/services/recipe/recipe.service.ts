@@ -1,3 +1,4 @@
+import { lastValueFrom } from 'rxjs';
 import { Injectable, Output, EventEmitter } from '@angular/core';
 import { IRecipeService } from 'src/app/interfaces/IRecipeService.interface';
 import { Recipe } from 'src/app/types/recipe.type';
@@ -11,6 +12,7 @@ import { Router } from '@angular/router';
 })
 export class RecipeService implements IRecipeService {
   @Output() recipesChanged: EventEmitter<Recipe[]> = new EventEmitter();
+  @Output() recipeChanged: EventEmitter<Recipe> = new EventEmitter();
   private protocol = '';
   private serverIp = '';
   private serverPort = '';
@@ -41,19 +43,30 @@ export class RecipeService implements IRecipeService {
     this.baseUrl = `${this.protocol}://${this.serverIp}:${this.serverPort}/api/recipes`;
   }
 
-  retrieveAllRecipes(): Promise<Recipe[]> {
-    throw new Error('Method not implemented.');
+  async retrieveAllRecipes(): Promise<Recipe[]> {
+    const data = await this.init().then(async () => {
+      return await lastValueFrom(this.http.get<Recipe[]>(`${this.baseUrl}/all`, { headers: this.headers }));
+    });
+    this.recipesChanged.emit(data);
+    return data;
   }
-  retrieveRecipeById(id: string): Promise<Recipe> {
-    throw new Error('Method not implemented.');
+
+  async retrieveRecipeByVp(vp: string): Promise<Recipe> {
+    const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/one?recipe_vp=${vp}`, { headers: this.headers }));
+    this.recipeChanged.emit(data);
+    return data;
   }
-  createRecipe(recipe: Recipe): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  async createRecipe(recipe: Recipe): Promise<Recipe> {
+    return await lastValueFrom(this.http.post<Recipe>(`${this.baseUrl}/create`, { heders: this.headers, body: recipe }));
   }
-  updateRecipe(recipe: Recipe): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  async updateRecipe(recipe: Recipe): Promise<Recipe> {
+    return await lastValueFrom(this.http.put<Recipe>(`${this.baseUrl}/update`, { headers: this.headers, body: recipe }));
   }
-  deleteRecipe(id: string): Promise<void> {
-    throw new Error('Method not implemented.');
+
+  async deleteRecipe(id: number): Promise<void> {
+    await lastValueFrom(this.http.delete(`${this.baseUrl}/delete?recipe_id=${id}`, { headers: this.headers }));
+    this.router.navigate(['/recipes']);
   }
 }

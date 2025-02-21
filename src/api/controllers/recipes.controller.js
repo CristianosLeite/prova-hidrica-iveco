@@ -38,14 +38,14 @@ class RecipeController {
   }
 
   async retrieve(req, res) {
-    const { recipe_id } = req.query;
+    const { vp } = req.query;
 
-    if (!recipe_id) {
-      res.status(400).send("Missing recipe ID");
+    if (!vp) {
+      res.status(400).send("Missing vp");
       return;
     }
 
-    await Recipe.findOne({ where: { recipe_id } }).then((recipe) => {
+    await Recipe.findOne({ where: { vp } }).then((recipe) => {
       if (!recipe) {
         res.status(404).send("Recipe not found");
       } else {
