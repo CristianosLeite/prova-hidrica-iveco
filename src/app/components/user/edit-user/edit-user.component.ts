@@ -66,11 +66,11 @@ export class EditUserComponent implements OnInit {
   }
 
   async saveUser() {
-    if (!this.user.badge_number || !this.user.user_name) {
+    if (!this.user.BadgeNumber || !this.user.UserName) {
       this.showAlert('Atenção!', 'Campos obrigatórios não preenchidos.', 'Por favor, preencha os campos obrigatórios.');
       return;
     }
-    if (!this.user.permissions) {
+    if (!this.user.Permissions) {
       this.showAlert('Atenção!', 'Nenhuma permissão foi selecionada.', 'Por favor, selecione ao menos uma permissão.');
       return;
     }
@@ -89,8 +89,8 @@ export class EditUserComponent implements OnInit {
   }
 
   async deleteUser() {
-    if (!this.user.id) return;
-    await this.userService.deleteUser(this.user.id);
+    if (!this.user.Id) return;
+    await this.userService.deleteUser(this.user.Id);
     this.router.navigate(['/main/users']);
     this.userService.retrieveAllUsers();
   }

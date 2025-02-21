@@ -13,19 +13,19 @@
 @if (dataSource.users.length > 0) {
 <ion-list class="users-list">
   <!-- Usuários -->
-  @for(user of dataSource.users; track user.id; let index = $index) {
-  <ion-item [routerLink]="['/', 'main', 'edit-user', user.id]">
+  @for(user of dataSource.users; track user.Id; let index = $index) {
+  <ion-item [routerLink]="['/', 'main', 'edit-user', user.Id]">
     <ion-icon slot="start" [ios]="personOutline" [md]="personSharp"></ion-icon>
 
     <!-- Nome -->
-    <ion-label>{{ user.user_name }}</ion-label>
+    <ion-label>{{ user.UserName }}</ion-label>
 
     <!-- Matrícula -->
-    <ion-label>{{ user.badge_number }}</ion-label>
+    <ion-label>{{ user.BadgeNumber }}</ion-label>
 
     <!-- Permissões -->
     <ion-label class="permissions">
-      @for (permission of user.permissions; track permission) {
+      @for (permission of user.Permissions; track permission) {
       <span [appCaption]="permission" [showText]="false" [tooltip]="handlePermissions(permission)">{{ permission
         }}</span>
       }

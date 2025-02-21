@@ -18,17 +18,17 @@
   <form (ngSubmit)="saveUser()">
     <ion-item>
       <ion-label position="floating">Matrícula</ion-label>
-      <ion-input [(ngModel)]="user.badge_number" name="badge_number" required></ion-input>
+      <ion-input [(ngModel)]="user.BadgeNumber" name="badge_number" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="floating">Nome</ion-label>
-      <ion-input [(ngModel)]="user.user_name" name="name" required></ion-input>
+      <ion-input [(ngModel)]="user.UserName" name="name" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="floating">Permissões</ion-label>
-      <ion-select [(ngModel)]="user.permissions" name="permissions" multiple="true">
+      <ion-select [(ngModel)]="user.Permissions" name="permissions" multiple="true">
         <ion-select-option value="create_users">Cadastrar usuários</ion-select-option>
         <ion-select-option value="view_users">Visualizar usuários cadastrados</ion-select-option>
         <ion-select-option value="edit_users">Editar usuários</ion-select-option>

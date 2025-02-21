@@ -47,7 +47,7 @@ export class ListUsersComponent implements OnInit {
   search(e: Event) {
     this.userService.retrieveAllUsers().then((users: User[]) => {
       this.dataSource.users = users.filter((user) => {
-        return user.user_name.toLowerCase().includes(this.searchTerm.toLowerCase());
+        return user.UserName.toLowerCase().includes(this.searchTerm.toLowerCase());
       });
     });
   }
@@ -72,10 +72,10 @@ export class ListUsersComponent implements OnInit {
     if (!this.dataSource.users) return [];
     let permissions: Permissions[] = [];
     this.dataSource.users.forEach((user) => {
-      if (user.permissions) {
+      if (user.Permissions) {
         permissions = [
           ...permissions,
-          ...user.permissions.map((permission) => permission as Permissions),
+          ...user.Permissions.map((permission) => permission as Permissions),
         ];
       }
     });
