@@ -2,5 +2,6 @@ export type Recipe = {
   recipe_id?: number;
   description: string;
   vp: string;
-  sprinklerHeight: number;
+  sprinkler_height: number;
+  createdBy: string;
 }
