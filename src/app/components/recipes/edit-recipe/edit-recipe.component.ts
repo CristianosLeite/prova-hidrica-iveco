@@ -3,6 +3,9 @@ import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Recipe } from 'src/app/types/recipe.type';
 import { Context } from 'src/app/types/context.type';
+import { ActivatedRoute, Router } from '@angular/router';
+import { RecipeService } from 'src/app/services/recipe/recipe.service';
+import  { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   imports: [
@@ -41,16 +44,62 @@ export class EditRecipeComponent  implements OnInit {
   public alertSubHeader: string | undefined = undefined;
   public alertMessage: string | undefined = undefined;
 
-  constructor() { }
-
-  ngOnInit() {}
-
-  deleteRecipe() {
-    console.log('Recipe deleted');
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private recipeService: RecipeService,
+    private authService: AuthService,
+    private router: Router,
+  ) {
+    this.recipeId = this.activatedRoute.snapshot.paramMap.get('id') as string;
   }
 
-  saveRecipe() {
-    console.log('Recipe saved');
+  ngOnInit() {
+    if (this.recipeId) {
+      this.context = 'edit';
+      this.recipeService.retrieveRecipeByVp(this.recipeId).then((recipe: Recipe) => {
+        this.recipe = recipe;
+      });
+    }
+  }
+
+  async saveRecipe() {
+    if (!this.recipe.description || !this.recipe.vp) {
+      this.showAlert('Atenção!', 'Campos obrigatórios não preenchidos.', 'Por favor, preencha os campos obrigatórios.');
+      return;
+    }
+    if (!this.recipe.sprinkler_height) {
+      this.showAlert('Atenção!', 'Campo obrigatório não preenchido.', 'Por favor, selecione a altura dos asperssores.');
+      return;
+    }
+    this.recipeId ? await this.updateRecipe() : await this.createRecipe();
+  }
+
+  private async createRecipe() {
+    this.recipe.createdBy = this.authService.getLoggedUser().Id!;
+    console.log(this.recipe);
+    await this.recipeService.createRecipe(this.recipe).then(() => {
+      this.router.navigate(['/main/recipes']);
+    }).catch((error) => {
+      this.showAlert('Erro!', 'Erro ao criar receita.', error.message);
+    });
+  }
+
+  private async updateRecipe() {
+    await this.recipeService.updateRecipe(this.recipe).then(() => {
+      this.router.navigate(['/main/recipes']);
+    });
+  }
+
+  async deleteRecipe() {
+    if (!this.recipe.recipe_id) return;
+    await this.recipeService.deleteRecipe(this.recipe.recipe_id);
+    this.recipeService.retrieveAllRecipes();
+  }
+
+  private showAlert(header: string, subHeader: string, message: string) {
+    this.alertHeader = header;
+    this.alertSubHeader = subHeader;
+    this.alertMessage = message;
   }
 
   customCounterFormatter(inputLength: number, maxLength: number) {
