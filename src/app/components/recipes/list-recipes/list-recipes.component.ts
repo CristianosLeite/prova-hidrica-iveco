@@ -28,7 +28,15 @@ export class ListRecipesComponent implements OnInit {
     private recipeService: RecipeService
   ) { }
 
-  ngOnInit() { }
+  ngOnInit() {
+    this.recipeService.retrieveAllRecipes().catch((error: Error) => {
+      this.hasError = true;
+      this.errorMessage = error.message;
+    });
+    this.recipeService.recipesChanged.subscribe((recipes: Recipe[]) => {
+      this.dataSource.recipes = recipes;
+    });
+  }
 
   search(e: Event) {
     this.recipeService.retrieveAllRecipes().then((recipes: Recipe[]) => {
