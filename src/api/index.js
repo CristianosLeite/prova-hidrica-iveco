@@ -7,7 +7,7 @@ const fs = require("fs");
 const { connect, createTables } = require("./database/database");
 const { OperationController } = require("./controllers/operation.controller");
 const { UsersController } = require("./controllers/users.controller");
-const { ActivityController } = require("./controllers/activities.controller");
+const { RecipeController } = require("./controllers/recipes.controller");
 const { SettingsController } = require("./controllers/settings.controller");
 // const { plcConnect, listenAndProcess } = require("./services/snap7-service");
 
@@ -83,9 +83,9 @@ function run() {
   const usersController = new UsersController(io);
   expressApp.use("/api/users", usersController.getRouter());
 
-  // Handle activities
-  const activityController = new ActivityController();
-  expressApp.use("/api/activities", activityController.getRouter());
+  // Handle recipes
+  const recipeController = new RecipeController(io);
+  expressApp.use("/api/recipes", recipeController.getRouter());
 
   // Handle settings
   const settingsController = new SettingsController();

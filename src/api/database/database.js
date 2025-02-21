@@ -1,6 +1,7 @@
 const { sequelize } = require("./config.js");
 const Operation = require("../models/operation.model.js");
 const User = require("../models/user.model.js");
+const Recipe = require("../models/recipe.model.js");
 const Settings = require("../models/settings.model.js");
 
 async function connect() {
@@ -28,6 +29,15 @@ async function connect() {
         })
         .catch((error) => {
           console.error("Não foi possível criar a tabela de usuários: ", error);
+        });
+
+      // Cria tabela de receitas
+      await Recipe.sync({ force: false })
+        .then(() => {
+          console.log("Tabela de receitas criada com sucesso.");
+        })
+        .catch((error) => {
+          console.error("Não foi possível criar a tabela de receitas: ", error);
         });
 
       // Cria tabela de configurações

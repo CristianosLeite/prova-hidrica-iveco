@@ -1,6 +1,6 @@
 const { DataTypes, Model } = require("sequelize");
 const { sequelize } = require("../database/config.js");
-const Activity = require("./activity.model.js");
+const Recipe = require("./recipe.model.js");
 
 class User extends Model {}
 
@@ -38,12 +38,12 @@ User.init(
   }
 );
 
-User.hasMany(Activity, {
-  foreignKey: "id",
-  as: "activities",
+User.hasMany(Recipe, {
+  foreignKey: "createdBy",
+  as: "recipes",
 });
 
-Activity.belongsTo(User, {
+Recipe.belongsTo(User, {
   foreignKey: "id",
   as: "user",
 });
