@@ -1,5 +1,6 @@
 const { Router } = require("express");
 const Recipe = require("../models/recipe.model.js");
+const { Op } = require("sequelize");
 
 class RecipeController {
   constructor(io) {
@@ -7,6 +8,7 @@ class RecipeController {
     this.router = Router();
     this.router.post("/create", this.create.bind(this));
     this.router.get("/all", this.all.bind(this));
+    this.router.get("/between", this.between.bind(this));
     this.router.get("/one", this.retrieve.bind(this));
     this.router.put("/update", this.update.bind(this));
     this.router.delete("/delete", this.delete.bind(this));
@@ -33,6 +35,18 @@ class RecipeController {
 
   async all(req, res) {
     await Recipe.findAll().then((recipes) => {
+      res.json(recipes);
+    });
+  }
+
+  async between(req, res) {
+    await Recipe.findAll({
+      where: {
+        recipe_id: {
+          [Op.between]: [req.query.start, req.query.end],
+        },
+      },
+    }).then((recipes) => {
       res.json(recipes);
     });
   }
