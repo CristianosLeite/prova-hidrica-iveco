@@ -54,8 +54,7 @@ export class RunComponent  implements OnInit {
       this.qtyVerifications = qty;
     });
     this.mainService.recipeChanged.subscribe((recipe: Recipe) => {
-      this.vp = recipe.vp;
-      console.log('Recipe changed', recipe);
+      this.vp = recipe.Vp;
     });
   }
 

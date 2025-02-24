@@ -62,7 +62,7 @@ export class RecipeService implements IRecipeService {
   }
 
   async createRecipe(recipe: Recipe): Promise<Recipe> {
-    if (!recipe.createdBy) {
+    if (!recipe.CreatedBy) {
       throw new Error('Recipe must have a createdBy field');
     }
 
