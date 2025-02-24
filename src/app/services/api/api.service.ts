@@ -96,6 +96,7 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.socket?.on('barcodeData', (recipe: Recipe) => {
         resolve({ type: 'success', payload: { message: 'Data read successfully', recipe } });
+        this.mainService.setRecipe(recipe);
       });
       this.socket?.on('error', (error: any) => {
         console.log('barcodeReader error:', error);
