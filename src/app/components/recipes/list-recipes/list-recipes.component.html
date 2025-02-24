@@ -19,17 +19,17 @@
 
 <ion-list>
   <!-- Receitas -->
-  @for(recipe of paginatedRecipes; track recipe.recipe_id; let index = $index) {
-  <ion-item [routerLink]="['/', 'main', 'edit-recipe', recipe.vp]">
+  @for(recipe of paginatedRecipes; track recipe.RecipeId; let index = $index) {
+  <ion-item [routerLink]="['/', 'main', 'edit-recipe', recipe.Vp]">
 
     <!-- Descrição -->
-    <ion-label style="min-width: 110px;">{{ recipe.description }}</ion-label>
+    <ion-label style="min-width: 110px;">{{ recipe.Description }}</ion-label>
 
     <!-- Vp -->
-    <ion-label>{{ recipe.vp }}</ion-label>
+    <ion-label>{{ recipe.Vp }}</ion-label>
 
     <!-- Altura dos aspersores -->
-    <ion-label style="margin: 0 20px 0 20px;">{{ handleSprinklerHeight(recipe.sprinkler_height) }}</ion-label>
+    <ion-label style="margin: 0 20px 0 20px;">{{ handleSprinklerHeight(recipe.SprinklerHeight) }}</ion-label>
 
   </ion-item>
   }

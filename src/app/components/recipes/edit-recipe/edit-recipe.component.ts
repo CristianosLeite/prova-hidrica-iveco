@@ -69,11 +69,11 @@ export class EditRecipeComponent  implements OnInit {
   }
 
   async saveRecipe() {
-    if (!this.recipe.description || !this.recipe.vp) {
+    if (!this.recipe.Description || !this.recipe.Vp) {
       this.showAlert('Atenção!', 'Campos obrigatórios não preenchidos.', 'Por favor, preencha os campos obrigatórios.');
       return;
     }
-    if (!this.recipe.sprinkler_height) {
+    if (!this.recipe.SprinklerHeight) {
       this.showAlert('Atenção!', 'Campo obrigatório não preenchido.', 'Por favor, selecione a altura dos asperssores.');
       return;
     }
@@ -81,7 +81,7 @@ export class EditRecipeComponent  implements OnInit {
   }
 
   private async createRecipe() {
-    this.recipe.createdBy = this.authService.getLoggedUser().Id!;
+    this.recipe.CreatedBy = this.authService.getLoggedUser().Id!;
     await this.recipeService.createRecipe(this.recipe).then(() => {
       this.recipeService.retrieveAllRecipes();
       this.router.navigate(['/main/recipes']);
@@ -97,8 +97,8 @@ export class EditRecipeComponent  implements OnInit {
   }
 
   async deleteRecipe() {
-    if (!this.recipe.recipe_id) return;
-    await this.recipeService.deleteRecipe(this.recipe.recipe_id);
+    if (!this.recipe.RecipeId) return;
+    await this.recipeService.deleteRecipe(this.recipe.RecipeId);
     this.recipeService.retrieveAllRecipes();
   }
 

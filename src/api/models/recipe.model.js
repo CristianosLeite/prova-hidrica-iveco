@@ -5,25 +5,30 @@ class Recipe extends Model {}
 
 Recipe.init(
   {
-    recipe_id: {
+    RecipeId: {
       type: DataTypes.INTEGER,
+      field: "recipe_id",
       autoIncrement: true,
       primaryKey: true,
     },
-    description: {
+    Description: {
       type: DataTypes.STRING,
+      field: "description",
       allowNull: false,
     },
-    vp: {
+    Vp: {
       type: DataTypes.STRING,
+      field: "vp",
       allowNull: false,
     },
-    sprinkler_height: {
+    SprinklerHeight: {
       type: DataTypes.INTEGER,
+      field: "sprinkler_height",
       allowNull: false,
     },
-    createdBy: {
+    CreatedBy: {
       type: DataTypes.STRING,
+      field: "created_by",
       allowNull: false,
     },
     createdAt: {

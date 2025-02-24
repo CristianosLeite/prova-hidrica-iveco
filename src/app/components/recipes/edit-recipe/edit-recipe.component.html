@@ -17,18 +17,18 @@
   <form (ngSubmit)="saveRecipe()">
     <ion-item>
       <ion-label position="floating">Descrição</ion-label>
-      <ion-input [(ngModel)]="recipe.description" name="description" required></ion-input>
+      <ion-input [(ngModel)]="recipe.Description" name="description" required></ion-input>
     </ion-item>
 
     <ion-item>
       <ion-label position="floating">VP</ion-label>
-      <ion-input [(ngModel)]="recipe.vp" name="vp" required [counter]="true"
+      <ion-input [(ngModel)]="recipe.Vp" name="vp" required [counter]="true"
       maxlength="14"
       [counterFormatter]="customCounterFormatter"></ion-input>
     </ion-item>
 
     <ion-item>
-      <ion-select placeholder="Selecione a altura dos aspersores" [(ngModel)]="recipe.sprinkler_height"
+      <ion-select placeholder="Selecione a altura dos aspersores" [(ngModel)]="recipe.SprinklerHeight"
         name="sprinklerHeight" required>
         <div slot="label">Altura do aspersores</div>
         <ion-select-option value="1">1 (baixa)</ion-select-option>
