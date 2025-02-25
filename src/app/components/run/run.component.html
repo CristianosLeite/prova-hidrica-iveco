@@ -1,4 +1,4 @@
-@if(vp) {
+@if(recipe) {
   <ion-header style="position: fixed;">
     @if(isLoading){
       <ion-progress-bar [buffer]="buffer" [value]="progress" color="success"></ion-progress-bar>
@@ -18,9 +18,7 @@
     </ion-toolbar>
   </ion-header>
 
-  <div class="sub-header">
-    <p id="vp">{{'VP: ' + vp}}</p>
-  </div>
+  <app-loaded-recipe-modal [recipe]="recipe"></app-loaded-recipe-modal>
   <app-infiltration-points></app-infiltration-points>
 } @else {
   <app-barcode-scanner></app-barcode-scanner>

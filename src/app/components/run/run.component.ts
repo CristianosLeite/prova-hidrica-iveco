@@ -5,6 +5,7 @@ import { InfiltrationPointsComponent } from '../infiltration-points/infiltration
 import { MainService } from 'src/app/services/main/main.service';
 import { Recipe } from 'src/app/types/recipe.type';
 import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
+import { LoadedRecipeModalComponent } from "../loaded-recipe-modal/loaded-recipe-modal.component";
 
 @Component({
   imports: [
@@ -12,13 +13,14 @@ import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.comp
     FormsModule,
     InfiltrationPointsComponent,
     BarcodeScannerComponent,
-  ],
+    LoadedRecipeModalComponent
+],
   selector: 'app-run',
   templateUrl: './run.component.html',
   styleUrls: ['./run.component.scss'],
 })
 export class RunComponent  implements OnInit {
-  public vp: string | null = null;
+  public recipe: Recipe | null = null;
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
   public qtyVerifications: number = 0;
@@ -54,7 +56,7 @@ export class RunComponent  implements OnInit {
       this.qtyVerifications = qty;
     });
     this.mainService.recipeChanged.subscribe((recipe: Recipe) => {
-      this.vp = recipe.Vp;
+      this.recipe = recipe;
     });
   }
 
