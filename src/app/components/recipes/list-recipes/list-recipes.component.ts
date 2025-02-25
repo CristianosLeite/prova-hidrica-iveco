@@ -82,6 +82,6 @@ export class ListRecipesComponent implements OnInit {
   }
 
   handleSprinklerHeight(height: number): string {
-    return height === 0 ? 'Baixa' : height === 1 ? 'Média' : 'Alta';
+    return height === 1 ? 'Alta' : height === 2 ? 'Média' : 'Baixa';
   }
 }
