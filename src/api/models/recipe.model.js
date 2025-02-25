@@ -28,7 +28,7 @@ Recipe.init(
     },
     CreatedBy: {
       type: DataTypes.STRING,
-      field: "created_by",
+      field: "createdBy",
       allowNull: false,
     },
     createdAt: {
