@@ -20,7 +20,7 @@ import { LoadedRecipeModalComponent } from "../loaded-recipe-modal/loaded-recipe
   styleUrls: ['./run.component.scss'],
 })
 export class RunComponent  implements OnInit {
-  public recipe: Recipe | null = null;
+  public recipe: Recipe = {} as Recipe;
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
   public qtyVerifications: number = 0;

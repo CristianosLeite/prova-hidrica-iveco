@@ -80,6 +80,7 @@ export class MainService implements IMainApplication {
 
   public cancelTest(): void {
     this.clearVerifications();
+    this.recipeChanged.emit({} as Recipe);
     console.log('Test canceled');
   }
 
