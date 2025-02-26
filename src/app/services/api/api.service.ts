@@ -83,8 +83,9 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.socket?.emit('verificationCompleted', infiltrationTest);
       this.socket?.on('verificationCompleted', async (infiltrationTest: InfiltrationTest) => {
-        resolve({ type: 'success', payload: { message: 'Verification completed successfully', infiltrationTest } });
+        this.mainService.processVerification(infiltrationTest);
         await this.storage.set(infiltrationTest.id!, infiltrationTest).then(() => { console.log('Verification completed') });
+        resolve({ type: 'success', payload: { message: 'Verification completed successfully', infiltrationTest } });
       });
       this.socket?.on('error', (error: any) => {
         reject({ type: 'error', payload: { message: 'Verification failed', error } });

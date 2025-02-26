@@ -76,7 +76,6 @@ export class PointSelectionComponent implements OnInit {
     this.test.status = 'completed';
     this.test.testResult = this.testResult;
     await this.apiService.verficationCompleted(this.test).then(() => {
-      this.mainService.processVerification(this.testResult);
       this.router.navigate(['main/run']);
     });
   }
