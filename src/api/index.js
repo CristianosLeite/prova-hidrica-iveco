@@ -94,44 +94,44 @@ function run() {
   io.on("connection", (socket) => {
     console.log("Client connected");
 
+    socket.on("startBackgroundService", () => {
+      io.emit("startBackgroundService");
+    });
+
+    socket.on("backgroundServiceInitialized", (data) => {
+      io.emit("backgroundServiceInitialized", data);
+    });
+
     socket.on("authenticate", () => {
       io.emit("authenticate");
-      console.log("Authenticating");
     });
 
     socket.on("authenticated", (data) => {
       io.emit("authenticated", data);
-      console.log("Authenticated: ", data);
     });
 
     socket.on("createUser", (user) => {
       io.emit("createUser", user);
-      console.log("Creating user: ", user);
     });
 
     socket.on("userCreated", (user) => {
       io.emit("userCreated", user);
-      console.log("User created: ", user);
     });
 
     socket.on("verificationCompleted", (data) => {
       io.emit("verificationCompleted", data);
-      console.log("Verification completed: ", data);
     });
 
     socket.on("sendingBarcode", (data) => {
       io.emit("sendingBarcode", data);
-      console.log("Sending barcode: ", data);
     });
 
     socket.on("barcodeData", (data) => {
       io.emit("barcodeData", data);
-      console.log("Barcode reader", data);
     });
 
     socket.on("recipeLoaded", (data) => {
       io.emit("recipeLoaded", data);
-      console.log("Recipe loaded: ", data);
     });
 
     socket.on("disconnect", () => {
@@ -140,7 +140,6 @@ function run() {
 
     socket.on("error", (error) => {
       io.emit("error", error);
-      console.error("Socket error: ", error);
     });
   });
 

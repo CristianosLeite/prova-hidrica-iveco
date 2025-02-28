@@ -1,5 +1,5 @@
 import { InfiltrationTest } from './../../types/infiltrationTest.type';
-import { Injectable } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { User } from 'src/app/types/user.type';
 import { SocketResponse } from 'src/app/types/socketResponse.type';
@@ -17,6 +17,8 @@ export class ApiService {
   private serverIp = '';
   private serverPort = '';
   private url = '';
+  @Output() public isApiConnected: EventEmitter<boolean> = new EventEmitter();
+  @Output() public isBackgroundServiceInitialized: EventEmitter<boolean> = new EventEmitter();
 
   constructor(
     private storage: StorageService,
@@ -44,6 +46,16 @@ export class ApiService {
 
           this.socket.on('connect', () => {
             console.log('Connected to API service');
+            this.isApiConnected.emit(true);
+          });
+
+          this.socket.on('backgroundServiceInitialized', () => {
+            this.isBackgroundServiceInitialized.emit(true);
+          });
+
+          this.socket.on('disconnect', () => {
+            console.log('Disconnected from API service');
+            this.isApiConnected.emit(false);
           });
         });
       });
@@ -52,6 +64,19 @@ export class ApiService {
     }
 
     console.log('API service initialized');
+  }
+
+  public connectBackgroundService(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('startBackgroundService');
+      this.socket?.on('startBackgroundService', () => {
+        resolve({ type: 'success', payload: { message: 'Background service successfully launched' } });
+        window.location.href = 'provahidrica:';
+      });
+      this.socket?.on('error', (error: any) => {
+        reject({ type: 'error', payload: { message: 'Background service launch failed', error } });
+      });
+    });
   }
 
   public authenticate(): Promise<SocketResponse> {

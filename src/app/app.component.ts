@@ -6,6 +6,7 @@ import { ApiService } from './services/api/api.service';
 import { UnauthenticatedUserComponent } from './components/unauthenticated-user/unauthenticated-user.component';
 import { RfidComponent } from './components/rfid/rfid.component';
 import { AuthService } from './services/auth/auth.service';
+import { ServicesInitializationComponent } from "./components/services-initialization/services-initialization.component";
 
 @Component({
   standalone: true,
@@ -13,7 +14,8 @@ import { AuthService } from './services/auth/auth.service';
     IonicModule,
     RouterLink,
     UnauthenticatedUserComponent,
-    RfidComponent
+    RfidComponent,
+    ServicesInitializationComponent
   ],
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -23,6 +25,8 @@ export class AppComponent implements OnInit {
   public logo = 'assets/img/conecsa-light.webp';
   public isUserAuthenticated = false;
   public isAuthenticating = false;
+  public isApiServiceInitialized = false;
+  public isBackgroundServiceRunning = false;
   private isDark = false;
 
   public appPages = [
@@ -39,11 +43,9 @@ export class AppComponent implements OnInit {
     private settingsService: SettingsService,
     private apiService: ApiService,
     private authService: AuthService
-  ) {
-    this.apiService.init();
-  }
+  ) { }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.settingsService.themeChanged.subscribe((isDark: boolean) => {
       this.isDark = isDark;
       this.setDarkModeLogo(this.isDark);
@@ -53,6 +55,12 @@ export class AppComponent implements OnInit {
     });
     this.authService.authenticationChanged.subscribe((isAuthenticated: boolean) => {
       this.isUserAuthenticated = isAuthenticated;
+    });
+    this.apiService.isApiConnected.subscribe((isConnected: boolean) => {
+      this.isApiServiceInitialized = isConnected;
+    });
+    this.apiService.isBackgroundServiceInitialized.subscribe((isInitialized: boolean) => {
+      this.isBackgroundServiceRunning = isInitialized;
     });
   }
 
