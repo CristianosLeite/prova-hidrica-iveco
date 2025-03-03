@@ -81,7 +81,7 @@ export class EditRecipeComponent  implements OnInit {
   }
 
   private async createRecipe() {
-    this.recipe.CreatedBy = this.authService.getLoggedUser().Id!;
+    this.recipe.CreatedBy = this.authService.getLoggedUser().BadgeNumber!;
     await this.recipeService.createRecipe(this.recipe).then(() => {
       this.recipeService.retrieveAllRecipes();
       this.router.navigate(['/main/recipes']);
