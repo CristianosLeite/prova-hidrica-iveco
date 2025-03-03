@@ -1,6 +1,7 @@
 const { DataTypes, Model } = require("sequelize");
 const { sequelize } = require("../database/config.js");
 const Recipe = require("./recipe.model.js");
+const Operation = require("./operation.model.js");
 
 class User extends Model {}
 
@@ -9,7 +10,6 @@ User.init(
     Id: {
       type: DataTypes.STRING,
       field: "id",
-      primaryKey: true
     },
     UserName: {
       type: DataTypes.STRING,
@@ -20,6 +20,7 @@ User.init(
       type: DataTypes.STRING,
       field: "badge_number",
       allowNull: false,
+      primaryKey: true,
       unique: true
     },
     Permissions: {
@@ -30,7 +31,9 @@ User.init(
   {
     sequelize,
     modelName: "User",
-    tableName: "users"
+    tableName: "users",
+    createdAt: false,
+    updatedAt: false
   }
 );
 
@@ -41,6 +44,16 @@ User.hasMany(Recipe, {
 
 Recipe.belongsTo(User, {
   foreignKey: "createdBy",
+  as: "user"
+});
+
+User.hasMany(Operation, {
+  foreignKey: "Operator",
+  as: "operations"
+});
+
+Operation.belongsTo(User, {
+  foreignKey: "Operator",
   as: "user"
 });
 
