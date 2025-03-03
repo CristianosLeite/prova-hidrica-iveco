@@ -56,6 +56,7 @@ export class RecipeService implements IRecipeService {
   }
 
   async retrieveRecipeByVp(vp: string): Promise<Recipe> {
+    await this.init();
     const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/one?vp=${vp}`, { headers: this.headers }));
     this.recipeChanged.emit(data);
     return data;
