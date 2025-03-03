@@ -45,10 +45,13 @@ export class BarcodeScannerComponent implements OnInit {
 
   async scan() {
     try {
-      const result = await ScannerPlugin.scanBarcode();
-      const response: SocketResponse = await this.apiService.sendBarcodeData(result.value);
-      this.mainService.setRecipe(response.payload.recipe);
-      this.updateUI('VP lido com sucesso', 'Receita carregada!', response.payload.message);
+      await ScannerPlugin.scanBarcode().then(async (result) => {
+        await this.apiService.sendBarcodeData(result.value).then((response) => {
+          this.mainService.setRecipe(response.payload.recipe);
+          console.log('Receita carregada:', response.payload.recipe);
+          this.updateUI('VP lido com sucesso', 'Receita carregada!', response.payload.message);
+        });
+      });
     } catch (error: any) {
       console.error('Erro ao escanear código de barras:', error);
       this.updateUI('Erro ao ler o código de barras.', error.payload.message, '');

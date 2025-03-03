@@ -134,8 +134,8 @@ export class ApiService {
   public sendBarcodeData(barcode: string): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
       this.socket?.emit('sendingBarcode', barcode);
-      this.socket?.on('recipeLoaded', (response: SocketResponse) => {
-        resolve({ type: 'success', payload: { message: 'Recipe loaded successfully', response } });
+      this.socket?.on('recipeLoaded', (recipe: SocketResponse) => {
+        resolve({ type: 'success', payload: { message: 'Recipe loaded successfully', recipe } });
       });
       this.socket?.on('error', (error: any) => {
         console.log('sendBarcodeData error:', error);
