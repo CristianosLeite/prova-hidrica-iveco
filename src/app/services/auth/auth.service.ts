@@ -21,7 +21,6 @@ export class AuthService {
     this.userAuthenticated.emit(user);
     this.authenticationChanged.emit(true);
     this.isAuthenticating.emit(false);
-    console.log('User authenticated:', user);
   }
 
   getLoggedUser(): User {
