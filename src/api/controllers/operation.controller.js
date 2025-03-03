@@ -1,19 +1,18 @@
 const { Router } = require("express");
-const Operation = require("../models/operation.model.js");
 const { Op } = require("sequelize");
+const Operation = require("../models/operation.model.js");
 
 /**
- * Controller para operações
+ * Operations controller
  */
 class OperationController {
-  constructor() {
-    this.router = Router(); // Cria um objeto de roteamento
+  constructor(io) {
+    this.io = io;
+    this.router = Router();
     this.router.post("/create", this.create.bind(this));
     this.router.get("/all", this.all.bind(this));
     this.router.get("/one", this.retrieveById.bind(this));
-    this.router.get("/partnumber", this.retrieveByPartnumber.bind(this));
-    this.router.get("/reg_num", this.retrieveByRegNum.bind(this));
-    this.router.get("/status", this.retrieveByStatus.bind(this));
+    this.router.get("/operator", this.retrieveByOperator.bind(this));
     this.router.get("/recipe", this.retrieveByRecipe.bind(this));
     this.router.get("/date_interval", this.retrieveByDateInterval.bind(this));
     this.router.put("/update", this.update.bind(this));
@@ -21,7 +20,7 @@ class OperationController {
   }
 
   /**
-   * Retorna o roteador
+   * Return the router
    * @returns { Router }
    */
   getRouter() {
@@ -29,8 +28,8 @@ class OperationController {
   }
 
   /**
-   * Salva a operação no banco de dados
-   * @param {*} req 
+   * Create a new operation
+   * @param {*} req
    * @param {*} res
    * @param { Operation } req.body
    * @returns { Operation }
@@ -52,8 +51,8 @@ class OperationController {
   }
 
   /**
-   * Devolve todas as operações cadastradas no banco de dados
-   * @param {*} req 
+   * Return all operations
+   * @param {*} req
    * @param {*} res
    * @returns { Operation[] }
    * @example /api/operation/all
@@ -65,7 +64,7 @@ class OperationController {
   }
 
   /**
-   * Retorna a operação pelo id
+   * Return an operation by id
    * @param {*} req
    * @param {*} res
    * @returns { Operation }
@@ -82,70 +81,34 @@ class OperationController {
   }
 
   /**
-   * Retorna a operação pelo desenho do motor
+   * Return an operation by operator's badge number
    * @param {*} req
    * @param {*} res
    * @returns { Operation[] }
-   * @example /api/operation/partnumber?partnumber=123456
+   * @example /api/operation/operator?badge_number=123456
    */
-  async retrieveByPartnumber(req, res) {
-    const partnumber = req.query["partnumber"];
+  async retrieveByOperator(req, res) {
+    const badgeNumber = req.query["badge_number"];
 
-    if (!partnumber) res.status(400).send("Missing partnumber");
+    if (!badgeNumber) res.status(400).send("Missing badge_number");
 
-    await Operation.findOne({ where: { partnumber: partnumber } }).then(
-      (operation) => {
-        res.json(operation);
-      }
-    );
-  }
-
-  /**
-   * Retorna a operação pelo número de matrícula
-   * @param {*} req 
-   * @param {*} res
-   * @returns { Operation[] }
-   * @example /api/operation/reg_num?reg_num=123456
-   */
-  async retrieveByRegNum(req, res) {
-    const regNum = req.query["reg_num"];
-
-    if (!regNum) res.status(400).send("Missing reg_num");
-
-    await Operation.findOne({ where: { reg_num: regNum } }).then((operation) => {
+    await Operation.findOne({ where: { badge_number: badgeNumber } }).then((operation) => {
       res.json(operation);
     });
   }
 
   /**
-   * Retorna a operação pelo status
-   * @param {*} req 
-   * @param {*} res
-   * @returns { Operation[] }
-   * @example /api/operation/status_ok?status_ok=true
-   */
-  async retrieveByStatus(req, res) {
-    const status = req.query["status_ok"];
-
-    if (!status) res.status(400).send("Missing status_ok");
-
-    await Operation.findAll({ where: { status_ok: status } }).then((operations) => {
-      res.json(operations);
-    });
-  }
-
-  /**
-   * Retorna a operação pelo código da receita
-   * @param {*} req 
+   * Return an operation by recipe code
+   * @param {*} req
    * @param {*} res
    * @returns { Operation[] }
    */
   retrieveByRecipe(req, res) {
-    const recipeCode = req.query["recipe"];
+    const recipeId = req.query["recipe_id"];
 
-    if (!recipeCode) res.status(400).send("Missing recipe");
+    if (!recipeId) res.status(400).send("Missing recipe_id");
 
-    Operation.findAll({ where: { recipe: recipeCode } }).then(
+    Operation.findAll({ where: { recipe: recipeId } }).then(
       (operations) => {
         res.json(operations);
       }
@@ -153,9 +116,9 @@ class OperationController {
   }
 
   /**
-   * Retorna a operação por intervalo de datas
-   * @param {*} req 
-   * @param {*} res 
+   * Return an operation by date interval
+   * @param {*} req
+   * @param {*} res
    * @returns { Operation[] }
    * @example /api/operation/date_interval?from=2021-01-01&to=2021-01-31
    */
@@ -178,9 +141,9 @@ class OperationController {
   }
 
   /**
-   * Atualiza uma operação
-   * @param {*} req 
-   * @param {*} res 
+   * Update an operation
+   * @param {*} req
+   * @param {*} res
    */
   async update(req, res) {
     const id = req.body["operation_id"];
@@ -202,9 +165,9 @@ class OperationController {
   }
 
   /**
-   * Deleta uma operação
-   * @param {*} req 
-   * @param {*} res 
+   * Delete an operation
+   * @param {*} req
+   * @param {*} res
    */
   async delete(req, res) {
     const id = req.query["operation_id"];

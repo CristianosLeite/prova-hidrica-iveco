@@ -1,5 +1,6 @@
 import { EventEmitter } from '@angular/core';
 import { InfiltrationPoints } from "../types/infiltrationPoints.type"
+import { Operation } from "../types/operation.type"
 
 export interface IMainApplication {
   qtyTests: number;
@@ -8,5 +9,5 @@ export interface IMainApplication {
 
   start(): void;
   stop(): void;
-  finish(): void;
+  finish(operation: Operation): void;
 }

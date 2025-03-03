@@ -4,6 +4,8 @@ import { InfiltrationPoints } from 'src/app/types/infiltrationPoints.type';
 import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
 import { Storage } from '@ionic/storage';
 import { Recipe } from 'src/app/types/recipe.type';
+import { Operation } from 'src/app/types/operation.type';
+import { OperationService } from '../operation/operation.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +25,8 @@ export class MainService implements IMainApplication {
   @Output() recipeChanged: EventEmitter<Recipe> = new EventEmitter();
 
   constructor(
-    private storage: Storage
+    private storage: Storage,
+    private operationService: OperationService
   ) { }
 
   public setRecipe(recipe: Recipe): void {
@@ -73,9 +76,24 @@ export class MainService implements IMainApplication {
     console.log('Service stopped');
   }
 
-  public finish(): void {
-    this.clearVerifications();
-    console.log('Service finished');
+  public finish(operation: Operation): void {
+    // Add the infiltration points to the operation before send to backend
+    this.addInfiltrationPointsToOperation(operation);
+
+    // Send the operation to the backend
+    this.operationService.createOperation(operation).then((operation) => {
+      if (operation) {
+        this.clearVerifications();
+        console.log('Service finished');
+      }
+    });
+
+  }
+
+  private addInfiltrationPointsToOperation(operation: Operation): void {
+    for (const key in this.infiltrationPoints) {
+      operation[`InfPoint${key}`] = this.infiltrationPoints[key];
+    }
   }
 
   public cancelTest(): void {
@@ -94,6 +112,7 @@ export class MainService implements IMainApplication {
       test.testResult = {};
     });
 
+    this.infiltrationPoints = {};
     this.tests.set([...this.tests()]);
     this.qtyVerificationsChanged.emit(0);
   }

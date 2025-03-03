@@ -6,6 +6,8 @@ import { MainService } from 'src/app/services/main/main.service';
 import { Recipe } from 'src/app/types/recipe.type';
 import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
 import { LoadedRecipeModalComponent } from "../loaded-recipe-modal/loaded-recipe-modal.component";
+import { Operation } from 'src/app/types/operation.type';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   imports: [
@@ -47,8 +49,11 @@ export class RunComponent  implements OnInit {
     },
   ];
 
+  private operation: Operation = {} as Operation;
+
   constructor(
-    private mainService: MainService
+    private mainService: MainService,
+    private authService: AuthService
   ) { }
 
   ngOnInit() {
@@ -57,12 +62,14 @@ export class RunComponent  implements OnInit {
     });
     this.mainService.recipeChanged.subscribe((recipe: Recipe) => {
       this.recipe = recipe;
+      this.operation.Recipe = this.recipe.RecipeId!;
+      this.operation.Vp = this.recipe.Vp;
     });
+    this.operation.Operator = this.authService.getLoggedUser().BadgeNumber;
   }
 
   finishTest() {
     if (this.qtyVerifications < this.qtyTests) {
-      // this.mainService.finish();
       return;
     }
     setInterval(() => {
@@ -78,7 +85,7 @@ export class RunComponent  implements OnInit {
     }, 50);
 
     this.isLoading = true;
-    this.mainService.finish();
+    this.mainService.finish(this.operation);
   }
 
   cancelTest() {

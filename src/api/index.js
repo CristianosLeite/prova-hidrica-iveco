@@ -76,7 +76,7 @@ function run() {
   // Create controllers
 
   // Handle operation
-  const operationController = new OperationController();
+  const operationController = new OperationController(io);
   expressApp.use("/api/operations", operationController.getRouter());
 
   // Handle users
