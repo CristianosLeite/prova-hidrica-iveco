@@ -5,10 +5,10 @@
     }
     <ion-toolbar>
       <ion-title class="title">{{qtyVerifications + '/' + qtyTests + ' verificações concluídas'}}</ion-title>
-      <ion-buttons id="cancel-test-button" slot="end" [class.disabled]="isLoading">
+      <ion-buttons id="finish-button" slot="end" [class.disabled]="isLoading">
         <ion-button (click)="finishTest()">
           @if (qtyVerifications < qtyTests && !isLoading) {
-          <ion-alert trigger="cancel-test-button" header="Atenção!"
+          <ion-alert trigger="finish-button" header="Atenção!"
             subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
             message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
           }
