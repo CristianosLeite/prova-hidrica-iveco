@@ -48,7 +48,6 @@ export class BarcodeScannerComponent implements OnInit {
       await ScannerPlugin.scanBarcode().then(async (result) => {
         await this.apiService.sendBarcodeData(result.value).then((response) => {
           this.mainService.setRecipe(response.payload.recipe);
-          console.log('Receita carregada:', response.payload.recipe);
           this.updateUI('VP lido com sucesso', 'Receita carregada!', response.payload.message);
         });
       });
