@@ -27,6 +27,16 @@ Operation.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    StartTime: {
+      field: "start_time",
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
+    EndTime: {
+      field: "end_time",
+      type: DataTypes.DATE,
+      allowNull: false,
+    },
     InfPoint1: {
       field: "inf_point1",
       type: DataTypes.BOOLEAN,

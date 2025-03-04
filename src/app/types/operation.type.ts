@@ -4,5 +4,6 @@ export type Operation = {
   Operator: string;
   Recipe: number;
   [key: string]: any;
-  CreatedAt: Date;
+  StartTime: string;
+  EndTime: string;
 }

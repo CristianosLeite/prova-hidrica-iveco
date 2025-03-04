@@ -98,7 +98,7 @@ export class AppComponent implements OnInit {
       this.lastOperations.set(operations.map((operation) => {
         return {
           vp: operation.Vp,
-          dateTime: new Date(operation.CreatedAt).toLocaleString(),
+          dateTime: new Date(operation.StartTime).toLocaleString(),
         };
       }));
     });

@@ -20,6 +20,7 @@ export class MainService implements IMainApplication {
   ]);
   private qtyTests: number = this.tests().length;
   private infiltrationPoints: InfiltrationPoints = {};
+  private startTime = new Date().toISOString();
 
   @Output() qtyVerificationsChanged: EventEmitter<number> = new EventEmitter();
   @Output() recipeChanged: EventEmitter<Recipe> = new EventEmitter();
@@ -30,6 +31,7 @@ export class MainService implements IMainApplication {
   ) { }
 
   public setRecipe(recipe: Recipe): void {
+    this.start();
     this.recipeChanged.emit(recipe);
   }
 
@@ -71,8 +73,8 @@ export class MainService implements IMainApplication {
   }
 
   public start(): void {
-    this.qtyVerificationsChanged.emit(this.qtyTests);
-    this.infiltrationPoints = {};
+    this.startTime = new Date().toISOString();
+    this.initializeTests();
     console.log('Service started');
   }
 
@@ -81,6 +83,10 @@ export class MainService implements IMainApplication {
   }
 
   public finish(operation: Operation): void {
+    // Set the operation start and end time
+    operation.StartTime = this.startTime;
+    operation.EndTime = new Date().toISOString();
+
     // Add the infiltration points to the operation before send to backend
     this.addInfiltrationPointsToOperation(operation);
 
