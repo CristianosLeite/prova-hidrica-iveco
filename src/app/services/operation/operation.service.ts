@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Output, EventEmitter } from '@angular/core';
 import { IOperationService } from 'src/app/interfaces/IOperationService.interface';
 import { Operation } from 'src/app/types/operation.type';
 import { StorageService } from '../storage/storage.service';
@@ -19,6 +19,8 @@ export class OperationService implements IOperationService {
     'Accept': 'application/json',
   });
 
+  @Output() operationCreated = new EventEmitter<Operation>();
+
   constructor(
     private storageService: StorageService,
     private http: HttpClient
@@ -37,8 +39,10 @@ export class OperationService implements IOperationService {
 
   async createOperation(operation: Operation): Promise<Operation> {
     await this.init();
-    console.log(operation);
-    return await lastValueFrom(this.http.post<Operation>(`${this.baseUrl}/create`, operation, { headers: this.headers }));
+    return await lastValueFrom(this.http.post<Operation>(`${this.baseUrl}/create`, operation, { headers: this.headers })).then((operation: Operation) => {
+      this.operationCreated.emit(operation);
+      return operation;
+    });
   }
 
   async retrieveAllOperations(): Promise<Operation[]> {
@@ -49,6 +53,11 @@ export class OperationService implements IOperationService {
   async retrieveOperationById(id: number): Promise<Operation> {
     await this.init();
     return await lastValueFrom(this.http.get<Operation>(`${this.baseUrl}/one?id=${id}`, { headers: this.headers }));
+  }
+
+  async retrieveLastOperationsByAmount(amount: number): Promise<Operation[]> {
+    await this.init();
+    return await lastValueFrom(this.http.get<Operation[]>(`${this.baseUrl}/amount?amount=${amount}`, { headers: this.headers }));
   }
 
   async retrieveOperationsByOperator(badge_number: string): Promise<Operation[]> {

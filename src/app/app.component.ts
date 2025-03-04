@@ -1,12 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { StorageService } from './services/storage/storage.service';
 import { SettingsService } from './services/settings/settings.service';
 import { ApiService } from './services/api/api.service';
 import { UnauthenticatedUserComponent } from './components/unauthenticated-user/unauthenticated-user.component';
 import { RfidComponent } from './components/rfid/rfid.component';
 import { AuthService } from './services/auth/auth.service';
 import { ServicesInitializationComponent } from "./components/services-initialization/services-initialization.component";
+import { OperationService } from './services/operation/operation.service';
+
+declare type LastOperations = {
+  vp: string;
+  dateTime: string;
+};
 
 @Component({
   standalone: true,
@@ -37,15 +44,21 @@ export class AppComponent implements OnInit {
     { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
     { title: 'Configurações', url: '/main/settings', icon: 'settings' },
   ];
-  public labels = ['28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído', '28/12/2024 00:43:00 - Concluído'];
+
+  public lastOperations = signal([] as LastOperations[]);
 
   constructor(
+    private storageService: StorageService,
     private settingsService: SettingsService,
     private apiService: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private operationService: OperationService
   ) { }
 
   ngOnInit() {
+    this.storageService.storageCreated.subscribe(async () => {
+      this.updateLastOperations();
+    });
     this.settingsService.themeChanged.subscribe((isDark: boolean) => {
       this.isDark = isDark;
       this.setDarkModeLogo(this.isDark);
@@ -61,6 +74,20 @@ export class AppComponent implements OnInit {
     });
     this.apiService.isBackgroundServiceInitialized.subscribe((isInitialized: boolean) => {
       this.isBackgroundServiceRunning = isInitialized;
+    });
+    this.operationService.operationCreated.subscribe(() => {
+      this.updateLastOperations();
+    });
+  }
+
+  async updateLastOperations(amount: number = 6) {
+    await this.operationService.retrieveLastOperationsByAmount(amount).then((operations) => {
+      this.lastOperations.set(operations.map((operation) => {
+        return {
+          vp: operation.Vp,
+          dateTime: new Date(operation.CreatedAt).toLocaleString(),
+        };
+      }));
     });
   }
 

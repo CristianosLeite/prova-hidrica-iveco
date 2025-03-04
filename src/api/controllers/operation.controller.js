@@ -12,6 +12,7 @@ class OperationController {
     this.router.post("/create", this.create.bind(this));
     this.router.get("/all", this.all.bind(this));
     this.router.get("/one", this.retrieveById.bind(this));
+    this.router.get("/amount", this.retrieveLastOperationsByAmount.bind(this));
     this.router.get("/operator", this.retrieveByOperator.bind(this));
     this.router.get("/recipe", this.retrieveByRecipe.bind(this));
     this.router.get("/date_interval", this.retrieveByDateInterval.bind(this));
@@ -77,6 +78,26 @@ class OperationController {
 
     await Operation.findOne({ where: { operation_id: id } }).then((operation) => {
       res.json(operation);
+    });
+  }
+
+  /**
+   * Return operations by specific amount
+   * @param {*} req
+   * @param {*} res
+   * @returns { Operation[] }
+   * @example /api/operation/amount?amount=5
+   */
+  async retrieveLastOperationsByAmount(req, res) {
+    const amountRequested = req.query["amount"];
+
+    if (!amountRequested) res.status(400).send("Missing amount");
+
+    await Operation.findAll({
+      order: [["operation_id", "DESC"]],
+      limit: amountRequested,
+    }).then((operations) => {
+      res.json(operations);
     });
   }
 

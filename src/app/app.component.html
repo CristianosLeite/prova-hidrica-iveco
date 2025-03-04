@@ -25,10 +25,10 @@
           <ion-list id="labels-list">
             <ion-list-header>Últimos registros</ion-list-header>
 
-            @for (label of labels; track label) {
+            @for (operation of lastOperations(); track operation) {
               <ion-item lines="none">
                 <ion-icon slot="start" ios="caret-forward-circle-outline" md="caret-forward-circle-outline"></ion-icon>
-                <ion-label>{{ label }}</ion-label>
+                <ion-label>{{ operation.vp + ' - ' + operation.dateTime }}</ion-label>
               </ion-item>
             }
           </ion-list>
