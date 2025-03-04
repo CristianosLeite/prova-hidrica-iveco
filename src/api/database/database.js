@@ -10,47 +10,12 @@ async function connect() {
     .then(async () => {
       console.log("Conexão com banco de dados estabelecida com sucesso!");
 
-      // Cria tabela de operações
-      await Operation.sync({ force: false })
-        .then(() => {
-          console.log("Tabela de operações criada com sucesso.");
-        })
-        .catch((error) => {
-          console.error(
-            "Não foi possível criar a tabela de operações: ",
-            error
-          );
-        });
+      addUUIDExtension();
 
-      // Cria tabela de usuários
-      await User.sync({ force: false })
-        .then(() => {
-          console.log("Tabela de usuários criada com sucesso.");
-        })
-        .catch((error) => {
-          console.error("Não foi possível criar a tabela de usuários: ", error);
-        });
-
-      // Cria tabela de receitas
-      await Recipe.sync({ force: false })
-        .then(() => {
-          console.log("Tabela de receitas criada com sucesso.");
-        })
-        .catch((error) => {
-          console.error("Não foi possível criar a tabela de receitas: ", error);
-        });
-
-      // Cria tabela de configurações
-      await Settings.sync({ force: false })
-        .then(() => {
-          console.log("Tabela de configurações criada com sucesso.");
-        })
-        .catch((error) => {
-          console.error(
-            "Não foi possível criar a tabela de configurações: ",
-            error
-          );
-        });
+      createOperationsTable();
+      createUsersTable();
+      createRecipesTable();
+      createSettingsTable();
     })
     .catch((error) => {
       console.error("Não foi possível conectar ao banco de dados: ", error);
@@ -65,6 +30,60 @@ async function createTables() {
     })
     .catch((error) => {
       console.error("Erro ao criar as tabelas: ", error);
+    });
+}
+
+async function addUUIDExtension() {
+  await sequelize
+    .query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";')
+    .then(() => {
+      console.log("Extensão UUID adicionada com sucesso.");
+    })
+    .catch((error) => {
+      console.error("Não foi possível adicionar a extensão UUID: ", error);
+    });
+}
+
+async function createOperationsTable() {
+  await Operation.sync({ force: false })
+    .then(() => {
+      console.log("Tabela de operações criada com sucesso.");
+    })
+    .catch((error) => {
+      console.error("Não foi possível criar a tabela de operações: ", error);
+    });
+}
+
+async function createUsersTable() {
+  await User.sync({ force: false })
+    .then(() => {
+      console.log("Tabela de usuários criada com sucesso.");
+    })
+    .catch((error) => {
+      console.error("Não foi possível criar a tabela de usuários: ", error);
+    });
+}
+
+async function createRecipesTable() {
+  await Recipe.sync({ force: false })
+    .then(() => {
+      console.log("Tabela de receitas criada com sucesso.");
+    })
+    .catch((error) => {
+      console.error("Não foi possível criar a tabela de receitas: ", error);
+    });
+}
+
+async function createSettingsTable() {
+  await Settings.sync({ force: false })
+    .then(() => {
+      console.log("Tabela de configurações criada com sucesso.");
+    })
+    .catch((error) => {
+      console.error(
+        "Não foi possível criar a tabela de configurações: ",
+        error
+      );
     });
 }
 

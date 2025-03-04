@@ -94,7 +94,7 @@ class OperationController {
     if (!amountRequested) res.status(400).send("Missing amount");
 
     await Operation.findAll({
-      order: [["operation_id", "DESC"]],
+      order: [["createdAt", "DESC"]],
       limit: amountRequested,
     }).then((operations) => {
       res.json(operations);

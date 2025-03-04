@@ -8,8 +8,9 @@ Operation.init(
   {
     OperationId: {
       field: "operation_id",
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      allowNull: false,
       primaryKey: true,
     },
     Vp: {
