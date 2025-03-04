@@ -38,14 +38,28 @@ export class BarcodeScannerComponent implements OnInit {
   }
 
   private async readBarcode() {
+    let typeData = '';
     try {
-      const response: SocketResponse = await this.apiService.BarcodeReader();
-      this.updateUI('VP lido com sucesso', 'Receita carregada!', response.payload.message, 'VP');
+      await this.apiService.BarcodeReader().then(async (response: SocketResponse) => {
+        if (response.payload.data.RecipeId) {
+          typeData = 'VP';
+          this.vp = response.payload.data.Vp;
+          this.updateUI('VP lido com sucesso', `VP: ${this.vp}`, '', 'VP');
+        } else {
+          typeData = 'VAN';
+          this.van = response.payload.data;
+          this.mainService.setVan(this.van);
+          this.updateUI('VAN lido com sucesso', `VAN: ${this.van}`, '', 'VAN');
+        }
+
+        if (this.vp !== '' && this.van !== '') await this.sendData();
+        else await this.apiService.BarcodeReader();
+      });
     } catch (error: any) {
-      console.error('Erro ao escanear código de barras:', error);
-      this.updateUI('Erro ao ler o código de barras.', error.payload.message, '', 'VP');
+      console.error('Erro ao ler código de barras:', error);
+      this.updateUI('Erro ao ler o código de barras.', error.payload.message, '', '');
       setTimeout(() => {
-        this.resetUI('VP');
+        this.resetUI(typeData);
       }, 5000);
     }
   }

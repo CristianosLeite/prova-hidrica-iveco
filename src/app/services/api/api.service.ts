@@ -6,7 +6,6 @@ import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { StorageService } from '../storage/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { MainService } from '../main/main.service';
-import { Recipe } from 'src/app/types/recipe.type';
 
 @Injectable({
   providedIn: 'root'
@@ -120,9 +119,8 @@ export class ApiService {
 
   public BarcodeReader(): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
-      this.socket?.on('barcodeData', (recipe: Recipe) => {
-        resolve({ type: 'success', payload: { message: 'Data read successfully', recipe } });
-        this.mainService.setRecipe(recipe);
+      this.socket?.on('barcodeData', (data: SocketResponse) => {
+        resolve({ type: 'success', payload: { message: 'Data read successfully', data } });
       });
       this.socket?.on('error', (error: any) => {
         console.log('barcodeReader error:', error);
