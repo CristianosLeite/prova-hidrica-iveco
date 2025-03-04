@@ -82,7 +82,7 @@ export class MainService implements IMainApplication {
     console.log('Service stopped');
   }
 
-  public finish(operation: Operation): void {
+  public async finish(operation: Operation): Promise<Operation> {
     // Set the operation start and end time
     operation.StartTime = this.startTime;
     operation.EndTime = new Date().toISOString();
@@ -91,11 +91,9 @@ export class MainService implements IMainApplication {
     this.addInfiltrationPointsToOperation(operation);
 
     // Send the operation to the backend
-    this.operationService.createOperation(operation).then((operation) => {
-      if (operation) {
-        this.clearVerifications();
-        console.log('Service finished');
-      }
+    return await this.operationService.createOperation(operation).then((operation) => {
+      if (operation) this.clearVerifications();
+      return operation;
     });
   }
 
@@ -124,6 +122,7 @@ export class MainService implements IMainApplication {
     this.infiltrationPoints = {};
     this.tests.set([...this.tests()]);
     this.qtyVerificationsChanged.emit(0);
+    this.recipeChanged.emit({} as Recipe);
   }
 
   private addInfiltrationPoint(key: number, value: boolean): void {

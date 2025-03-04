@@ -32,6 +32,9 @@ export class RunComponent  implements OnInit {
   public buffer = 0.06;
   public isLoading = false;
 
+  public toast = false;
+  public toastMessage = '';
+
   public alertButtons = [
     {
       text: 'Sim',
@@ -85,7 +88,21 @@ export class RunComponent  implements OnInit {
     }, 50);
 
     this.isLoading = true;
-    this.mainService.finish(this.operation);
+    this.mainService.finish(this.operation).then((operation) => {
+      if (operation) {
+        this.progress = 1;
+        this.isLoading = false;
+        this.toast = true;
+        this.toastMessage = 'Operação finalizada com sucesso!';
+      }
+    }).catch((error) => {
+      console.error(error);
+      this.isLoading = false;
+      this.toast = true;
+      this.toastMessage = 'Erro ao finalizar a operação!';
+    });
+
+    this.toast = false;
   }
 
   cancelTest() {
