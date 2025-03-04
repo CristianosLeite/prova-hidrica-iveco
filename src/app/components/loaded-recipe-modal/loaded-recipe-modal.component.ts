@@ -2,10 +2,14 @@ import { Component, OnInit, AfterViewInit, Input, ViewChild } from '@angular/cor
 import { IonicModule } from '@ionic/angular';
 import { Recipe } from 'src/app/types/recipe.type';
 import { IonModal } from '@ionic/angular';
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { MainService } from 'src/app/services/main/main.service';
+import { DatePipe } from '@angular/common';
 
 @Component({
   imports: [
     IonicModule,
+    DatePipe
   ],
   selector: 'app-loaded-recipe-modal',
   templateUrl: './loaded-recipe-modal.component.html',
@@ -13,13 +17,24 @@ import { IonModal } from '@ionic/angular';
 })
 export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
   @Input() public recipe: Recipe | null = null;
+
   presentingElement!: HTMLElement | null;
   @ViewChild(IonModal) modal!: IonModal;
 
-  constructor() { }
+  public operator = '';
+  public startTime = '';
+  public van = '';
+
+  constructor(
+    private authService: AuthService,
+    private mainService: MainService
+  ) { }
 
   ngOnInit() {
     this.presentingElement = document.querySelector('.ion-page');
+    this.operator = this.authService.getLoggedUser().UserName;
+    this.startTime = this.mainService.getStartTime();
+    this.van = this.mainService.getVan();
   }
 
   ngAfterViewInit() {

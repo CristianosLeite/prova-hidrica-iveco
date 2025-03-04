@@ -24,6 +24,21 @@
           <ion-text>{{ handleSprinklerHeight(recipe!.SprinklerHeight) }}</ion-text>
         </ion-item>
       </ion-list>
+      <ion-title>Dados do teste</ion-title>
+      <ion-list>
+        <ion-item>
+          <ion-label>Operador</ion-label>
+          <ion-text>{{ operator }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>Início do teste</ion-label>
+          <ion-text>{{ startTime | date : 'dd/MM/yyyy HH:mm:ss' }}</ion-text>
+        </ion-item>
+        <ion-item>
+          <ion-label>VAN</ion-label>
+          <ion-text>{{ van }}</ion-text>
+        </ion-item>
+      </ion-list>
     </ion-content>
   </ng-template>
 </ion-modal>
