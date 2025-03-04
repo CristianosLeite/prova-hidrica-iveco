@@ -2,46 +2,68 @@
   <app-services-initialization></app-services-initialization>
 } @else {
   @if(isUserAuthenticated) {
-  <ion-app>
-    <ion-split-pane contentId="main-content">
-      <ion-menu contentId="main-content" type="overlay">
-        <ion-content>
-          <ion-list id="inbox-list">
-            <ion-img class="logo" [src]="logo" alt="Conecsa logo"></ion-img>
-            <ion-list-header>Sistema de controle</ion-list-header>
-            <ion-note>Prova Hídrica</ion-note>
+    <ion-app>
+      @if(isMobile && showMobileContent) {
+        <ion-content class="ion-padding-top">
+          <ion-img class="logo" [src]="logo" alt="Conecsa logo" style="margin-top: 20px;"/>
+          <ion-list-header>Sistema de controle</ion-list-header>
+          <ion-note>Prova Hídrica</ion-note>
 
-            @for (p of appPages; track p; let i = $index) {
-              <ion-menu-toggle auto-hide="false">
-                <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
-                  routerLinkActive="selected">
-                  <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-                  <ion-label>{{ p.title }}</ion-label>
-                </ion-item>
-              </ion-menu-toggle>
-            }
-          </ion-list>
-
-          <ion-list id="labels-list">
-            <ion-list-header>Últimos registros</ion-list-header>
-
-            @for (operation of lastOperations(); track operation) {
-              <ion-item lines="none">
-                <ion-icon slot="start" ios="caret-forward-circle-outline" md="caret-forward-circle-outline"></ion-icon>
-                <ion-label>{{ operation.vp + ' - ' + operation.dateTime }}</ion-label>
-              </ion-item>
-            }
-          </ion-list>
+          <ion-grid style="margin-top: 20px;">
+            <ion-row class="ion-justify-content-center">
+              @for (p of appPages; track p; let i = $index) {
+                <ion-col size="6">
+                  <ion-button expand="full" [routerLink]="[p.url]" routerDirection="root" (click)="hideMobileContent()">
+                    <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                    {{ p.title }}
+                  </ion-button>
+                </ion-col>
+              }
+            </ion-row>
+          </ion-grid>
+          <ion-img class="logo" src="assets/img/iveco-logo.webp" style="bottom: 0;"/>
         </ion-content>
-      </ion-menu>
-      <ion-router-outlet id="main-content"></ion-router-outlet>
-    </ion-split-pane>
-  </ion-app>
+      } @else {
+        <ion-split-pane contentId="main-content">
+          <ion-menu contentId="main-content" type="overlay">
+            <ion-content>
+              <ion-list id="inbox-list">
+                <ion-img class="logo" [src]="logo" alt="Conecsa logo"></ion-img>
+                <ion-list-header>Sistema de controle</ion-list-header>
+                <ion-note>Prova Hídrica</ion-note>
+
+                @for (p of appPages; track p; let i = $index) {
+                  <ion-menu-toggle auto-hide="false">
+                    <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
+                      routerLinkActive="selected">
+                      <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
+                      <ion-label>{{ p.title }}</ion-label>
+                    </ion-item>
+                  </ion-menu-toggle>
+                }
+              </ion-list>
+
+              <ion-list id="labels-list">
+                <ion-list-header>Últimos registros</ion-list-header>
+
+                @for (operation of lastOperations(); track operation) {
+                  <ion-item lines="none">
+                    <ion-icon slot="start" ios="caret-forward-circle-outline" md="caret-forward-circle-outline"></ion-icon>
+                    <ion-label>{{ operation.vp + ' - ' + operation.dateTime }}</ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            </ion-content>
+          </ion-menu>
+          <ion-router-outlet id="main-content"></ion-router-outlet>
+        </ion-split-pane>
+      }
+    </ion-app>
   } @else {
     @if(! isAuthenticating && ! isUserAuthenticated) {
       <app-unauthenticated-user [logo]="logo"></app-unauthenticated-user>
     } @else {
-        <app-rfid [context]="'authenticate'"></app-rfid>
+      <app-rfid [context]="'authenticate'"></app-rfid>
     }
   }
 }

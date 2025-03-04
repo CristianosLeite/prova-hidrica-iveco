@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, HostListener } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { StorageService } from './services/storage/storage.service';
@@ -35,6 +35,8 @@ export class AppComponent implements OnInit {
   public isApiServiceInitialized = false;
   public isBackgroundServiceRunning = false;
   private isDark = false;
+  public isMobile = false;
+  public showMobileContent = true;
 
   public appPages = [
     { title: 'Iniciar', url: '/main/run', icon: 'play' },
@@ -43,6 +45,7 @@ export class AppComponent implements OnInit {
     { title: 'Receitas', url: '/main/recipes', icon: 'cube' },
     { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
     { title: 'Configurações', url: '/main/settings', icon: 'settings' },
+    { title: 'Buscar', url: '/main/search', icon: 'qr-code' },
   ];
 
   public lastOperations = signal([] as LastOperations[]);
@@ -56,6 +59,7 @@ export class AppComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.checkScreenSize();
     this.storageService.storageCreated.subscribe(async () => {
       this.updateLastOperations();
     });
@@ -80,6 +84,15 @@ export class AppComponent implements OnInit {
     });
   }
 
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenSize();
+  }
+
+  checkScreenSize() {
+    this.isMobile = window.innerWidth <= 768;
+  }
+
   async updateLastOperations(amount: number = 6) {
     await this.operationService.retrieveLastOperationsByAmount(amount).then((operations) => {
       this.lastOperations.set(operations.map((operation) => {
@@ -94,5 +107,9 @@ export class AppComponent implements OnInit {
   setDarkModeLogo(isDark: boolean) {
     this.isDark = isDark;
     this.logo = this.isDark ? 'assets/img/conecsa.webp' : 'assets/img/conecsa-light.webp';
+  }
+
+  hideMobileContent() {
+    this.showMobileContent = false;
   }
 }
