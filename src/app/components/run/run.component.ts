@@ -26,7 +26,7 @@ export class RunComponent  implements OnInit {
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
   public qtyVerifications: number = 0;
-  public qtyTests: number = this.mainService.qtyTests;
+  public qtyTests: number = this.mainService.getQtyTests();
 
   public progress = 0;
   public buffer = 0.06;

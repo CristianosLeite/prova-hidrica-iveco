@@ -18,8 +18,8 @@ export class MainService implements IMainApplication {
     { id: 'leftside', title: 'Verificar lado esquerdo da cabine', url: '/main/leftside-test', img: '../../../assets/img/left-truck.webp', testImg: '../../../assets/img/leftside-test.webp', altImg: 'Leftside truck', content: 'Verificar vãos da lateral esquerda', status: 'pending' },
     { id: 'rightside', title: 'Verificar lado direito da cabine', url: '/main/rightside-test', img: '../../../assets/img/right-truck.webp', testImg: '../../../assets/img/rightside-test.webp', altImg: 'Rightside truck', content: 'Verificar vãos da lateral direita', status: 'pending' },
   ]);
-  qtyTests: number = this.tests().length;
-  infiltrationPoints: InfiltrationPoints = {};
+  private qtyTests: number = this.tests().length;
+  private infiltrationPoints: InfiltrationPoints = {};
 
   @Output() qtyVerificationsChanged: EventEmitter<number> = new EventEmitter();
   @Output() recipeChanged: EventEmitter<Recipe> = new EventEmitter();
@@ -57,6 +57,10 @@ export class MainService implements IMainApplication {
     this.qtyVerificationsChanged.emit(qty);
   }
 
+  public getQtyTests(): number {
+    return this.qtyTests;
+  }
+
   private updateInfiltraionPoints(): void {
     this.infiltrationPoints = this.tests().reduce((acc, test) => {
       if (test.status === 'completed') {
@@ -87,7 +91,6 @@ export class MainService implements IMainApplication {
         console.log('Service finished');
       }
     });
-
   }
 
   private addInfiltrationPointsToOperation(operation: Operation): void {
