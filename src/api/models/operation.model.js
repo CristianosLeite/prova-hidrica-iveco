@@ -17,6 +17,11 @@ Operation.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    Van: {
+      field: "van",
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     Operator: {
       field: "operator",
       type: DataTypes.STRING,

@@ -1,5 +1,5 @@
 .card-icon {
-  margin: 20px 20px 0 20px;
+  margin: 15px 15px 0 15px;
   font-size: 48px;
   animation: pulse-animation 2s infinite linear;
 }
@@ -9,11 +9,9 @@
 }
 
 .camera-button {
-  display: block;
-  width: 100%;
-  bottom: 0;
-  position: fixed;
-  padding: 20px;
+  display: flex;
+  max-width: 100px;
+  margin: 18px;
 
   @media (min-width: 720px) {
     display: none;
