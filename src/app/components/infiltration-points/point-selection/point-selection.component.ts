@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { MainService } from 'src/app/services/main/main.service';
 import { StorageService } from 'src/app/services/storage/storage.service';
+import { InfiltrationPoints } from 'src/app/types/infiltrationPoints.type';
 import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
 
 interface InfiltrationPoint {
@@ -26,7 +27,7 @@ export class PointSelectionComponent implements OnInit {
   @Input() testPoints!: InfiltrationPoint[];
   @Input() testTitle!: string;
 
-  public testResult: { [key: number]: boolean } = {};
+  public infiltrationPoints: InfiltrationPoints = {};
   public selectedSignals: { [key: number]: any } = {};
 
   public test: InfiltrationTest = {} as InfiltrationTest;
@@ -40,7 +41,7 @@ export class PointSelectionComponent implements OnInit {
 
   async ngOnInit() {
     this.testPoints.forEach(point => {
-      this.testResult[point.id] = false;
+      this.infiltrationPoints[point.id] = false;
       this.selectedSignals[point.id] = signal(false);
     });
 
@@ -55,10 +56,10 @@ export class PointSelectionComponent implements OnInit {
       await this.storage.get(this.testId).then((test) => {
         if (test) {
           for (const key in test.testResult) {
-            this.testResult[key as unknown as keyof typeof this.testResult] = test.testResult[key];
+            this.infiltrationPoints[key as unknown as keyof typeof this.infiltrationPoints] = test.testResult[key];
           }
           this.testPoints.forEach(point => {
-            this.selectedSignals[point.id].set(this.testResult[point.id]);
+            this.selectedSignals[point.id].set(this.infiltrationPoints[point.id]);
           });
         }
       });
@@ -67,14 +68,14 @@ export class PointSelectionComponent implements OnInit {
     }
   }
 
-  select(button: number) {
-    this.selectedSignals[button].set(!this.selectedSignals[button]());
-    this.testResult[button] = this.selectedSignals[button]();
+  select(pointNumber: number) {
+    this.selectedSignals[pointNumber].set(!this.selectedSignals[pointNumber]());
+    this.infiltrationPoints[pointNumber] = this.selectedSignals[pointNumber]();
   }
 
   async confirm() {
     this.test.status = 'completed';
-    this.test.testResult = this.testResult;
+    this.test.infiltrationPoints = this.infiltrationPoints;
     await this.apiService.verficationCompleted(this.test).then(() => {
       this.router.navigate(['main/run']);
     });

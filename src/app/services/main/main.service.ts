@@ -79,7 +79,7 @@ export class MainService implements IMainApplication {
   private updateInfiltraionPoints(): void {
     this.infiltrationPoints = this.tests().reduce((acc, test) => {
       if (test.status === 'completed') {
-        return { ...acc, ...test.testResult };
+        return { ...acc, ...test.infiltrationPoints };
       }
       return acc;
     }, {});
@@ -132,7 +132,7 @@ export class MainService implements IMainApplication {
     }
     this.tests().forEach((test) => {
       test.status = 'pending';
-      test.testResult = {};
+      test.infiltrationPoints = {};
     });
 
     this.infiltrationPoints = {};

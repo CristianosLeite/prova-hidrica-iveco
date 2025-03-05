@@ -1,3 +1,5 @@
+import { InfiltrationPoints } from "./infiltrationPoints.type";
+
 export type InfiltrationTest = {
   id?: string;
   title: string;
@@ -7,7 +9,5 @@ export type InfiltrationTest = {
   altImg: string;
   content: string;
   status: string;
-  testResult?: {
-    [key: number]: boolean;
-  };
+  infiltrationPoints?: InfiltrationPoints;
 }
