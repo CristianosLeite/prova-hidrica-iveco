@@ -22,7 +22,7 @@ class UsersController {
     const newUser = req.body;
 
     if (!newUser) {
-      res.status(400).send("Missing user");
+      res.status(400).send({ message: "Missing user" });
       return;
     }
 
@@ -39,7 +39,7 @@ class UsersController {
     console.log(req.body);
 
     if (!badgeNumber) {
-      res.status(400).send("Missing badge number");
+      res.status(400).send({ message: "Missing badge number" });
       console.log("Missing badge number");
       return;
     }
@@ -47,7 +47,7 @@ class UsersController {
     await User.findOne({ where: { badge_number: badgeNumber } }).then(
       (user) => {
         if (!user) {
-          res.status(404).send("User not found");
+          res.status(404).send({ message: "User not found" });
           console.log("User not found");
         } else {
           res.json(user);
@@ -65,7 +65,7 @@ class UsersController {
       });
       console.log("Users retrieved successfully");
     } catch (error) {
-      res.status(500).send("Error retrieving users");
+      res.status(500).send({message: "Error retrieving users" });
       console.error(error);
     }
   }
@@ -73,7 +73,7 @@ class UsersController {
   async retrieve(req, res) {
     const user_id = req.query["user_id"];
 
-    if (!user_id) res.status(400).send("Missing user id");
+    if (!user_id) res.status(400).send({ message: "Missing user id" });
 
     await User.findOne({ where: { id: user_id } }).then((user) => {
       res.json(user);
@@ -83,7 +83,7 @@ class UsersController {
   async retrieveByBadgeNumber(req, res) {
     const badgeNumber = req.query["badge_number"];
 
-    if (!badgeNumber) res.status(400).send("Missing badge_number");
+    if (!badgeNumber) res.status(400).send({ message: "Missing badge_number" });
 
     await User.findOne({ where: { badge_number: badgeNumber } }).then(
       (user) => {
@@ -93,16 +93,16 @@ class UsersController {
   }
 
   async update(req, res) {
-    const user_id = req.body["id"];
+    const user_id = req.query["user_id"];
     const userToUpdate = req.body;
 
-    if (!user_id) res.status(400).send("Missing user id");
+    if (!user_id) res.status(400).send({ message: "Missing user id" });
 
-    if (!userToUpdate) res.status(400).send("Missing user");
+    if (!userToUpdate) res.status(404).send({ message: "Missing user object" });
 
     await User.findOne({ where: { id: user_id } }).then((user) => {
       if (!user) {
-        res.status(404).send("User not found");
+        res.status(404).send({ message: "User not found" });
       } else {
         user.update(userToUpdate).then(() => {
           res.json(userToUpdate);
@@ -114,11 +114,11 @@ class UsersController {
   async delete(req, res) {
     const user_id = req.query["user_id"];
 
-    if (!user_id) res.status(400).send("Missing user id");
+    if (!user_id) res.status(400).send({ message: "Missing user id" });
 
     await User.findOne({ where: { id: user_id } }).then((user) => {
       if (!user) {
-        res.status(404).send("User not found");
+        res.status(404).send({ message: "User not found"} );
       } else {
         user.destroy().then(() => {
           res.json(user);
