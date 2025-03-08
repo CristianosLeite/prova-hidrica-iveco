@@ -21,6 +21,14 @@ class OperationController {
   }
 
   /**
+   * Get the router
+   * @returns { Router }
+   */
+  getRouter() {
+    return this.router;
+  }
+
+  /**
    * Create a new operation
    * @param {*} req
    * @param {*} res
