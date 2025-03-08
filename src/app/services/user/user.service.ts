@@ -78,7 +78,7 @@ export class UserService implements IUserService {
 
   async updateUser(user: User): Promise<User> {
     const data = await this.init().then(async () => {
-      return await lastValueFrom(this.http.put<User>(`${this.baseUrl}/update`, user, { headers: this.headers }));
+      return await lastValueFrom(this.http.put<User>(`${this.baseUrl}/update?user_id=${user.Id}`, user, { headers: this.headers }));
     });
     return data;
   }
