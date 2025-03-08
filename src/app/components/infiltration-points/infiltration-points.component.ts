@@ -20,8 +20,8 @@ export class InfiltrationPointsComponent implements OnInit {
     private mainService: MainService
   ) { }
 
-  async ngOnInit() {
-    await this.mainService.initializeTests();
+  ngOnInit() {
+    this.mainService.start();
     this.tests.set(this.mainService.tests());
   }
 }

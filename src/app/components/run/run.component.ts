@@ -88,7 +88,7 @@ export class RunComponent  implements OnInit {
     }, 50);
 
     this.isLoading = true;
-    this.mainService.finish(this.operation).then((operation) => {
+    this.mainService.stop('finish', this.operation).then((operation) => {
       if (operation) {
         this.progress = 1;
         this.isLoading = false;
@@ -106,6 +106,6 @@ export class RunComponent  implements OnInit {
   }
 
   cancelTest() {
-    this.mainService.cancelTest();
+    this.mainService.stop('cancel');
   }
 }
