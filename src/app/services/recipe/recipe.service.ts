@@ -74,7 +74,7 @@ export class RecipeService implements IRecipeService {
 
   async updateRecipe(recipe: Recipe): Promise<Recipe> {
     return await this.init().then(async () => {
-      return await lastValueFrom(this.http.put<Recipe>(`${this.baseUrl}/update`, recipe, { headers: this.headers}));
+      return await lastValueFrom(this.http.put<Recipe>(`${this.baseUrl}/update?recipe_id=${recipe.RecipeId}`, recipe, { headers: this.headers}));
     });
   }
 
