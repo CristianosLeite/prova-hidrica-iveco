@@ -53,10 +53,11 @@ export class PointSelectionComponent implements OnInit {
     }
 
     try {
-      await this.storage.get(this.testId).then((test) => {
+      await this.storage.get(this.testId).then((test: InfiltrationTest) => {
         if (test) {
-          for (const key in test.testResult) {
-            this.infiltrationPoints[key as unknown as keyof typeof this.infiltrationPoints] = test.testResult[key];
+          for (const t in test.infiltrationPoints) {
+            const key = Number(t);
+            this.infiltrationPoints[t as unknown as keyof typeof this.infiltrationPoints] = test.infiltrationPoints[key];
           }
           this.testPoints.forEach(point => {
             this.selectedSignals[point.id].set(this.infiltrationPoints[point.id]);
@@ -76,7 +77,18 @@ export class PointSelectionComponent implements OnInit {
   async confirm() {
     this.test.status = 'completed';
     this.test.infiltrationPoints = this.infiltrationPoints;
-    await this.apiService.verficationCompleted(this.test).then(() => {
+
+    // Verifica se algum ponto de infiltração está marcado como true
+    let hasInfiltrationPoints = false;
+    for (const key in this.infiltrationPoints) {
+      if (this.infiltrationPoints[key]) {
+        hasInfiltrationPoints = true;
+        break;
+      }
+    }
+    this.test.result = hasInfiltrationPoints ? 'NOK' : 'OK';
+
+    await this.apiService.verficationCompleted(this.testId, this.test).then(() => {
       this.router.navigate(['main/run']);
     });
   }
