@@ -103,11 +103,11 @@ export class ApiService {
     });
   }
 
-  public verficationCompleted(infiltrationTest: InfiltrationTest): Promise<SocketResponse> {
+  public verficationCompleted(testId: string, infiltrationTest: InfiltrationTest): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
       this.socket?.emit('verificationCompleted', infiltrationTest);
       this.socket?.on('verificationCompleted', async (infiltrationTest: InfiltrationTest) => {
-        this.mainService.processVerification(infiltrationTest.infiltrationPoints!);
+        this.mainService.processVerification(testId, infiltrationTest);
         await this.storage.set(infiltrationTest.id!, infiltrationTest).then(() => { console.log('Verification completed') });
         resolve({ type: 'success', payload: { message: 'Verification completed successfully', infiltrationTest } });
       });
