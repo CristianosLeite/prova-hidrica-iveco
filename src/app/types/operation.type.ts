@@ -1,5 +1,5 @@
 export type Operation = {
-  OperationId?: number;
+  OperationId?: string;
   Vp: string;
   Van: string;
   Operator: string;
