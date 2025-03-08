@@ -1,4 +1,5 @@
 import { InfiltrationPoints } from "./infiltrationPoints.type";
+import { Result } from "./testResult.type";
 
 export type InfiltrationTest = {
   id?: string;
@@ -10,4 +11,5 @@ export type InfiltrationTest = {
   content: string;
   status: string;
   infiltrationPoints?: InfiltrationPoints;
+  result: Result;
 }
