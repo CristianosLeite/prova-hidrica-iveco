@@ -43,6 +43,18 @@ Operation.init(
       type: DataTypes.DATE,
       allowNull: false,
     },
+    Duration: {
+      field: "duration",
+      type: DataTypes.TIME,
+      allowNull: false,
+      defaultValue: "00:00:00",
+    },
+    Status: {
+      field: "status",
+      type: DataTypes.STRING,
+      allowNull: false,
+      defaultValue: "pending",
+    },
     InfPoint1: {
       field: "inf_point1",
       type: DataTypes.BOOLEAN,
