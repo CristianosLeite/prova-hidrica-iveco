@@ -10,6 +10,11 @@ import { Operation } from 'src/app/types/operation.type';
 import { OperationService } from '../operation/operation.service';
 import { Result, Status, TestResult } from 'src/app/types/testResult.type';
 import { PrinterService } from '../printer/printer.service';
+import UpsideTestModel from 'src/app/models/upside-test.model';
+import FrontsideTestModel from 'src/app/models/frontside-test.model';
+import BacksideTestModel from 'src/app/models/backside-test.model';
+import LeftsideTestModel from 'src/app/models/leftside-test.model';
+import RightsideTestModel from 'src/app/models/rightside-test.model';
 
 /**
  * Main service class
@@ -26,11 +31,11 @@ export class MainService implements IMainApplication {
    * @type {WritableSignal<InfiltrationTest[]>}
    */
   public tests: WritableSignal<InfiltrationTest[]> = signal([
-    { id: 'upside', title: 'Verificar teto', url: '/main/upside-test', img: '../../../assets/img/upside-truck.webp', testImg: '../../../assets/img/frontside-test.webp', altImg: 'Upside truck', content: 'Verificar parte superior da cabine', status: 'pending', result: 'OK' },
-    { id: 'frontside', title: 'Verificar frente da cabine', url: '/main/frontside-test', img: '../../../assets/img/front-truck.webp', testImg: '../../../assets/img/frontside-test.webp', altImg: 'Frontside truck', content: 'Verificar vãos do para-brisa e painel frontal', status: 'pending', result: 'OK' },
-    { id: 'backside', title: 'Verificar traseira da cabine', url: '/main/backside-test', img: '../../../assets/img/back-truck.webp', testImg: '../../../assets/img/backside-test.webp', altImg: 'Backside truck', content: 'Verificar tampões do teto posterior', status: 'pending', result: 'OK' },
-    { id: 'leftside', title: 'Verificar lado esquerdo da cabine', url: '/main/leftside-test', img: '../../../assets/img/left-truck.webp', testImg: '../../../assets/img/leftside-test.webp', altImg: 'Leftside truck', content: 'Verificar vãos da lateral esquerda', status: 'pending', result: 'OK' },
-    { id: 'rightside', title: 'Verificar lado direito da cabine', url: '/main/rightside-test', img: '../../../assets/img/right-truck.webp', testImg: '../../../assets/img/rightside-test.webp', altImg: 'Rightside truck', content: 'Verificar vãos da lateral direita', status: 'pending', result: 'OK' },
+    UpsideTestModel,
+    FrontsideTestModel,
+    BacksideTestModel,
+    LeftsideTestModel,
+    RightsideTestModel
   ]);
 
   /**
@@ -209,6 +214,12 @@ export class MainService implements IMainApplication {
     // Add the infiltration points to the operation before send to backend
     this.addInfiltrationPointsToOperation(operation);
 
+    // Determine the overall test status
+    operation.Status = this.determineTestStatus();
+
+    // Calculate the duration of the operation
+    operation.Duration = this.calculateDuration(operation.StartTime, operation.EndTime);
+
     // Send the operation to the backend
     const newOperation = await this.operationService.createOperation(operation).then((operation) => {
       if (operation) this.clearTestParams();
@@ -244,10 +255,10 @@ export class MainService implements IMainApplication {
       duration: this.calculateDuration(operation.StartTime, operation.EndTime),
       operator: operation.Operator,
       upsideTestResult: this.getTestStatus('upside'),
-      frontSideTestResult: this.getTestStatus('frontside'),
-      backSideTestResult: this.getTestStatus('backside'),
-      leftSideTestResult: this.getTestStatus('leftside'),
-      rightSideTestResult: this.getTestStatus('rightside'),
+      frontsideTestResult: this.getTestStatus('frontside'),
+      backsideTestResult: this.getTestStatus('backside'),
+      leftsideTestResult: this.getTestStatus('leftside'),
+      rightsideTestResult: this.getTestStatus('rightside'),
     };
   }
 
@@ -285,9 +296,10 @@ export class MainService implements IMainApplication {
     const start = new Date(startTime);
     const end = new Date(endTime);
     const diff = end.getTime() - start.getTime();
+    const hours = Math.floor(diff / 3600000);
     const minutes = Math.floor(diff / 60000);
     const seconds = ((diff % 60000) / 1000).toFixed(0);
-    return this.formatTime(`${minutes}:${seconds}`);
+    return this.formatTime(`${hours}:${minutes}:${seconds}`);
   }
 
   /**
@@ -296,8 +308,11 @@ export class MainService implements IMainApplication {
    * @returns
    */
   private formatTime(time: string): string {
-    const [minutes, seconds] = time.split(':');
-    return `${Number(minutes) < 10 ? '0' + minutes : minutes}:${Number(seconds) < 10 ? '0' + seconds : seconds}`;
+    const [hours, minutes, seconds] = time.split(':');
+    return `${Number(hours) < 10 ? '0'
+      + hours : hours}:${Number(minutes) < 10 ? '0'
+        + minutes : minutes}:${Number(seconds) < 10 ? '0'
+          + seconds : seconds}`;
   }
 
   /**
