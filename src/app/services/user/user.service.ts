@@ -54,9 +54,9 @@ export class UserService implements IUserService {
     });
   }
 
-  async retrieveUser(id: string): Promise<User> {
+  async retrieveUserById(id: string): Promise<User> {
     const data = await this.init().then(async () => {
-      return await lastValueFrom(this.http.get<User>(`${this.baseUrl}/one?user_id=${id}`, { headers: this.headers }));
+      return await lastValueFrom(this.http.get<User>(`${this.baseUrl}/id?user_id=${id}`, { headers: this.headers }));
     });
     return data;
   }
@@ -69,9 +69,9 @@ export class UserService implements IUserService {
     return data;
   }
 
-  async getUserByBadgeNumber(badgeNumber: number): Promise<User> {
+  async getUserByBadgeNumber(badgeNumber: string): Promise<User> {
     const data = await this.init().then(async () => {
-      return await lastValueFrom(this.http.get<User>(`${this.baseUrl}/one?badge_number=${badgeNumber}`, { headers: this.headers }));
+      return await lastValueFrom(this.http.get<User>(`${this.baseUrl}/badge?badge_number=${badgeNumber}`, { headers: this.headers }));
     });
     return data;
   }
