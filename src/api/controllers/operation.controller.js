@@ -72,7 +72,7 @@ class OperationController {
   async retrieveById(req, res) {
     const id = req.query["operation_id"];
 
-    if (!id) res.status(400).send({ message: "Missing operation_id" });
+    if (!id) return res.status(400).send({ message: "Missing operation id" });
 
     await Operation.findOne({ where: { operation_id: id } }).then((operation) => {
       res.json(operation);
@@ -89,7 +89,7 @@ class OperationController {
   async retrieveLastOperationsByAmount(req, res) {
     const amountRequested = req.query["amount"];
 
-    if (!amountRequested) res.status(400).send({ message: "Missing amount" });
+    if (!amountRequested) return res.status(400).send({ message: "Missing amount" });
 
     await Operation.findAll({
       order: [["createdAt", "DESC"]],
@@ -109,7 +109,7 @@ class OperationController {
   async retrieveByOperator(req, res) {
     const badgeNumber = req.query["badge_number"];
 
-    if (!badgeNumber) res.status(400).send({ message: "Missing badge_number" });
+    if (!badgeNumber) return res.status(400).send({ message: "Missing badge_number" });
 
     await Operation.findOne({ where: { badge_number: badgeNumber } }).then((operation) => {
       res.json(operation);
@@ -125,7 +125,7 @@ class OperationController {
   retrieveByRecipe(req, res) {
     const recipeId = req.query["recipe_id"];
 
-    if (!recipeId) res.status(400).send({ message: "Missing recipe_id" });
+    if (!recipeId) return res.status(400).send({ message: "Missing recipe_id" });
 
     Operation.findAll({ where: { recipe: recipeId } }).then(
       (operations) => {
@@ -145,7 +145,7 @@ class OperationController {
     const from = req.query["from"];
     const to = req.query["to"];
 
-    if (!from || !to) res.status(400).send({ message: "Missing date interval" });
+    if (!from || !to) return res.status(400).send({ message: "Missing date interval" });
 
     Operation.findAll({
       where: {
@@ -168,9 +168,9 @@ class OperationController {
     const id = req.body["operation_id"];
     const operationToUpdate = req.body;
 
-    if (!id) res.status(400).send({ message: "Missing operation_id" });
+    if (!id) return res.status(400).send({ message: "Missing operation_id" });
 
-    if (!operationToUpdate) res.status(400).send({ message: "Missing operation" });
+    if (!operationToUpdate) return res.status(400).send({ message: "Missing operation" });
 
     await Operation.findOne({ where: { operation_id: id } }).then((operation) => {
       if (!operation) {
@@ -191,7 +191,7 @@ class OperationController {
   async delete(req, res) {
     const id = req.query["operation_id"];
 
-    if (!id) res.status(400).send({ message: "Missing operation_id" });
+    if (!id) return res.status(400).send({ message: "Missing operation_id" });
 
     await Operation.findOne({ where: { operation_id: id } }).then((operation) => {
       if (!operation) {
