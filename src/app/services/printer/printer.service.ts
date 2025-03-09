@@ -46,10 +46,10 @@ export class PrinterService {
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printColumnsText({ colsTextArr: ['TETO', `${testResult.upsideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
-    await IPosPrinter.printColumnsText({ colsTextArr: ['FRENTE', `${testResult.frontSideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
-    await IPosPrinter.printColumnsText({ colsTextArr: ['TETO POSTERIOR', `${testResult.backSideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
-    await IPosPrinter.printColumnsText({ colsTextArr: ['LADO ESQUERDO', `${testResult.leftSideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
-    await IPosPrinter.printColumnsText({ colsTextArr: ['LADO DIREITO', `${testResult.rightSideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
+    await IPosPrinter.printColumnsText({ colsTextArr: ['FRENTE', `${testResult.frontsideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
+    await IPosPrinter.printColumnsText({ colsTextArr: ['TETO POSTERIOR', `${testResult.backsideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
+    await IPosPrinter.printColumnsText({ colsTextArr: ['LADO ESQUERDO', `${testResult.leftsideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
+    await IPosPrinter.printColumnsText({ colsTextArr: ['LADO DIREITO', `${testResult.rightsideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
     await IPosPrinter.printColumnsText({ colsTextArr: ['RESULTADO', `${testResult.status}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
     await IPosPrinter.printRowBlock();
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
