@@ -34,7 +34,7 @@
     "@ionic/storage": "^4.0.0",
     "@ionic/storage-angular": "^4.0.0",
     "ionicons": "^7.0.0",
-    "ipos-printer": "1.1.0",
+    "ipos-printer": "1.2.0",
     "q2i-scanner-plugin": "^0.0.4",
     "rxjs": "~7.8.0",
     "socket.io": "^4.8.1",
