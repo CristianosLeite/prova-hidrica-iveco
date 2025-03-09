@@ -5,16 +5,21 @@ import { Context } from 'src/app/types/context.type';
 import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { ScannerPlugin } from 'q2i-scanner-plugin';
 import { MainService } from 'src/app/services/main/main.service';
+import { Router } from '@angular/router';
 
 @Component({
   standalone: true,
   imports: [IonicModule],
-  selector: 'app-barcode-scanner',
-  templateUrl: './barcode-scanner.component.html',
-  styleUrls: ['./barcode-scanner.component.scss']
+  selector: 'app-scanner',
+  templateUrl: './scanner.component.html',
+  styleUrls: ['./scanner.component.scss']
 })
-export class BarcodeScannerComponent implements OnInit {
+export class ScannerComponent implements OnInit {
   @Input() context: Context | undefined;
+  public qrTitle: WritableSignal<string> = signal('Aguardando leitura do QR Code');
+  public qrSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
+  public qrContent: WritableSignal<string> = signal('Aguardando leitura...');
+
   public vpTitle: WritableSignal<string> = signal('Aguardando leitura do VP');
   public vpSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
   public vpContent: WritableSignal<string> = signal('Aguardando leitura...');
@@ -28,10 +33,11 @@ export class BarcodeScannerComponent implements OnInit {
 
   constructor(
     private apiService: ApiService,
-    private mainService: MainService
+    private mainService: MainService,
+    private router: Router
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     setInterval(() => {
       this.readBarcode();
     }, 5000);
@@ -41,15 +47,22 @@ export class BarcodeScannerComponent implements OnInit {
     let typeData = '';
     try {
       await this.apiService.BarcodeReader().then(async (response: SocketResponse) => {
-        if (response.payload.data.RecipeId) {
-          typeData = 'VP';
-          this.vp = response.payload.data.Vp;
-          this.updateUI('VP lido com sucesso', `VP: ${this.vp}`, '', 'VP');
+        if (! this.context && this.context !== 'search') {
+          if (response.payload.data.RecipeId) {
+            typeData = 'VP';
+            this.vp = response.payload.data.Vp;
+            this.updateUI('VP lido com sucesso', `VP: ${this.vp}`, '', 'VP');
+          } else {
+            typeData = 'VAN';
+            this.van = response.payload.data;
+            this.mainService.setVan(this.van);
+            this.updateUI('VAN lido com sucesso', `VAN: ${this.van}`, '', 'VAN');
+          }
         } else {
-          typeData = 'VAN';
-          this.van = response.payload.data;
-          this.mainService.setVan(this.van);
-          this.updateUI('VAN lido com sucesso', `VAN: ${this.van}`, '', 'VAN');
+          typeData = 'QR';
+          this.updateUI('QR Code lido com sucesso', `ID: ${response.payload.data}`, '', 'QR');
+          this.router.navigate(['/main/test-result'], { queryParams: { id: response.payload.data } });
+          this.context = undefined;
         }
 
         if (this.vp !== '' && this.van !== '') await this.sendData();
@@ -66,10 +79,18 @@ export class BarcodeScannerComponent implements OnInit {
 
   async scan(typeData: string) {
     try {
-      if (typeData === 'VP') {
-        await this.scanVP();
-      } else if (typeData === 'VAN') {
-        await this.scanVAN();
+      switch (typeData) {
+        case 'QR':
+          await this.scanQR();
+          break;
+        case 'VP':
+          await this.scanVP();
+          break;
+        case 'VAN':
+          await this.scanVAN();
+          break;
+        default:
+          console.error('Tipo de leitura não reconhecido.');
       }
     } catch (error: any) {
       console.error('Erro ao escanear código de barras:', error);
@@ -78,6 +99,15 @@ export class BarcodeScannerComponent implements OnInit {
         this.resetUI(typeData);
       }, 5000);
     }
+  }
+
+  private async scanQR() {
+    await ScannerPlugin.scanBarcode().then((result) => {
+      this.updateUI('QR Code lido com sucesso', `ID: ${result.value}`, '', 'QR');
+      this.router.navigate(['/main/test-result'], { queryParams: { id: result.value } });
+      this.context = undefined;
+      return result;
+    });
   }
 
   private async scanVP() {
@@ -112,6 +142,10 @@ export class BarcodeScannerComponent implements OnInit {
       this.vanTitle.set(title);
       this.vanSubtitle.set(subtitle);
       this.vanContent.set(content);
+    } else if (typeData === 'QR') {
+      this.qrTitle.set(title);
+      this.qrSubtitle.set(subtitle);
+      this.qrContent.set(content);
     }
   }
 
