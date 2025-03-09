@@ -148,3 +148,14 @@ ion-content {
   gap: 20px;
   margin-top: 40px;
 }
+
+.link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.link:hover {
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--ion-color-primary);
+}

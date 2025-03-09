@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, HostListener } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { StorageService } from './services/storage/storage.service';
 import { SettingsService } from './services/settings/settings.service';
@@ -11,6 +11,7 @@ import { ServicesInitializationComponent } from "./components/services-initializ
 import { OperationService } from './services/operation/operation.service';
 
 declare type LastOperations = {
+  id: string;
   vp: string;
   dateTime: string;
 };
@@ -55,7 +56,8 @@ export class AppComponent implements OnInit {
     private settingsService: SettingsService,
     private apiService: ApiService,
     private authService: AuthService,
-    private operationService: OperationService
+    private operationService: OperationService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -97,6 +99,7 @@ export class AppComponent implements OnInit {
     await this.operationService.retrieveLastOperationsByAmount(amount).then((operations) => {
       this.lastOperations.set(operations.map((operation) => {
         return {
+          id: operation.OperationId!,
           vp: operation.Vp,
           dateTime: new Date(operation.StartTime).toLocaleString(),
         };
@@ -111,5 +114,9 @@ export class AppComponent implements OnInit {
 
   hideMobileContent() {
     this.showMobileContent = false;
+  }
+
+  openOperation(operationId: string) {
+    this.router.navigate(['/main/test-result'], { queryParams: { id: operationId } });
   }
 }

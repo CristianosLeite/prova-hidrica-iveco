@@ -11,8 +11,8 @@ export type TestResult = {
   duration: string;
   operator: string;
   upsideTestResult: Result;
-  frontSideTestResult: Result;
-  backSideTestResult: Result;
-  leftSideTestResult: Result;
-  rightSideTestResult: Result;
+  frontsideTestResult: Result;
+  backsideTestResult: Result;
+  leftsideTestResult: Result;
+  rightsideTestResult: Result;
 }
