@@ -47,17 +47,16 @@ export class RecipeService implements IRecipeService {
     return data;
   }
 
-  async retriveBetweenRecipes(start: number, end: number): Promise<Recipe[]> {
-    const data = await this.init().then(async () => {
-      return await lastValueFrom(this.http.get<Recipe[]>(`${this.baseUrl}/between?start=${start}&end=${end}`, { headers: this.headers }));
-    });
-    this.recipesChanged.emit(data);
+  async retrieveRecipeByVp(vp: string): Promise<Recipe> {
+    await this.init();
+    const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/vp?vp=${vp}`, { headers: this.headers }));
+    this.recipeChanged.emit(data);
     return data;
   }
 
-  async retrieveRecipeByVp(vp: string): Promise<Recipe> {
+  async retrieveRecipeById(id: number): Promise<Recipe> {
     await this.init();
-    const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/one?vp=${vp}`, { headers: this.headers }));
+    const data = await lastValueFrom(this.http.get<Recipe>(`${this.baseUrl}/id?recipe_id=${id}`, { headers: this.headers }));
     this.recipeChanged.emit(data);
     return data;
   }
