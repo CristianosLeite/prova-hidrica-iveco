@@ -50,9 +50,9 @@ export class OperationService implements IOperationService {
     return await lastValueFrom(this.http.get<Operation[]>(`${this.baseUrl}/all`, { headers: this.headers }));
   }
 
-  async retrieveOperationById(id: number): Promise<Operation> {
+  async retrieveOperationById(id: string): Promise<Operation> {
     await this.init();
-    return await lastValueFrom(this.http.get<Operation>(`${this.baseUrl}/one?id=${id}`, { headers: this.headers }));
+    return await lastValueFrom(this.http.get<Operation>(`${this.baseUrl}/one?operation_id=${id}`, { headers: this.headers }));
   }
 
   async retrieveLastOperationsByAmount(amount: number): Promise<Operation[]> {
@@ -80,7 +80,7 @@ export class OperationService implements IOperationService {
     return await lastValueFrom(this.http.put<Operation>(`${this.baseUrl}/update`, operation, { headers: this.headers }));
   }
 
-  async deleteOperation(id: number): Promise<void> {
+  async deleteOperation(id: string): Promise<void> {
     await this.init();
     await lastValueFrom(this.http.delete(`${this.baseUrl}/delete?operation_id=${id}`, { headers: this.headers }));
   }
