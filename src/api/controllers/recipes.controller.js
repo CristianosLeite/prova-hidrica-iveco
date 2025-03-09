@@ -10,7 +10,8 @@ class RecipeController {
     this.router = Router();
     this.router.post("/create", this.create.bind(this));
     this.router.get("/all", this.all.bind(this));
-    this.router.get("/one", this.retrieve.bind(this));
+    this.router.get("/vp", this.retrieveByVp.bind(this));
+    this.router.get("/id", this.retrieveById.bind(this));
     this.router.put("/update", this.update.bind(this));
     this.router.delete("/delete", this.delete.bind(this));
   }
@@ -65,7 +66,7 @@ class RecipeController {
    * @returns { Recipe }
    * @example /api/recipe/one?vp=123456
    */
-  async retrieve(req, res) {
+  async retrieveByVp(req, res) {
     const { vp } = req.query;
 
     if (!vp) {
@@ -74,6 +75,23 @@ class RecipeController {
     }
 
     await Recipe.findOne({ where: { vp } }).then((recipe) => {
+      if (!recipe) {
+        res.status(404).send({ message: "Recipe not found" });
+      } else {
+        res.json(recipe);
+      }
+    });
+  }
+
+  async retrieveById(req, res) {
+    const { recipe_id } = req.query;
+
+    if (!recipe_id) {
+      res.status(400).send({ message: "Missing recipe ID" });
+      return;
+    }
+
+    await Recipe.findOne({ where: { recipe_id } }).then((recipe) => {
       if (!recipe) {
         res.status(404).send({ message: "Recipe not found" });
       } else {
