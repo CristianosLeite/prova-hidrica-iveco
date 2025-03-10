@@ -9,6 +9,7 @@ import { Recipe } from 'src/app/types/recipe.type';
 import { Operation } from 'src/app/types/operation.type';
 import { OperationService } from '../operation/operation.service';
 import { Result, Status, TestResult } from 'src/app/types/testResult.type';
+import { UserService } from '../user/user.service';
 import { PrinterService } from '../printer/printer.service';
 import UpsideTestModel from 'src/app/models/upside-test.model';
 import FrontsideTestModel from 'src/app/models/frontside-test.model';
@@ -85,6 +86,7 @@ export class MainService implements IMainApplication {
   constructor(
     private storage: Storage,
     private operationService: OperationService,
+    private usersService: UserService,
     private printerService: PrinterService
   ) { }
 
@@ -221,12 +223,13 @@ export class MainService implements IMainApplication {
     operation.Duration = this.calculateDuration(operation.StartTime, operation.EndTime);
 
     // Send the operation to the backend
-    const newOperation = await this.operationService.createOperation(operation).then((operation) => {
+    const newOperation = await this.operationService.createOperation(operation).then(async (operation) => {
       if (operation) this.clearTestParams();
 
-      // Print the operation
-      const testResult = this.createTestResult(operation);
-      this.printerService.printTestResult(testResult);
+      // Create and print the test result
+      await this.createTestResult(operation).then(async (testResult) => {
+        await this.printerService.printTestResult(testResult);
+      });
 
       return operation;
     });
@@ -241,25 +244,27 @@ export class MainService implements IMainApplication {
    * @returns {TestResult} The test result object
    * @type {TestResult}
    */
-  private createTestResult(operation: Operation): TestResult {
+  private async createTestResult(operation: Operation): Promise<TestResult> {
     const status = this.determineTestStatus();
-    const [date, time] = this.formatEndTime(operation.EndTime);
-
-    return {
-      operationId: operation.OperationId!,
-      van: operation.Van,
-      description: this.recipe.Description,
-      status: status,
-      date: date,
-      time: time,
-      duration: this.calculateDuration(operation.StartTime, operation.EndTime),
-      operator: operation.Operator,
-      upsideTestResult: this.getTestStatus('upside'),
-      frontsideTestResult: this.getTestStatus('frontside'),
-      backsideTestResult: this.getTestStatus('backside'),
-      leftsideTestResult: this.getTestStatus('leftside'),
-      rightsideTestResult: this.getTestStatus('rightside'),
-    };
+    const [date, time] = this.getFormattedDateTime(operation.CreatedAt!);
+    // Operation.Operator is the badge number of the user
+    return await this.usersService.getUserByBadgeNumber(operation.Operator).then((user) => {
+      return {
+        operationId: operation.OperationId!,
+        van: operation.Van,
+        description: this.recipe.Description,
+        status: status,
+        date: date,
+        time: time,
+        duration: this.calculateDuration(operation.StartTime, operation.EndTime),
+        operator: `${operation.Operator} - ${user.UserName}`,
+        upsideTestResult: this.getTestStatus('upside'),
+        frontsideTestResult: this.getTestStatus('frontside'),
+        backsideTestResult: this.getTestStatus('backside'),
+        leftsideTestResult: this.getTestStatus('leftside'),
+        rightsideTestResult: this.getTestStatus('rightside'),
+      };
+    });
   }
 
   /**
@@ -276,14 +281,13 @@ export class MainService implements IMainApplication {
   }
 
   /**
-   * Format the end time into date and time components.
+   * Split the date and time string into an array.
    * @param endTime The end time string
    * @returns {[string, string]} An array containing the date and time
    */
-  private formatEndTime(endTime: string): [string, string] {
-    const [date, timeWithMs] = endTime.split('T');
-    const time = timeWithMs.split('.')[0];
-    return [date, time];
+  private getFormattedDateTime(date: Date | string): [string, string] {
+    const dateObj = new Date(date);
+    return [dateObj.toLocaleDateString(), dateObj.toLocaleTimeString()];
   }
 
   /**
