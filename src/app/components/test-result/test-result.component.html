@@ -1,0 +1,63 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalhes do Teste</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="print()">
+        <ion-icon slot="icon-only" ios="print-outline" md="print-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item>
+      <ion-label><strong>VAN:</strong></ion-label>
+      <ion-text>{{ testResult.van }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Descrição:</strong></ion-label>
+      <ion-text>{{ testResult.description }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Data:</strong></ion-label>
+      <ion-text>{{ testResult.date }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Hora:</strong></ion-label>
+      <ion-text>{{ testResult.time }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Duração:</strong></ion-label>
+      <ion-text>{{ testResult.duration }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Operador:</strong></ion-label>
+      <ion-text>{{ testResult.operator }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Resultado Teto:</strong></ion-label>
+      <ion-text>{{ testResult.upsideTestResult }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Resultado Frente:</strong></ion-label>
+      <ion-text>{{ testResult.frontsideTestResult }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Resultado Posterior:</strong></ion-label>
+      <ion-text>{{ testResult.backsideTestResult }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Resultado Lado Esquerdo:</strong></ion-label>
+      <ion-text>{{ testResult.leftsideTestResult }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Resultado Lado Direito:</strong></ion-label>
+      <ion-text>{{ testResult.rightsideTestResult }}</ion-text>
+    </ion-item>
+    <ion-item>
+      <ion-label><strong>Status:</strong></ion-label>
+      <ion-text>{{ testResult.status }}</ion-text>
+    </ion-item>
+  </ion-list>
+</ion-content>

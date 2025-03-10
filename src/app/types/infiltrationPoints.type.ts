@@ -1,3 +1,3 @@
 export type InfiltrationPoints = {
-  [key: number]: boolean | null;
+  [key: number]: boolean;
 }

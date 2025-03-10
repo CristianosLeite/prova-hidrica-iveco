@@ -21,7 +21,7 @@
               }
             </ion-row>
           </ion-grid>
-          <ion-img class="logo" src="assets/img/iveco-logo.webp" style="bottom: 0;"/>
+          <ion-img class="logo iveco" src="assets/img/iveco-logo.webp"/>
         </ion-content>
       } @else {
         <ion-split-pane contentId="main-content">
@@ -47,7 +47,7 @@
                 <ion-list-header>Últimos registros</ion-list-header>
 
                 @for (operation of lastOperations(); track operation) {
-                  <ion-item lines="none">
+                  <ion-item class="link" lines="none" (click)="openOperation(operation.id)">
                     <ion-icon slot="start" ios="caret-forward-circle-outline" md="caret-forward-circle-outline"></ion-icon>
                     <ion-label>{{ operation.vp + ' - ' + operation.dateTime }}</ion-label>
                   </ion-item>

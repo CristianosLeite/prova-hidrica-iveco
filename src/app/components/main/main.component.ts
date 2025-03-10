@@ -7,7 +7,7 @@ import { EditUserComponent } from '../user/edit-user/edit-user.component';
 import { SettingsComponent } from '../settings/settings.component';
 import { ServerComponent } from '../settings/server/server.component';
 import { PreferencesComponent } from '../settings/preferences/preferences.component';
-import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
+import { ScannerComponent } from '../scanner/scanner.component';
 import { DevicesComponent } from '../devices/devices.component';
 import { DeviceConfigComponent } from '../settings/device-config/device-config.component';
 import { RunComponent } from '../run/run.component';
@@ -16,6 +16,12 @@ import { PointSelectionComponent } from '../infiltration-points/point-selection/
 import { RecipesComponent } from '../recipes/recipes.component';
 import { EditRecipeComponent } from '../recipes/edit-recipe/edit-recipe.component';
 import { OperationsComponent } from "../operations/operations.component";
+import { TestResultComponent } from '../test-result/test-result.component';
+import UpsideTestModel from 'src/app/models/upside-test.model';
+import FrontsideTestModel from 'src/app/models/frontside-test.model';
+import BacksideTestModel from 'src/app/models/backside-test.model';
+import LeftsideTestModel from 'src/app/models/leftside-test.model';
+import RightsideTestModel from 'src/app/models/rightside-test.model';
 
 @Component({
   standalone: true,
@@ -30,12 +36,13 @@ import { OperationsComponent } from "../operations/operations.component";
     SettingsComponent,
     ServerComponent,
     PreferencesComponent,
-    BarcodeScannerComponent,
+    ScannerComponent,
     DevicesComponent,
     DeviceConfigComponent,
     InfiltrationPointsComponent,
     PointSelectionComponent,
     OperationsComponent
+    TestResultComponent
 ],
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -43,6 +50,11 @@ import { OperationsComponent } from "../operations/operations.component";
 })
 export class MainComponent implements OnInit {
   public page!: string;
+  public upsidePoints = UpsideTestModel.points;
+  public frontsidePoints = FrontsideTestModel.points;
+  public backsidePoints = BacksideTestModel.points;
+  public leftsidePoints = LeftsideTestModel.points;
+  public rightsidePoints = RightsideTestModel.points;
 
   constructor(
     private activatedRoute: ActivatedRoute,

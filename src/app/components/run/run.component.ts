@@ -4,7 +4,7 @@ import { IonicModule } from '@ionic/angular';
 import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
 import { MainService } from 'src/app/services/main/main.service';
 import { Recipe } from 'src/app/types/recipe.type';
-import { BarcodeScannerComponent } from '../barcode-scanner/barcode-scanner.component';
+import { ScannerComponent } from '../scanner/scanner.component';
 import { LoadedRecipeModalComponent } from "../loaded-recipe-modal/loaded-recipe-modal.component";
 import { Operation } from 'src/app/types/operation.type';
 import { AuthService } from 'src/app/services/auth/auth.service';
@@ -14,7 +14,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
     IonicModule,
     FormsModule,
     InfiltrationPointsComponent,
-    BarcodeScannerComponent,
+    ScannerComponent,
     LoadedRecipeModalComponent
 ],
   selector: 'app-run',
@@ -88,7 +88,7 @@ export class RunComponent  implements OnInit {
     }, 50);
 
     this.isLoading = true;
-    this.mainService.finish(this.operation).then((operation) => {
+    this.mainService.stop('finish', this.operation).then((operation) => {
       if (operation) {
         this.progress = 1;
         this.isLoading = false;
@@ -106,6 +106,6 @@ export class RunComponent  implements OnInit {
   }
 
   cancelTest() {
-    this.mainService.cancelTest();
+    this.mainService.stop('cancel');
   }
 }

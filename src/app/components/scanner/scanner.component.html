@@ -1,0 +1,50 @@
+@if(context && context === 'search') {
+  <ion-card>
+    <ion-icon class="card-icon" name="qr-code-outline"></ion-icon>
+    <ion-card-header>
+      <ion-card-title>{{ qrTitle() }}</ion-card-title>
+      <ion-card-subtitle>{{ qrSubtitle() }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{ qrContent() }}
+    </ion-card-content>
+
+    <ion-button class="camera-button" (click)="scan('QR')" shape="round">
+      <ion-icon name="camera-outline"></ion-icon>
+    </ion-button>
+  </ion-card>
+} @else {
+  <ion-card>
+    <ion-icon class="card-icon" name="barcode-outline"></ion-icon>
+    <ion-card-header>
+      <ion-card-title>{{ vpTitle() }}</ion-card-title>
+      <ion-card-subtitle>{{ vpSubtitle() }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{ vpContent() }}
+    </ion-card-content>
+
+    <ion-button class="camera-button" (click)="scan('VP')" shape="round">
+      <ion-icon name="camera-outline"></ion-icon>
+    </ion-button>
+  </ion-card>
+
+  <ion-card>
+    <ion-icon class="card-icon" name="barcode-outline"></ion-icon>
+    <ion-card-header>
+      <ion-card-title>{{ vanTitle() }}</ion-card-title>
+      <ion-card-subtitle>{{ vanSubtitle() }}</ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      {{ vanContent() }}
+    </ion-card-content>
+
+    <ion-button class="camera-button" (click)="scan('VAN')" shape="round">
+      <ion-icon name="camera-outline"></ion-icon>
+    </ion-button>
+  </ion-card>
+}
+

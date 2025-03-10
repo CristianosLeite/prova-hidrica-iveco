@@ -5,7 +5,6 @@ import { User } from 'src/app/types/user.type';
 import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { StorageService } from '../storage/storage.service';
 import { AuthService } from '../auth/auth.service';
-import { MainService } from '../main/main.service';
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +21,6 @@ export class ApiService {
   constructor(
     private storage: StorageService,
     private authService: AuthService,
-    private mainService: MainService
   ) { }
 
   public async init() {
@@ -103,11 +101,10 @@ export class ApiService {
     });
   }
 
-  public verficationCompleted(infiltrationTest: InfiltrationTest): Promise<SocketResponse> {
+  public verficationCompleted(testId: string, infiltrationTest: InfiltrationTest): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
       this.socket?.emit('verificationCompleted', infiltrationTest);
       this.socket?.on('verificationCompleted', async (infiltrationTest: InfiltrationTest) => {
-        this.mainService.processVerification(infiltrationTest.testResult!);
         await this.storage.set(infiltrationTest.id!, infiltrationTest).then(() => { console.log('Verification completed') });
         resolve({ type: 'success', payload: { message: 'Verification completed successfully', infiltrationTest } });
       });

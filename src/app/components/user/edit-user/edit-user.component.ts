@@ -58,7 +58,7 @@ export class EditUserComponent implements OnInit {
 
   ngOnInit() {
     if (this.userId) {
-      this.userService.retrieveUser(this.userId).then((user: User) => {
+      this.userService.retrieveUserById(this.userId).then((user: User) => {
         this.user = user;
         this.context = 'edit';
       });
