@@ -89,6 +89,7 @@ export class PointSelectionComponent implements OnInit {
     this.test.result = hasInfiltrationPoints ? 'NOK' : 'OK';
 
     await this.apiService.verficationCompleted(this.testId, this.test).then(() => {
+      this.mainService.processVerification(this.testId, this.test);
       this.router.navigate(['main/run']);
     });
   }
