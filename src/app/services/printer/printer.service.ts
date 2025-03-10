@@ -38,11 +38,10 @@ export class PrinterService {
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'DURAÇÃO:', typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printSpecifiedTypeText({ text: testResult.duration, typeface: 'ST', fontSize: 24 });
-
+    await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'OPERADOR:', typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printSpecifiedTypeText({ text: testResult.operator, typeface: 'ST', fontSize: 24 });
-
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printColumnsText({ colsTextArr: ['TETO', `${testResult.upsideTestResult}`], colsWidthArr: [14, 14], colsAlignArr: [0, 2], isContinuousPrint: 1 });
@@ -59,6 +58,6 @@ export class PrinterService {
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 1 });
     //await IPosPrinter.printBitmap({ alignment: 1, bitmapSize: 16, base64: this.conecsaLogo });
-    await IPosPrinter.printBlankLines({ lines: 5, height: 32 });
+    await IPosPrinter.printBlankLines({ lines: 4, height: 32 });
   }
 }
