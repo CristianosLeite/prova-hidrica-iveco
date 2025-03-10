@@ -54,15 +54,15 @@ export class ListUsersComponent implements OnInit {
 
   handlePermissions(permission: string) {
     const value: { [key: string]: string } = {
-      create_users: 'Cadastrar usuários',
-      view_users: 'Visualizar usuários cadastrados',
-      edit_users: 'Editar usuários',
-      operate: 'Operar no automático',
-      set_manual: 'Operar no manual',
-      view_history: 'Visualizar histórico de atividades',
-      view_logs: 'Visualizar logs',
-      create_activity: 'Cadastrar nova atividade',
-      export_reports: 'Exportar relatórios',
+      RU: 'Visualizar usuários cadastrados',
+      WU: 'Cadastrar / Editar usuários',
+      RR: 'Visualizar receitas cadastradas',
+      WR: 'Cadastrar / Editar receitas',
+      OA: 'Operar automático',
+      OM: 'Operar manual',
+      RO: 'Visualizar histórico de operações',
+      RL: 'Visualizar logs',
+      ER: 'Exportar Relatórios'
     };
 
     return value[permission];
