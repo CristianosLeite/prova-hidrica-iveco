@@ -41,7 +41,7 @@ import RightsideTestModel from 'src/app/models/rightside-test.model';
     DeviceConfigComponent,
     InfiltrationPointsComponent,
     PointSelectionComponent,
-    OperationsComponent
+    OperationsComponent,
     TestResultComponent
 ],
   selector: 'app-main',
