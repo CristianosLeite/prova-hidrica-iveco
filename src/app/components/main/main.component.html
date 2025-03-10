@@ -12,6 +12,8 @@
 <ion-content>
   @if (page === 'run') {
   <app-run></app-run>
+  } @else if (page === 'records') {
+    <app-operations></app-operations>
   } @else if(page === 'users') {
   <app-user></app-user>
   } @else if (page === 'add-new-user' || page === 'edit-user') {

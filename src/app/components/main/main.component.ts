@@ -15,6 +15,7 @@ import { InfiltrationPointsComponent } from '../infiltration-points/infiltration
 import { PointSelectionComponent } from '../infiltration-points/point-selection/point-selection.component';
 import { RecipesComponent } from '../recipes/recipes.component';
 import { EditRecipeComponent } from '../recipes/edit-recipe/edit-recipe.component';
+import { OperationsComponent } from "../operations/operations.component";
 
 @Component({
   standalone: true,
@@ -34,6 +35,7 @@ import { EditRecipeComponent } from '../recipes/edit-recipe/edit-recipe.componen
     DeviceConfigComponent,
     InfiltrationPointsComponent,
     PointSelectionComponent,
+    OperationsComponent
 ],
   selector: 'app-main',
   templateUrl: './main.component.html',

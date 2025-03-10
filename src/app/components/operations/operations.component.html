@@ -1,0 +1,49 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (click)="search()"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-toast [isOpen]="hasError" message="Erro ao buscar registros" [duration]="5000"></ion-toast>
+
+<ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+  <ion-refresher-content></ion-refresher-content>
+</ion-refresher>
+
+@if (operations.length > 0) {
+  <div class="content-header">
+    <ion-label>VP</ion-label>
+    <ion-label>VAN</ion-label>
+    <ion-label>Data e hora</ion-label>
+  </div>
+
+  <ion-list class="operation-list">
+    <!-- Operações -->
+    @for(operation of operations; track operation.OperationId; let index = $index) {
+    <ion-item [routerLink]="['/', 'main', 'view-operation', operation.OperationId]">
+      <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
+
+      <!-- VP -->
+      <ion-label>{{ operation.Vp }}</ion-label>
+
+      <!-- VAN -->
+      <ion-label>{{ operation.Van }}</ion-label>
+
+      <!-- Data e hora -->
+      <ion-label>{{ operation.StartTime }}</ion-label>
+    </ion-item>
+  }
+</ion-list>
+
+<!-- <div>
+  <ion-button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</ion-button>
+  <ion-button (click)="nextPage()" [disabled]="(currentPage * itemsPerPage) => operation.length">Próximo</ion-button>
+</div> -->
+}
+@else {
+  <ion-list class="operation-list">
+    <ion-item>
+      <ion-label class="ion-text-center">Nenhum registro encontrado</ion-label>
+    </ion-item>
+  </ion-list>
+  }
