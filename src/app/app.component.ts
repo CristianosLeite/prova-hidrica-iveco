@@ -44,7 +44,7 @@ export class AppComponent implements OnInit {
     { title: 'Registros', url: '/main/records', icon: 'server' },
     { title: 'Usuários', url: '/main/users', icon: 'people' },
     { title: 'Receitas', url: '/main/recipes', icon: 'cube' },
-    { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
+    // { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
     { title: 'Configurações', url: '/main/settings', icon: 'settings' },
     { title: 'Buscar', url: '/main/search', icon: 'qr-code' },
   ];
