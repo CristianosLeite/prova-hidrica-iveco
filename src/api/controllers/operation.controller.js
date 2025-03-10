@@ -66,37 +66,6 @@ class OperationController {
     });
   }
 
-  //  /**
-  //  * Return a number of operations
-  //  * @param {*} req
-  //  * @param {*} res
-  //  * @returns { number }
-  //  * @example /api/operation/amount_operations
-  //  */
-  // async amount_operations(req, res) {
-  //   const [result] = await db.query('SELECT COUNT(*) as total FROM operations');
-  //   res.json(result.total);
-  // }
-
-  // /**
-  //  * Return paginated operations
-  //  * @param {*} req
-  //  * @param {*} res
-  //  * @returns { Operation[] }
-  //  * @example /api/operation/paginated?page=1&limit=9
-  //  */
-  // async paginated_operations(req, res) {
-  //   const page = req.query.page;
-  //   const limit = req.query.limit;
-  //   const offset = (page - 1) * limit;
-
-  //   const operations = await Operation.findAll({
-  //     offset: offset,
-  //     limit: limit,
-  //     order: [['StartTime', 'DESC']]
-  //   });
-  //   res.json(operations);
-  // }
   /**
    * Return an operation by id
    * @param {*} req

@@ -28,7 +28,6 @@ export class OperationsComponent implements OnInit {
 
   ngOnInit() {
     this.loadAllOperations();
-    // this.loadInitialData();
   }
 
   async loadAllOperations() {
@@ -46,20 +45,6 @@ export class OperationsComponent implements OnInit {
     const endIndex = startIndex + this.itemsPerPage;
     this.displayedOperations = this.operations.slice(startIndex, endIndex);
   }
-
-  // async loadInitialData() {
-  //   try {
-  //     this.totalOperations = await this.operationService.retrieveNumberOfOperations();
-  //     await this.loadPage(this.currentPage);
-  //   } catch (error) {
-  //     this.hasError = true;
-  //   }
-  // }
-
-  // async loadPage(page: number) {
-  //   this.currentPage = page;
-  //   this.operations = await this.operationService.retrieveOperationsByPage(page, this.itemsPerPage);
-  // }
 
   previousPage() {
     if (this.currentPage > 1) {
