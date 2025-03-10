@@ -31,9 +31,9 @@ export class ApiService {
           await this.storage.get('serverIp'),
           await this.storage.get('serverPort')
         ]).then(([protocol, serverIp, serverPort]) => {
-          this.protocol = protocol;
-          this.serverIp = serverIp;
-          this.serverPort = serverPort;
+          this.protocol = protocol || 'https';
+          this.serverIp = serverIp || 'prova-hidrica';
+          this.serverPort = serverPort || '4000';
           this.url = `${this.protocol}://${this.serverIp}:${this.serverPort}`;
 
           this.socket = io(this.url, {

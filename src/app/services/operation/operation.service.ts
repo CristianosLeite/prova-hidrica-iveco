@@ -50,6 +50,17 @@ export class OperationService implements IOperationService {
     return await lastValueFrom(this.http.get<Operation[]>(`${this.baseUrl}/all`, { headers: this.headers }));
   }
 
+  // async retrieveNumberOfOperations(): Promise<number> {
+  //   await this.init();
+  //   return await lastValueFrom(this.http.get<number>(`${this.baseUrl}/amount_operations`, { headers: this.headers }));
+  // }
+
+  // async retrieveOperationsByPage(page: number, itemsPerPage: number): Promise<Operation[]> {
+  //   await this.init();
+  //   const offset = (page - 1) * itemsPerPage;
+  //   return await lastValueFrom(this.http.get<Operation[]>(`${this.baseUrl}/page?=${page}&limit=${itemsPerPage}&offset=${offset}`, { headers: this.headers }));
+  // }
+
   async retrieveOperationById(id: string): Promise<Operation> {
     await this.init();
     return await lastValueFrom(this.http.get<Operation>(`${this.baseUrl}/one?operation_id=${id}`, { headers: this.headers }));

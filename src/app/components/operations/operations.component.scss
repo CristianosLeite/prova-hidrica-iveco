@@ -1,0 +1,21 @@
+.content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: self-start;
+  padding: 10px;
+}
+
+ion-list {
+  min-height: 310px;
+  max-height: 310px;
+  overflow: auto;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-top: 20px; // Espaço após a lista
+}

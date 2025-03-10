@@ -15,6 +15,7 @@ import { InfiltrationPointsComponent } from '../infiltration-points/infiltration
 import { PointSelectionComponent } from '../infiltration-points/point-selection/point-selection.component';
 import { RecipesComponent } from '../recipes/recipes.component';
 import { EditRecipeComponent } from '../recipes/edit-recipe/edit-recipe.component';
+import { OperationsComponent } from "../operations/operations.component";
 import { TestResultComponent } from '../test-result/test-result.component';
 import UpsideTestModel from 'src/app/models/upside-test.model';
 import FrontsideTestModel from 'src/app/models/frontside-test.model';
@@ -40,6 +41,7 @@ import RightsideTestModel from 'src/app/models/rightside-test.model';
     DeviceConfigComponent,
     InfiltrationPointsComponent,
     PointSelectionComponent,
+    OperationsComponent
     TestResultComponent
 ],
   selector: 'app-main',
