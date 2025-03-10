@@ -29,14 +29,15 @@
     <ion-item>
       <ion-label position="floating">Permissões</ion-label>
       <ion-select [(ngModel)]="user.Permissions" name="permissions" multiple="true">
-        <ion-select-option value="create_users">Cadastrar usuários</ion-select-option>
-        <ion-select-option value="view_users">Visualizar usuários cadastrados</ion-select-option>
-        <ion-select-option value="edit_users">Editar usuários</ion-select-option>
-        <ion-select-option value="operate">Operar automático</ion-select-option>
-        <ion-select-option value="set_manual">Operar manual</ion-select-option>
-        <ion-select-option value="view_history">Visualizar histórico de operações</ion-select-option>
-        <ion-select-option value="view_logs">Visualizar logs</ion-select-option>
-        <ion-select-option value="export_reports">Exportar Relatórios</ion-select-option>
+        <ion-select-option value="RU">Ver usuários cadastrados</ion-select-option>
+        <ion-select-option value="WU">Cadastrar / Editar / Excluir usuários</ion-select-option>
+        <ion-select-option value="RR">Ver receitas cadastradas</ion-select-option>
+        <ion-select-option value="WR">Cadastrar / Editar / Excluir receitas</ion-select-option>
+        <ion-select-option value="OA">Operar automático</ion-select-option>
+        <ion-select-option value="OM">Operar manual</ion-select-option>
+        <ion-select-option value="RO">Ver histórico de operações</ion-select-option>
+        <ion-select-option value="RL">Visualizar logs</ion-select-option>
+        <ion-select-option value="ER">Exportar Relatórios</ion-select-option>
       </ion-select>
     </ion-item>
 
