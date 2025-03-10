@@ -3,8 +3,6 @@ import { IonicModule } from '@ionic/angular';
 import { Result, TestResult } from 'src/app/types/testResult.type';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PrinterService } from 'src/app/services/printer/printer.service';
-import { addIcons } from 'ionicons';
-import { chevronForwardCircle, print, save } from 'ionicons/icons';
 import { OperationService } from 'src/app/services/operation/operation.service';
 import { RecipeService } from 'src/app/services/recipe/recipe.service';
 import { UserService } from 'src/app/services/user/user.service';
@@ -15,7 +13,11 @@ import FrontsideTestModel from 'src/app/models/frontside-test.model';
 import BacksideTestModel from 'src/app/models/backside-test.model';
 import LeftsideTestModel from 'src/app/models/leftside-test.model';
 import RightsideTestModel from 'src/app/models/rightside-test.model';
+import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
 
+/**
+ * This component displays the test result of a specific operation.
+ */
 @Component({
   imports: [IonicModule],
   selector: 'app-test-result',
@@ -26,6 +28,14 @@ export class TestResultComponent implements OnInit {
   @Input() testResult: TestResult = {} as TestResult;
   @Input() operationId: string = '';
 
+  public tests: InfiltrationTest[] = [
+    UpsideTestModel,
+    FrontsideTestModel,
+    BacksideTestModel,
+    LeftsideTestModel,
+    RightsideTestModel
+  ];
+
   constructor(
     private activatedRoute: ActivatedRoute,
     private operationService: OperationService,
@@ -35,13 +45,15 @@ export class TestResultComponent implements OnInit {
     private router: Router
   ) {
     this.operationId = this.activatedRoute.snapshot.queryParamMap.get('id') as string;
-    addIcons({ chevronForwardCircle, print, save });
   }
 
   ngOnInit() {
     this.setTestResult();
   }
 
+  /**
+   * This method retrieves the operation, recipe, and user objects from the database and sets the test result.
+   */
   async setTestResult() {
     if (this.operationId) {
       Promise.all([
@@ -51,6 +63,8 @@ export class TestResultComponent implements OnInit {
             await this.recipeService.retrieveRecipeById(operation.Recipe)),
         await this.operationService.retrieveOperationById(this.operationId)
           .then(async (operation) =>
+            // The operator is stored as a badge number in the operation object.
+            // We need to retrieve the user object to get the operator's name.
             await this.userService.getUserByBadgeNumber(operation.Operator)),
       ]).then(([operation, recipe, user]) => {
         const createdAt = new Date(operation.CreatedAt!);
@@ -62,7 +76,7 @@ export class TestResultComponent implements OnInit {
           date: createdAt.toLocaleDateString(),
           time: createdAt.toLocaleTimeString(),
           duration: operation.Duration!,
-          operator: user.UserName,
+          operator: `${user.BadgeNumber} - ${user.UserName}`,
           upsideTestResult: this.getTestResult('upside', operation),
           frontsideTestResult: this.getTestResult('frontside', operation),
           backsideTestResult: this.getTestResult('backside', operation),
@@ -81,19 +95,19 @@ export class TestResultComponent implements OnInit {
     let points: Point[];
     switch (testId) {
       case 'upside':
-        points = UpsideTestModel.points;
+        points = this.tests[0].points; // UpsideTestModel
         break;
       case 'frontside':
-        points = FrontsideTestModel.points;
+        points = this.tests[1].points; // FrontsideTestModel
         break;
       case 'backside':
-        points = BacksideTestModel.points;
+        points = this.tests[2].points; // BacksideTestModel
         break;
       case 'leftside':
-        points = LeftsideTestModel.points;
+        points = this.tests[3].points; // LeftsideTestModel
         break;
       case 'rightside':
-        points = RightsideTestModel.points;
+        points = this.tests[4].points; // RightsideTestModel
         break;
       default:
         points = [];
@@ -107,11 +121,18 @@ export class TestResultComponent implements OnInit {
     return infPoints.includes(true) ? 'NOK' : 'OK';
   }
 
-  reprint() {
-    this.printerService.printTestResult(this.testResult);
+  /**
+   * This method is called when the user clicks the print button.
+   * Avoid calling async methods directly in the template.
+   */
+  print() {
+    this.sendToPrinter();
   }
 
-  finalize() {
-    this.router.navigate(['main/run']);
+  /**
+   * This method sends asynchronously the test result to the printer.
+   */
+  async sendToPrinter() {
+    await this.printerService.printTestResult(this.testResult);
   }
 }

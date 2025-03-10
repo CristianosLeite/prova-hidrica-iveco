@@ -1,6 +1,11 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Detalhes do Teste</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="print()">
+        <ion-icon slot="icon-only" ios="print-outline" md="print-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -55,26 +60,4 @@
       <ion-text>{{ testResult.status }}</ion-text>
     </ion-item>
   </ion-list>
-
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-fab>
-          <ion-fab-button>
-            <ion-icon name="chevron-forward-circle"></ion-icon>
-          </ion-fab-button>
-          <ion-fab-list side="end">
-            <ion-fab-button (click)="reprint()">
-              <ion-icon name="print"></ion-icon>
-            </ion-fab-button>
-            @if(!operationId) {
-              <ion-fab-button>
-                  <ion-icon name="save" (click)="finalize()"></ion-icon>
-              </ion-fab-button>
-            }
-            </ion-fab-list>
-        </ion-fab>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
 </ion-content>
