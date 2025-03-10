@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-searchbar [(ngModel)]="searchTerm" (click)="search()"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="searchTerm" (ionChange)="search()"></ion-searchbar>
   </ion-toolbar>
 </ion-header>
 
@@ -10,7 +10,7 @@
   <ion-refresher-content></ion-refresher-content>
 </ion-refresher>
 
-@if (operations.length > 0) {
+@if (displayedOperations.length > 0) {
   <div class="content-header">
     <ion-label>VP</ion-label>
     <ion-label>VAN</ion-label>
@@ -18,32 +18,25 @@
   </div>
 
   <ion-list class="operation-list">
-    <!-- Operações -->
-    @for(operation of operations; track operation.OperationId; let index = $index) {
-    <ion-item [routerLink]="['/', 'main', 'view-operation', operation.OperationId]">
-      <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
+    @for (operation of displayedOperations; track operation.OperationId; let index = $index) {
+      <ion-item [routerLink]="['/', 'main', 'view-operation', operation.OperationId]">
+        <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
+        <ion-label>{{ operation.Vp }}</ion-label>
+        <ion-label>{{ operation.Van }}</ion-label>
+        <ion-label>{{ operation.StartTime }}</ion-label>
+      </ion-item>
+    }
+  </ion-list>
 
-      <!-- VP -->
-      <ion-label>{{ operation.Vp }}</ion-label>
-
-      <!-- VAN -->
-      <ion-label>{{ operation.Van }}</ion-label>
-
-      <!-- Data e hora -->
-      <ion-label>{{ operation.StartTime }}</ion-label>
-    </ion-item>
-  }
-</ion-list>
-
-<!-- <div>
-  <ion-button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</ion-button>
-  <ion-button (click)="nextPage()" [disabled]="(currentPage * itemsPerPage) => operation.length">Próximo</ion-button>
-</div> -->
-}
-@else {
+  <div class="pagination-controls">
+    <ion-button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</ion-button>
+    <ion-label>Página {{ currentPage }} de {{ totalPages }}</ion-label>
+    <ion-button (click)="nextPage()" [disabled]="currentPage === totalPages">Próximo</ion-button>
+  </div>
+} @else {
   <ion-list class="operation-list">
     <ion-item>
       <ion-label class="ion-text-center">Nenhum registro encontrado</ion-label>
     </ion-item>
   </ion-list>
-  }
+}

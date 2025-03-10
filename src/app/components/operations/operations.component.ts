@@ -22,29 +22,81 @@ export class OperationsComponent implements OnInit {
   public errorMessage = '';
   public currentPage = 1;
   public itemsPerPage = 6;
+  public displayedOperations: Operation[] = [];
 
   constructor(private operationService: OperationService) {}
 
   ngOnInit() {
-    this.operationService
-      .retrieveLastOperationsByAmount(6)
-      .then((operations: Operation[]) => {
-        this.operations = operations;
-      });
+    this.loadAllOperations();
+    // this.loadInitialData();
   }
 
-  search() {}
+  async loadAllOperations() {
+    try {
+      this.operations = await this.operationService.retrieveAllOperations();
+      this.updateDisplayedOperations();
+    } catch (error) {
+      this.hasError = true;
+      console.error('Erro ao carregar operações:', error);
+    }
+  }
+
+  updateDisplayedOperations() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.displayedOperations = this.operations.slice(startIndex, endIndex);
+  }
+
+  // async loadInitialData() {
+  //   try {
+  //     this.totalOperations = await this.operationService.retrieveNumberOfOperations();
+  //     await this.loadPage(this.currentPage);
+  //   } catch (error) {
+  //     this.hasError = true;
+  //   }
+  // }
+
+  // async loadPage(page: number) {
+  //   this.currentPage = page;
+  //   this.operations = await this.operationService.retrieveOperationsByPage(page, this.itemsPerPage);
+  // }
+
+  previousPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updateDisplayedOperations();
+    }
+  }
+
+  nextPage() {
+    const totalPages = Math.ceil(this.operations.length / this.itemsPerPage);
+    if (this.currentPage < totalPages) {
+      this.currentPage++;
+      this.updateDisplayedOperations();
+    }
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.operations.length / this.itemsPerPage);
+  }
 
   handleRefresh(event: IonRefresherCustomEvent<RefresherEventDetail>) {
     setTimeout(() => {
-      this.operationService
-        .retrieveLastOperationsByAmount(6)
-        .then((operations: Operation[]) => {
-          this.operations = operations;
-        })
-        .then(() => {
-          event.target.complete();
-        });
+      this.loadAllOperations().then(() => {
+        event.target.complete();
+      });
     }, 2000);
+  }
+
+  search() {
+    if (this.searchTerm) {
+      this.displayedOperations = this.operations.filter(op =>
+        op.Vp.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        op.Van.toLowerCase().includes(this.searchTerm.toLowerCase())
+      ).slice(0, this.itemsPerPage);
+      this.currentPage = 1;
+    } else {
+      this.updateDisplayedOperations();
+    }
   }
 }

@@ -5,6 +5,17 @@
   padding: 10px;
 }
 
-.operation-list {
-  padding-bottom: calc(30vh - 5vw);
+ion-list {
+  min-height: 310px;
+  max-height: 310px;
+  overflow: auto;
+}
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  margin-top: 20px; // Espaço após a lista
 }
