@@ -11,8 +11,6 @@ class OperationController {
     this.router = Router();
     this.router.post("/create", this.create.bind(this));
     this.router.get("/all", this.all.bind(this));
-    this.router.get("/amount_operations", this.amount_operations.bind(this));
-    this.router.get("/paginated", this.paginated_operations.bind(this));
     this.router.get("/one", this.retrieveById.bind(this));
     this.router.get("/amount", this.retrieveLastOperationsByAmount.bind(this));
     this.router.get("/operator", this.retrieveByOperator.bind(this));
