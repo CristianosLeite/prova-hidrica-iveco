@@ -25,15 +25,15 @@ import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
   styleUrls: ['./test-result.component.scss'],
 })
 export class TestResultComponent implements OnInit {
-  @Input() testResult: TestResult = {} as TestResult;
-  @Input() operationId: string = '';
+  public testResult: TestResult = {} as TestResult;
+  public operationId: string = '';
 
   public tests: InfiltrationTest[] = [
     UpsideTestModel,
     FrontsideTestModel,
     BacksideTestModel,
     LeftsideTestModel,
-    RightsideTestModel
+    RightsideTestModel,
   ];
 
   constructor(
@@ -44,7 +44,10 @@ export class TestResultComponent implements OnInit {
     private printerService: PrinterService,
     private router: Router
   ) {
-    this.operationId = this.activatedRoute.snapshot.queryParamMap.get('id') as string;
+    this.operationId = this.activatedRoute.snapshot.paramMap.get(
+      'id'
+    ) as string;
+    console.log('Operation ID:', this.operationId);
   }
 
   ngOnInit() {
@@ -56,34 +59,31 @@ export class TestResultComponent implements OnInit {
    */
   async setTestResult() {
     if (this.operationId) {
-      Promise.all([
-        await this.operationService.retrieveOperationById(this.operationId),
-        await this.operationService.retrieveOperationById(this.operationId)
-          .then(async (operation) =>
-            await this.recipeService.retrieveRecipeById(operation.Recipe)),
-        await this.operationService.retrieveOperationById(this.operationId)
-          .then(async (operation) =>
-            // The operator is stored as a badge number in the operation object.
-            // We need to retrieve the user object to get the operator's name.
-            await this.userService.getUserByBadgeNumber(operation.Operator)),
-      ]).then(([operation, recipe, user]) => {
-        const createdAt = new Date(operation.CreatedAt!);
-        this.testResult = {
-          operationId: operation.OperationId!,
-          van: operation.Van,
-          description: recipe.Description,
-          status: operation.Status,
-          date: createdAt.toLocaleDateString(),
-          time: createdAt.toLocaleTimeString(),
-          duration: operation.Duration!,
-          operator: `${user.BadgeNumber} - ${user.UserName}`,
-          upsideTestResult: this.getTestResult('upside', operation),
-          frontsideTestResult: this.getTestResult('frontside', operation),
-          backsideTestResult: this.getTestResult('backside', operation),
-          leftsideTestResult: this.getTestResult('leftside', operation),
-          rightsideTestResult: this.getTestResult('rightside', operation),
-        }
-      });
+      const operation = await this.operationService.retrieveOperationById(
+        this.operationId
+      );
+      console.log('Operation:', operation);
+      const [recipe, user] = await Promise.all([
+        this.recipeService.retrieveRecipeById(operation.Recipe),
+        this.userService.retrieveUserById(operation.Operator),
+      ]);
+
+      const createdAt = new Date(operation.CreatedAt!);
+      this.testResult = {
+        operationId: operation.OperationId!,
+        van: operation.Van,
+        description: recipe.Description,
+        status: operation.Status,
+        date: createdAt.toLocaleDateString(),
+        time: createdAt.toLocaleTimeString(),
+        duration: operation.Duration!,
+        operator: `${user.BadgeNumber} - ${user.UserName}`,
+        upsideTestResult: this.getTestResult('upside', operation),
+        frontsideTestResult: this.getTestResult('frontside', operation),
+        backsideTestResult: this.getTestResult('backside', operation),
+        leftsideTestResult: this.getTestResult('leftside', operation),
+        rightsideTestResult: this.getTestResult('rightside', operation),
+      };
     }
   }
 
@@ -115,7 +115,7 @@ export class TestResultComponent implements OnInit {
     }
 
     // Get the value of each infiltration point
-    const infPoints = points.map(point => operation[`InfPoint${point.id}`]);
+    const infPoints = points.map((point) => operation[`InfPoint${point.id}`]);
 
     // If at least one infiltration point is true, the test result is NOK. Otherwise, it is OK.
     return infPoints.includes(true) ? 'NOK' : 'OK';
