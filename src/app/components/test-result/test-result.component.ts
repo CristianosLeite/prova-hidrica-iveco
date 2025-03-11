@@ -65,7 +65,7 @@ export class TestResultComponent implements OnInit {
       console.log('Operation:', operation);
       const [recipe, user] = await Promise.all([
         this.recipeService.retrieveRecipeById(operation.Recipe),
-        this.userService.retrieveUserById(operation.Operator),
+        this.userService.getUserByBadgeNumber(operation.Operator),
       ]);
 
       const createdAt = new Date(operation.CreatedAt!);
