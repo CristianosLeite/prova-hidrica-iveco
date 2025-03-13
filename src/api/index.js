@@ -9,7 +9,7 @@ const { OperationController } = require("./controllers/operation.controller");
 const { UsersController } = require("./controllers/users.controller");
 const { RecipeController } = require("./controllers/recipes.controller");
 const { SettingsController } = require("./controllers/settings.controller");
-// const { plcConnect, listenAndProcess } = require("./services/snap7-service");
+const { Snap7Service } = require("./services/snap7-service");
 
 function app() {
   const server = express();
@@ -47,7 +47,7 @@ function app() {
   return { app: server };
 }
 
-function run() {
+async function run() {
   const port = process.env["PORT"] || 4000;
 
   // Start up the Express server
@@ -91,6 +91,10 @@ function run() {
   const settingsController = new SettingsController();
   expressApp.use("/api/settings", settingsController.getRouter());
 
+  // Start listening and processing PLC data
+  const snap7Service = new Snap7Service(io);
+  await snap7Service.plcConnect("192.168.0.1");
+
   io.on("connection", (socket) => {
     console.log("Client connected");
 
@@ -108,6 +112,10 @@ function run() {
 
     socket.on("authenticated", (data) => {
       io.emit("authenticated", data);
+    });
+
+    socket.on("logout", () => {
+      io.emit("logout");
     });
 
     socket.on("createUser", (user) => {
@@ -141,6 +149,61 @@ function run() {
     socket.on("error", (error) => {
       io.emit("error", error);
     });
+
+    socket.on("enableOperation", async () => {
+      try {
+        if (snap7Service.isPlcConnected()) {
+          await snap7Service.writeBoolean(7, 0, 0, true).then(() => {
+            setTimeout(() => {
+              snap7Service.writeBoolean(7, 0, 0, false);
+            }, 1000);
+
+            io.emit("operationEnabled");
+          });
+        }
+      } catch (error) {
+        console.log("Error enabling operation: ", error);
+        io.emit("plcError", error);
+      }
+    });
+
+    socket.on("setSprinklerHeight", async (data) => {
+      try {
+        console.log("Setting sprinkler height: ", data);
+        if (snap7Service.isPlcConnected()) {
+          await snap7Service.writeInteger(7, 2, data).then(() => {
+            setTimeout(async () => {
+              await snap7Service.writeInteger(7, 2, 0);
+            }, 1000);
+            io.emit("sprinklerHeightSet", data);
+          });
+        }
+      } catch (error) {
+        console.log("Error setting sprinkler height: ", error);
+        io.emit("plcError", error);
+      }
+    });
+
+    socket.on("resetOperation", async () => {
+      try {
+        if (snap7Service.isPlcConnected()) {
+          await snap7Service.writeBoolean(7, 4, 0, true).then(() => {
+            setTimeout(() => {
+              snap7Service.writeBoolean(7, 4, 0, false);
+            });
+          });
+          await snap7Service.writeBoolean(7, 1, 0, true).then(() => {
+            setTimeout(() => {
+              snap7Service.writeBoolean(7, 1, 0, false);
+            }, 1000);
+            io.emit("operationReset");
+          });
+        }
+      } catch (error) {
+        console.log("Error resetting operation: ", error);
+        io.emit("plcError", error);
+      }
+    });
   });
 
   server.listen(port, () => {
@@ -160,9 +223,6 @@ function run() {
   server.on("request", (req, res) => {
     console.log("Request received");
   });
-
-  // Start listening and processing PLC data
-  // listenAndProcess();
 }
 
 run();
