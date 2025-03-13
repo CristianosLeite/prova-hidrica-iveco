@@ -13,7 +13,7 @@
 @if (displayedOperations.length > 0) {
   <div class="content-header">
     <ion-label>VP</ion-label>
-    <ion-label>VAN</ion-label>
+    <ion-label>CIS</ion-label>
     <ion-label>Data e hora</ion-label>
   </div>
 
@@ -22,7 +22,7 @@
       <ion-item [routerLink]="['/', 'main', 'view-operation', operation.OperationId]">
         <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
         <ion-label>{{ operation.Vp }}</ion-label>
-        <ion-label>{{ operation.Van }}</ion-label>
+        <ion-label>{{ operation.Cis }}</ion-label>
         <ion-label>{{ operation.StartTime }}</ion-label>
       </ion-item>
     }

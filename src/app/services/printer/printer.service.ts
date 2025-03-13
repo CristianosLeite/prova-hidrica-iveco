@@ -20,8 +20,8 @@ export class PrinterService {
     await IPosPrinter.printBlankLines({ lines: 1, height: 32 });
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 0 });
-    await IPosPrinter.printSpecifiedTypeText({ text: 'VAN:', typeface: 'ST', fontSize: 24 });
-    await IPosPrinter.printSpecifiedTypeText({ text: testResult.van, typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: 'CIS:', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: testResult.cis, typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'DESCRIÇÃO:', typeface: 'ST', fontSize: 24 });

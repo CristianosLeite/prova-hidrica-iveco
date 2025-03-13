@@ -3,7 +3,7 @@ import { Status } from "./testResult.type";
 export type Operation = {
   OperationId?: string;
   Vp: string;
-  Van: string;
+  Cis: string;
   Operator: string;
   Recipe: number;
   Status: Status;

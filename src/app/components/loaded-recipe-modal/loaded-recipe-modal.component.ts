@@ -23,7 +23,7 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   public operator = '';
   public startTime = '';
-  public van = '';
+  public cis = '';
 
   constructor(
     private authService: AuthService,
@@ -34,7 +34,7 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
     this.presentingElement = document.querySelector('.ion-page');
     this.operator = this.authService.getLoggedUser().UserName;
     this.startTime = this.mainService.getStartTime();
-    this.van = this.mainService.getVan();
+    this.cis = this.mainService.getCis();
   }
 
   ngAfterViewInit() {
@@ -43,5 +43,9 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   handleSprinklerHeight(height: number): string {
     return height === 1 ? 'Alta' : height === 2 ? 'Média' : 'Baixa';
+  }
+
+  startOperation() {
+    this.modal.dismiss();
   }
 }

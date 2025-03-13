@@ -70,7 +70,7 @@ export class TestResultComponent implements OnInit {
         const createdAt = new Date(operation.CreatedAt!);
         this.testResult = {
           operationId: operation.OperationId!,
-          van: operation.Van,
+          cis: operation.Cis,
           description: recipe.Description,
           status: operation.Status,
           date: createdAt.toLocaleDateString(),

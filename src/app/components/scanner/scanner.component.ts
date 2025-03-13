@@ -24,12 +24,12 @@ export class ScannerComponent implements OnInit {
   public vpSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
   public vpContent: WritableSignal<string> = signal('Aguardando leitura...');
 
-  public vanTitle: WritableSignal<string> = signal('Aguardando leitura do VAN');
-  public vanSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
-  public vanContent: WritableSignal<string> = signal('Aguardando leitura...');
+  public cisTitle: WritableSignal<string> = signal('Aguardando leitura do CIS');
+  public cisSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
+  public cisContent: WritableSignal<string> = signal('Aguardando leitura...');
 
   private vp: string = '';
-  private van: string = '';
+  private cis: string = '';
 
   constructor(
     private apiService: ApiService,
@@ -53,10 +53,10 @@ export class ScannerComponent implements OnInit {
             this.vp = response.payload.data.Vp;
             this.updateUI('VP lido com sucesso', `VP: ${this.vp}`, '', 'VP');
           } else {
-            typeData = 'VAN';
-            this.van = response.payload.data;
-            this.mainService.setVan(this.van);
-            this.updateUI('VAN lido com sucesso', `VAN: ${this.van}`, '', 'VAN');
+            typeData = 'cis';
+            this.cis = response.payload.data;
+            this.mainService.setCis(this.cis);
+            this.updateUI('cis lido com sucesso', `cis: ${this.cis}`, '', 'cis');
           }
         } else {
           typeData = 'QR';
@@ -65,7 +65,7 @@ export class ScannerComponent implements OnInit {
           this.context = undefined;
         }
 
-        if (this.vp !== '' && this.van !== '') await this.sendData();
+        if (this.vp !== '' && this.cis !== '') await this.sendData();
         else await this.apiService.BarcodeReader();
       });
     } catch (error: any) {
@@ -86,8 +86,8 @@ export class ScannerComponent implements OnInit {
         case 'VP':
           await this.scanVP();
           break;
-        case 'VAN':
-          await this.scanVAN();
+        case 'cis':
+          await this.scanCIS();
           break;
         default:
           console.error('Tipo de leitura não reconhecido.');
@@ -114,16 +114,16 @@ export class ScannerComponent implements OnInit {
     await ScannerPlugin.scanBarcode().then(async (result) => {
       this.vp = result.value;
       this.updateUI('VP lido com sucesso', `VP: ${result.value}`, '', 'VP');
-      if (this.vp !== '' && this.van !== '') await this.sendData();
+      if (this.vp !== '' && this.cis !== '') await this.sendData();
     });
   }
 
-  private async scanVAN() {
+  private async scanCIS() {
     await ScannerPlugin.scanBarcode().then(async (result) => {
-      this.van = result.value;
-      this.mainService.setVan(result.value);
-      this.updateUI('VAN lido com sucesso', `VAN: ${result.value}`, '', 'VAN');
-      if (this.vp !== '' && this.van !== '') await this.sendData();
+      this.cis = result.value;
+      this.mainService.setCis(result.value);
+      this.updateUI('cis lido com sucesso', `cis: ${result.value}`, '', 'cis');
+      if (this.vp !== '' && this.cis !== '') await this.sendData();
     });
   }
 
@@ -138,10 +138,10 @@ export class ScannerComponent implements OnInit {
       this.vpTitle.set(title);
       this.vpSubtitle.set(subtitle);
       this.vpContent.set(content);
-    } else if (typeData === 'VAN') {
-      this.vanTitle.set(title);
-      this.vanSubtitle.set(subtitle);
-      this.vanContent.set(content);
+    } else if (typeData === 'cis') {
+      this.cisTitle.set(title);
+      this.cisSubtitle.set(subtitle);
+      this.cisContent.set(content);
     } else if (typeData === 'QR') {
       this.qrTitle.set(title);
       this.qrSubtitle.set(subtitle);

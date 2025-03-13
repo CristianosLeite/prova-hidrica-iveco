@@ -77,7 +77,7 @@ export class OperationsComponent implements OnInit {
     if (this.searchTerm) {
       this.displayedOperations = this.operations.filter(op =>
         op.Vp.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        op.Van.toLowerCase().includes(this.searchTerm.toLowerCase())
+        op.Cis.toLowerCase().includes(this.searchTerm.toLowerCase())
       ).slice(0, this.itemsPerPage);
       this.currentPage = 1;
     } else {
