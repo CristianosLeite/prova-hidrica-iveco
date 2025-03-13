@@ -9,7 +9,8 @@ const { OperationController } = require("./controllers/operation.controller");
 const { UsersController } = require("./controllers/users.controller");
 const { RecipeController } = require("./controllers/recipes.controller");
 const { SettingsController } = require("./controllers/settings.controller");
-const { Snap7Service } = require("./services/snap7-service");
+const { Snap7Service } = require("./services/snap7-service.js");
+const setupSockets = require("./sockets/sockets");
 
 function app() {
   const server = express();
@@ -26,12 +27,6 @@ function app() {
   server.use(express.json({ limit: "50mb" }));
   server.use(express.urlencoded({ limit: "50mb", extended: true }));
   server.use(bodyParser.json());
-
-  server.use(express.urlencoded({ extended: true }));
-
-  // Enable parsing of application/json and application/x-www-form-urlencoded
-  server.use(express.json());
-  server.use(express.urlencoded({ extended: true }));
 
   // Set the prefix for the API
   server.use("/api", (req, res, next) => {
@@ -73,6 +68,9 @@ async function run() {
     transports: ["websocket", "polling"],
   });
 
+  // Start listening and processing PLC data
+  const snap7Service = new Snap7Service(io);
+
   // Create controllers
 
   // Handle operation
@@ -91,120 +89,14 @@ async function run() {
   const settingsController = new SettingsController();
   expressApp.use("/api/settings", settingsController.getRouter());
 
-  // Start listening and processing PLC data
-  const snap7Service = new Snap7Service(io);
-  await snap7Service.plcConnect("192.168.0.1");
+  // Setup sockets
+  setupSockets(io, snap7Service);
 
-  io.on("connection", (socket) => {
-    console.log("Client connected");
-
-    socket.on("startBackgroundService", () => {
-      io.emit("startBackgroundService");
-    });
-
-    socket.on("backgroundServiceInitialized", (data) => {
-      io.emit("backgroundServiceInitialized", data);
-    });
-
-    socket.on("authenticate", () => {
-      io.emit("authenticate");
-    });
-
-    socket.on("authenticated", (data) => {
-      io.emit("authenticated", data);
-    });
-
-    socket.on("logout", () => {
-      io.emit("logout");
-    });
-
-    socket.on("createUser", (user) => {
-      io.emit("createUser", user);
-    });
-
-    socket.on("userCreated", (user) => {
-      io.emit("userCreated", user);
-    });
-
-    socket.on("verificationCompleted", (data) => {
-      io.emit("verificationCompleted", data);
-    });
-
-    socket.on("sendingBarcode", (data) => {
-      io.emit("sendingBarcode", data);
-    });
-
-    socket.on("barcodeData", (data) => {
-      io.emit("barcodeData", data);
-    });
-
-    socket.on("recipeLoaded", (data) => {
-      io.emit("recipeLoaded", data);
-    });
-
-    socket.on("disconnect", () => {
-      console.log("Client disconnected");
-    });
-
-    socket.on("error", (error) => {
-      io.emit("error", error);
-    });
-
-    socket.on("enableOperation", async () => {
-      try {
-        if (snap7Service.isPlcConnected()) {
-          await snap7Service.writeBoolean(7, 0, 0, true).then(() => {
-            setTimeout(() => {
-              snap7Service.writeBoolean(7, 0, 0, false);
-            }, 1000);
-
-            io.emit("operationEnabled");
-          });
-        }
-      } catch (error) {
-        console.log("Error enabling operation: ", error);
-        io.emit("plcError", error);
-      }
-    });
-
-    socket.on("setSprinklerHeight", async (data) => {
-      try {
-        console.log("Setting sprinkler height: ", data);
-        if (snap7Service.isPlcConnected()) {
-          await snap7Service.writeInteger(7, 2, data).then(() => {
-            setTimeout(async () => {
-              await snap7Service.writeInteger(7, 2, 0);
-            }, 1000);
-            io.emit("sprinklerHeightSet", data);
-          });
-        }
-      } catch (error) {
-        console.log("Error setting sprinkler height: ", error);
-        io.emit("plcError", error);
-      }
-    });
-
-    socket.on("resetOperation", async () => {
-      try {
-        if (snap7Service.isPlcConnected()) {
-          await snap7Service.writeBoolean(7, 4, 0, true).then(() => {
-            setTimeout(() => {
-              snap7Service.writeBoolean(7, 4, 0, false);
-            });
-          });
-          await snap7Service.writeBoolean(7, 1, 0, true).then(() => {
-            setTimeout(() => {
-              snap7Service.writeBoolean(7, 1, 0, false);
-            }, 1000);
-            io.emit("operationReset");
-          });
-        }
-      } catch (error) {
-        console.log("Error resetting operation: ", error);
-        io.emit("plcError", error);
-      }
-    });
-  });
+  try {
+    await snap7Service.plcConnect("192.168.0.1");
+  } catch (error) {
+    console.log("Error connecting to PLC: ", error);
+  }
 
   server.listen(port, () => {
     console.log(
