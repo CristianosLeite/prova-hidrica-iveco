@@ -138,4 +138,17 @@ export class ApiService {
       });
     });
   }
+
+  public enableOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('enableOperation');
+      this.socket?.on('operationEnabled', () => {
+        resolve({ type: 'success', payload: { message: 'Operation enabled successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('startOperation error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
 }

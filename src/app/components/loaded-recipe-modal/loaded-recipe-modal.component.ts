@@ -5,6 +5,7 @@ import { IonModal } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { MainService } from 'src/app/services/main/main.service';
 import { DatePipe } from '@angular/common';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   imports: [
@@ -27,7 +28,8 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   constructor(
     private authService: AuthService,
-    private mainService: MainService
+    private mainService: MainService,
+    private apiService: ApiService
   ) { }
 
   ngOnInit() {
@@ -47,5 +49,6 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   startOperation() {
     this.modal.dismiss();
+    this.apiService.enableOperation();
   }
 }
