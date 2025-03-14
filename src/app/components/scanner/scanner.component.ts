@@ -86,7 +86,7 @@ export class ScannerComponent implements OnInit {
         case 'VP':
           await this.scanVP();
           break;
-        case 'cis':
+        case 'CIS':
           await this.scanCIS();
           break;
         default:
@@ -122,7 +122,7 @@ export class ScannerComponent implements OnInit {
     await ScannerPlugin.scanBarcode().then(async (result) => {
       this.cis = result.value;
       this.mainService.setCis(result.value);
-      this.updateUI('cis lido com sucesso', `cis: ${result.value}`, '', 'cis');
+      this.updateUI('cis lido com sucesso', `CIS: ${result.value}`, '', 'CIS');
       if (this.vp !== '' && this.cis !== '') await this.sendData();
     });
   }
@@ -138,7 +138,7 @@ export class ScannerComponent implements OnInit {
       this.vpTitle.set(title);
       this.vpSubtitle.set(subtitle);
       this.vpContent.set(content);
-    } else if (typeData === 'cis') {
+    } else if (typeData === 'CIS') {
       this.cisTitle.set(title);
       this.cisSubtitle.set(subtitle);
       this.cisContent.set(content);
