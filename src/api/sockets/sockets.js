@@ -1,3 +1,25 @@
+async function setSprinklerHeight(height) {
+  try {
+    console.log("Setting sprinkler height: ", height);
+    if (snap7Service.isPlcConnected()) {
+      await snap7Service.writeBooleanToDb(7, 4, 1, true).then(() => {
+        // setTimeout(() => {
+        //   snap7Service.writeBoolean(7, 3, 0, false);
+        // }, 1000);
+      });
+      await snap7Service.writeIntegerToDb(7, 2, height).then(() => {
+        setTimeout(async () => {
+          await snap7Service.writeIntegerToDb(7, 2, 0);
+        }, 1000);
+        io.emit("sprinklerHeightSet", height);
+      });
+    }
+  } catch (error) {
+    console.log("Error setting sprinkler height: ", error);
+    io.emit("plcError", error);
+  }
+}
+
 module.exports = function(io, snap7Service) {
   io.on("connection", (socket) => {
     console.log("Client connected");
@@ -42,7 +64,9 @@ module.exports = function(io, snap7Service) {
       io.emit("barcodeData", data);
     });
 
-    socket.on("recipeLoaded", (data) => {
+    socket.on("recipeLoaded", async (data) => {
+      //await setSprinklerHeight(data.sprinklerHeight);
+      console.log("Recipe loaded: ", data);
       io.emit("recipeLoaded", data);
     });
 
@@ -72,25 +96,7 @@ module.exports = function(io, snap7Service) {
     });
 
     socket.on("setSprinklerHeight", async (data) => {
-      try {
-        console.log("Setting sprinkler height: ", data);
-        if (snap7Service.isPlcConnected()) {
-          await snap7Service.writeBooleanToDb(7, 4, 1, true).then(() => {
-            // setTimeout(() => {
-            //   snap7Service.writeBoolean(7, 3, 0, false);
-            // }, 1000);
-          });
-          await snap7Service.writeIntegerToDb(7, 2, data).then(() => {
-            setTimeout(async () => {
-              await snap7Service.writeIntegerToDb(7, 2, 0);
-            }, 1000);
-            io.emit("sprinklerHeightSet", data);
-          });
-        }
-      } catch (error) {
-        console.log("Error setting sprinkler height: ", error);
-        io.emit("plcError", error);
-      }
+      await setSprinklerHeight(data);
     });
 
     socket.on("resetOperation", async () => {
