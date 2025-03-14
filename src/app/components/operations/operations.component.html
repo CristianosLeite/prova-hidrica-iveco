@@ -19,8 +19,7 @@
 
   <ion-list class="operation-list">
     @for (operation of displayedOperations; track operation.OperationId; let index = $index) {
-      <ion-item [routerLink]="['/', 'main', 'view-operation', operation.OperationId]">
-        <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
+      <ion-item (click)="openOperation(operation.OperationId!)">
         <ion-label>{{ operation.Vp }}</ion-label>
         <ion-label>{{ operation.Cis }}</ion-label>
         <ion-label>{{ operation.StartTime }}</ion-label>
