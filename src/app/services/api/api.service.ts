@@ -151,4 +151,30 @@ export class ApiService {
       });
     });
   }
+
+  public resetOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('resetOperation');
+      this.socket?.on('operationReset', () => {
+        resolve({ type: 'success', payload: { message: 'Operation reset successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('resetOperation error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
+
+  public stopOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('stopOperation');
+      this.socket?.on('operationStopped', () => {
+        resolve({ type: 'success', payload: { message: 'Operation stopped successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('stopOperation error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
 }
