@@ -53,7 +53,7 @@ class Snap7Service {
    * @param {number} bit - The bit number
    * @returns {Promise} - The boolean value
    */
-  readBooleanFomDb(dbNumber, byte, bit) {
+  readBooleanFromDb(dbNumber, byte, bit) {
     return new Promise((resolve, reject) => {
       s7client.DBRead(dbNumber, byte, 1, function (err, res) {
         if (err) {
