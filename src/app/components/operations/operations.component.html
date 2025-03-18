@@ -19,7 +19,7 @@
 
   <ion-list class="operation-list">
     @for (operation of displayedOperations; track operation.OperationId; let index = $index) {
-      <ion-item [routerLink]="['/', 'main', 'test-result', operation.OperationId]">
+      <ion-item [routerLink]="['/', 'main', 'test-result']" [queryParams]="{ id: operation.OperationId }">
         <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
         <ion-label>{{ operation.Vp }}</ion-label>
         <ion-label>{{ operation.Van }}</ion-label>
