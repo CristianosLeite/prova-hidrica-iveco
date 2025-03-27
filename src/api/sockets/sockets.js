@@ -2,36 +2,27 @@ module.exports = function (io, snap7Service) {
   async function setSprinklerHeight(height) {
     try {
       if (snap7Service.isPlcConnected()) {
-        const isPlatformActive = (await snap7Service.readBooleanFromDb(7, 4, 1))
-          .value;
-        if (!isPlatformActive) {
-          await Promise.all([
-            // Set
-            snap7Service.writeBooleanToDb(7, 4, 1, true), // Active platform
-            snap7Service.writeIntegerToDb(7, 2, height), // Set height
-          ]).then(() => {
-            // setTimeout(async () => {
-            //   // Reset
-            //   await snap7Service.writeBooleanToDb(7, 4, 1, false); // Active platform
-            // }, 1000);
-          });
-        } else {
-          await snap7Service.writeIntegerToDb(7, 2, height);
-        }
-        //     // Active platform
-        //     await snap7Service.writeBooleanToDb(7, 4, 1, true).then(() => {
-        //       // setTimeout(() => {
-        //       //   snap7Service.writeBoolean(7, 3, 0, false);
-        //       // }, 1000);
-        //     });
-        //   }
-        //   // Set height
-        //   await snap7Service.writeIntegerToDb(7, 2, height).then(() => {
-        //     setTimeout(async () => {
-        //       await snap7Service.writeIntegerToDb(7, 2, 0);
-        //     }, 1000);
-        //     io.emit("sprinklerHeightSet", height);
-        //   });
+        const isSensorInPosition1 = (
+          await snap7Service.readBooleanFromMemory(11, 7)
+        ).value;
+        const isSensorInPosition2 = (
+          await snap7Service.readBooleanFromMemory(12, 0)
+        ).value;
+        const isSensorInPosition3 = (
+          await snap7Service.readBooleanFromMemory(12, 1)
+        ).value;
+        await Promise.all([
+          // Set
+          snap7Service.writeBooleanToDb(7, 4, 1, true), // Active platform
+          snap7Service.writeIntegerToDb(7, 2, height), // Set height
+        ]).then(() => {
+          setTimeout(async () => {
+            // Reset
+            if (isSensorInPosition1 || isSensorInPosition2 || isSensorInPosition3) {
+              await snap7Service.writeBooleanToDb(7, 1, 0, false);
+            }
+          }, 15000);
+        });
       }
       io.emit("sprinklerHeightSet", height);
     } catch (error) {
@@ -101,14 +92,14 @@ module.exports = function (io, snap7Service) {
         if (snap7Service.isPlcConnected()) {
           await Promise.all([
             // Set
-            snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
-            snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
+            await snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
+            await snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
           ]).then(() => {
             setTimeout(async () => {
               await Promise.all([
                 // Reset
-                snap7Service.writeBooleanToDb(7, 4, 0, false),
-                snap7Service.writeBooleanToDb(7, 0, 0, false),
+                await snap7Service.writeBooleanToDb(7, 4, 0, false),
+                await snap7Service.writeBooleanToDb(7, 0, 0, false),
               ]);
             }, 1000);
             io.emit("operationEnabled");
@@ -137,16 +128,16 @@ module.exports = function (io, snap7Service) {
         if (snap7Service.isPlcConnected()) {
           await Promise.all([
             // Set
-            snap7Service.writeBooleanToDb(7, 4, 2, true), // Stop auto
-            snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
-            snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
+            await snap7Service.writeBooleanToDb(7, 4, 2, true), // Stop auto
+            await snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
+            await snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
           ]).then(() => {
             setTimeout(async () => {
               await Promise.all([
                 // Reset
-                snap7Service.writeBooleanToDb(7, 4, 2, false),
-                snap7Service.writeBooleanToDb(7, 4, 0, false),
-                snap7Service.writeBooleanToDb(7, 0, 0, false),
+                await snap7Service.writeBooleanToDb(7, 4, 2, false),
+                await snap7Service.writeBooleanToDb(7, 4, 0, false),
+                await snap7Service.writeBooleanToDb(7, 0, 0, false),
               ]);
             }, 1000);
             io.emit("operationReset");
@@ -174,26 +165,21 @@ module.exports = function (io, snap7Service) {
     socket.on("stopOperation", async () => {
       try {
         if (snap7Service.isPlcConnected()) {
-          // Set
-          await snap7Service
-            .writeBooleanToDb(7, 4, 2, true) // Stop auto
-            .then(() => {
-              setTimeout(async () => {
+          await Promise.all([
+            // Set
+            await snap7Service.writeBooleanToDb(7, 4, 2, true), // Stop auto
+            await snap7Service.writeBooleanToDb(7, 4, 3, true), // End cycle
+            setSprinklerHeight(1), // Set sprinkler height to 1 (default)
+          ]).then(() => {
+            setTimeout(async () => {
+              await Promise.all([
                 // Reset
-                await snap7Service.writeBooleanToDb(7, 4, 2, false);
-              }, 1000);
-              io.emit("operationStopped");
-            });
-          // // Set sprinkler height to 1 (default)
-          // await setSprinklerHeight(1).then(async () => {
-          //   // Stop auto
-          //   await snap7Service.writeBooleanToDb(7, 4, 2, true).then(() => {
-          //     setTimeout(async () => {
-          //       await snap7Service.writeBooleanToDb(7, 4, 2, false);
-          //     }, 1000);
-          //     io.emit("operationStopped");
-          //   });
-          // });
+                await snap7Service.writeBooleanToDb(7, 4, 2, false),
+                await snap7Service.writeBooleanToDb(7, 4, 3, false),
+              ]);
+            }, 1000);
+            io.emit("operationStopped");
+          });
         }
       } catch (error) {
         console.log("Error stopping operation: ", error);
