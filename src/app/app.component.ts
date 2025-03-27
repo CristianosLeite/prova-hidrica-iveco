@@ -9,6 +9,7 @@ import { RfidComponent } from './components/rfid/rfid.component';
 import { AuthService } from './services/auth/auth.service';
 import { ServicesInitializationComponent } from "./components/services-initialization/services-initialization.component";
 import { OperationService } from './services/operation/operation.service';
+import { DeviceService } from './services/device/device.service';
 
 declare type LastOperations = {
   id: string;
@@ -44,7 +45,7 @@ export class AppComponent implements OnInit {
     { title: 'Registros', url: '/main/records', icon: 'server' },
     { title: 'Usuários', url: '/main/users', icon: 'people' },
     { title: 'Receitas', url: '/main/recipes', icon: 'cube' },
-    // { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
+    { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait' },
     { title: 'Configurações', url: '/main/settings', icon: 'settings' },
     { title: 'Buscar', url: '/main/search', icon: 'qr-code' },
   ];
@@ -57,10 +58,11 @@ export class AppComponent implements OnInit {
     private apiService: ApiService,
     private authService: AuthService,
     private operationService: OperationService,
-    private router: Router
+    private router: Router,
+    private deviceService: DeviceService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.checkScreenSize();
     this.storageService.storageCreated.subscribe(async () => {
       this.updateLastOperations();
@@ -84,6 +86,8 @@ export class AppComponent implements OnInit {
     this.operationService.operationCreated.subscribe(() => {
       this.updateLastOperations();
     });
+
+    this.deviceService.startDeviceSync();
   }
 
   @HostListener('window:resize', ['$event'])

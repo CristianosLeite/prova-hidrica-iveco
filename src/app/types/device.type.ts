@@ -17,11 +17,8 @@ export enum BatteryStatus {
 
 export type Device = {
   deviceId: string;
-  deviceName: string;
   type: DeviceType | string;
   networkStatus: DeviceStatus | string;
   batteryStatus: BatteryStatus | string;
   isCharging: boolean;
-  createdAt: Date;
-  updatedAt: Date;
 }

@@ -2,6 +2,7 @@ const setupPlcSockets = require('./plc/plc.socket');
 const setupUserSockets = require('./user/user.socket');
 const setupBarcodeSockets = require('./barcode/barcode.socket');
 const setupBackgroundSockets = require('./background/background.socket');
+const setupDeviceSockets = require('./device/device.socket');
 
 module.exports = function (io, snap7Service) {
   io.on("connection", (socket) => {
@@ -26,5 +27,8 @@ module.exports = function (io, snap7Service) {
 
     // Delegate barcode-related logic to barcode.socket.js
     setupBarcodeSockets(io, socket);
+
+    // Delegate device-related logic to device.socket.js
+    setupDeviceSockets(io, socket);
   });
 };

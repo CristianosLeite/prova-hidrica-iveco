@@ -6,6 +6,7 @@ import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { StorageService } from '../storage/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { Recipe } from 'src/app/types/recipe.type';
+import { Device } from 'src/app/types/device.type';
 
 @Injectable({
   providedIn: 'root'
@@ -178,6 +179,19 @@ export class ApiService {
       this.socket?.on('error', (error: any) => {
         console.log('stopOperation error:', error);
         reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
+
+  public sendDeviceData(device: Device): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('sendDeviceData', device);
+      this.socket?.on('deviceDataRecieved', (devices: Device[]) => {
+        console.log('Devices:', devices);
+        resolve({ type: 'success', payload: { message: 'Device data sent successfully', devices } });
+      });
+      this.socket?.on('error', (error: any) => {
+        reject({ type: 'error', payload: { message: 'Device data send failed', error } });
       });
     });
   }
