@@ -75,6 +75,13 @@ export class MainService implements IMainApplication {
   private cis: string = '';
 
   /**
+   * It is used to store the chassis code retrieved from the barcode scanner.
+   * This data guarantees the traceability of the operation.
+   * @type {string}
+   */
+  private chassis: string = '';
+
+  /**
    * - Notify the {@link RunComponent} component that the quantity of verifications has changed.
    */
   @Output() qtyVerificationsChanged: EventEmitter<number> = new EventEmitter();
@@ -113,6 +120,14 @@ export class MainService implements IMainApplication {
    */
   public setCis(cis: string): void {
     this.cis = cis;
+  }
+
+  /**
+   * Set the chassis code and store it in the service.
+   * @param chassis - The chassis code
+   */
+  public setChassis(chassis: string): void {
+    this.chassis = chassis;
   }
 
   /**
@@ -212,6 +227,9 @@ export class MainService implements IMainApplication {
 
     // Add the cis to the operation before send to backend
     operation.Cis = this.cis;
+
+    // Add the chassis to the operation before send to backend
+    operation.Chassis = this.chassis;
 
     // Add the infiltration points to the operation before send to backend
     this.addInfiltrationPointsToOperation(operation);

@@ -19,7 +19,12 @@ Recipe.init(
     Vp: {
       type: DataTypes.STRING,
       field: "vp",
-      allowNull: false,
+      allowNull: true,
+    },
+    Cis: {
+      type: DataTypes.STRING,
+      field: "cis",
+      allowNull: true,
     },
     SprinklerHeight: {
       type: DataTypes.INTEGER,

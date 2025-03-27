@@ -6,22 +6,20 @@ import { TestResult } from 'src/app/types/testResult.type';
   providedIn: 'root'
 })
 export class PrinterService {
-  private ivecoLogo: string = ''
-  private conecsaLogo: string = '';
-
-  constructor() { }
-
   public async printTestResult(testResult: TestResult): Promise<void> {
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 1 });
-    // await IPosPrinter.printBitmap({ alignment: 1, bitmapSize: 16, base64: this.ivecoLogo });
-    // await IPosPrinter.printBlankLines({ lines: 2, height: 32 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'TESTE PROVA HÍDRICA', typeface: 'ST', fontSize: 32 });
     await IPosPrinter.printBlankLines({ lines: 1, height: 32 });
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 0 });
+
+    await IPosPrinter.printSpecifiedTypeText({ text: 'CHASSI:', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: testResult.chassis || 'Não informado', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
+
     await IPosPrinter.printSpecifiedTypeText({ text: 'CIS:', typeface: 'ST', fontSize: 24 });
-    await IPosPrinter.printSpecifiedTypeText({ text: testResult.cis, typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: testResult.cis || 'Não Informado', typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'DESCRIÇÃO:', typeface: 'ST', fontSize: 24 });
@@ -57,7 +55,6 @@ export class PrinterService {
     await IPosPrinter.printBlankLines({ lines: 2, height: 24 });
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 1 });
-    //await IPosPrinter.printBitmap({ alignment: 1, bitmapSize: 16, base64: this.conecsaLogo });
     await IPosPrinter.printBlankLines({ lines: 4, height: 32 });
   }
 }

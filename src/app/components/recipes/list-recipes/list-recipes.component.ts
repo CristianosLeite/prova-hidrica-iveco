@@ -17,8 +17,6 @@ import { RefresherEventDetail, IonRefresherCustomEvent } from '@ionic/core';
   styleUrls: ['./list-recipes.component.scss'],
 })
 export class ListRecipesComponent implements OnInit {
-  public documentOutline = 'document-outline';
-  public documentSharp = 'document-sharp';
   public dataSource: { recipes: Recipe[] } = { recipes: [] };
   public searchTerm: string = '';
   public hasError = false;

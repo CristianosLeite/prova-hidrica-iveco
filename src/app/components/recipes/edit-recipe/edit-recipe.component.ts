@@ -19,6 +19,7 @@ import { AlertController } from '@ionic/angular';
 })
 export class EditRecipeComponent  implements OnInit {
   public recipeId: string = '';
+  public recipeKey = '';
   public recipe: Recipe = {} as Recipe;
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
@@ -69,7 +70,8 @@ export class EditRecipeComponent  implements OnInit {
   }
 
   async saveRecipe() {
-    if (!this.recipe.Description || !this.recipe.Vp) {
+    this.setCisOrVp();
+    if (!this.recipe.Description || (!this.recipe.Vp && !this.recipe.Cis)) {
       this.showAlert('Atenção!', 'Campos obrigatórios não preenchidos.', 'Por favor, preencha os campos obrigatórios.');
       return;
     }
@@ -88,6 +90,14 @@ export class EditRecipeComponent  implements OnInit {
     }).catch((error) => {
       this.showAlert('Erro!', 'Erro ao criar receita.', error.message);
     });
+  }
+
+  private setCisOrVp() {
+    if (this.recipeKey.length === 8) {
+      this.recipe.Cis = this.recipeKey;
+    } else {
+      this.recipe.Vp = this.recipeKey;
+    }
   }
 
   private async updateRecipe() {

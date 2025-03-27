@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Result, TestResult } from 'src/app/types/testResult.type';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PrinterService } from 'src/app/services/printer/printer.service';
 import { OperationService } from 'src/app/services/operation/operation.service';
 import { RecipeService } from 'src/app/services/recipe/recipe.service';
@@ -41,8 +41,7 @@ export class TestResultComponent implements OnInit {
     private operationService: OperationService,
     private recipeService: RecipeService,
     private userService: UserService,
-    private printerService: PrinterService,
-    private router: Router
+    private printerService: PrinterService
   ) {
     this.operationId = this.activatedRoute.snapshot.queryParamMap.get('id') as string;
   }
@@ -70,7 +69,9 @@ export class TestResultComponent implements OnInit {
         const createdAt = new Date(operation.CreatedAt!);
         this.testResult = {
           operationId: operation.OperationId!,
-          cis: operation.Cis,
+          vp: operation.Vp || 'Não informado',
+          cis: operation.Cis || 'Não informado',
+          chassis: operation.Chassis || 'Não informado',
           description: recipe.Description,
           status: operation.Status,
           date: createdAt.toLocaleDateString(),
@@ -82,7 +83,7 @@ export class TestResultComponent implements OnInit {
           backsideTestResult: this.getTestResult('backside', operation),
           leftsideTestResult: this.getTestResult('leftside', operation),
           rightsideTestResult: this.getTestResult('rightside', operation),
-        }
+        };
       });
     }
   }

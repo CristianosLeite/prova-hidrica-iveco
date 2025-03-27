@@ -1,8 +1,14 @@
 .content-header {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: self-start;
   padding: 10px;
+}
+
+.header-column {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
 }
 
 .pagination-controls {
