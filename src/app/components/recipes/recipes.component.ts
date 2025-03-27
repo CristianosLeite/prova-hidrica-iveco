@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { RouterLink } from '@angular/router';
 import { ListRecipesComponent } from "./list-recipes/list-recipes.component";
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   imports: [
@@ -13,14 +14,15 @@ import { ListRecipesComponent } from "./list-recipes/list-recipes.component";
   templateUrl: './recipes.component.html',
   styleUrls: ['./recipes.component.scss'],
 })
-export class RecipesComponent  implements OnInit {
+export class RecipesComponent {
   public documentOutline = 'document-outline';
   public documentSharp = 'document-sharp';
   public addOutline = 'add-outline';
   public addSharp = 'add-sharp';
 
-  constructor() { }
+  public userHasPermission = false;
 
-  ngOnInit() {}
-
+  constructor(auth: AuthService) {
+    this.userHasPermission = auth.hasPermission('WR')
+  }
 }

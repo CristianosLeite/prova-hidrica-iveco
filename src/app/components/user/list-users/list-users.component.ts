@@ -62,7 +62,8 @@ export class ListUsersComponent implements OnInit {
       OM: 'Operar manual',
       RO: 'Visualizar histórico de operações',
       RL: 'Visualizar logs',
-      ER: 'Exportar Relatórios'
+      ER: 'Exportar Relatórios',
+      MS: 'Acessar configurações'
     };
 
     return value[permission];

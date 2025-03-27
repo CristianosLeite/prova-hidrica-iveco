@@ -26,7 +26,7 @@
   <app-edit-recipe></app-edit-recipe>
   } @else if (page === 'devices') {
   <app-devices></app-devices>
-  } @else if (page === 'settings') {
+  } @else if (page === 'settings' && authService.hasPermission('MS')) {
   <app-settings></app-settings>
   } @else if (page === 'server-config') {
   <app-server></app-server>
