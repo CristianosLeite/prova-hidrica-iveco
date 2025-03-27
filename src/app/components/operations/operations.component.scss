@@ -5,6 +5,12 @@
   padding: 10px;
 }
 
+.header-column {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+}
+
 ion-list {
   min-height: 310px;
   max-height: 310px;
@@ -17,5 +23,5 @@ ion-list {
   align-items: center;
   gap: 10px;
   padding: 10px;
-  margin-top: 20px; // Espaço após a lista
+  margin-top: 20px;
 }

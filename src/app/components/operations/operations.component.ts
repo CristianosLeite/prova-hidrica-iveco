@@ -1,7 +1,7 @@
 import { IonRefresherCustomEvent, RefresherEventDetail } from '@ionic/core';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { OperationService } from 'src/app/services/operation/operation.service';
 import { Operation } from 'src/app/types/operation.type';
@@ -9,7 +9,7 @@ import { Operation } from 'src/app/types/operation.type';
 @Component({
   selector: 'app-operations',
   standalone: true,
-  imports: [IonicModule, FormsModule, RouterLink],
+  imports: [IonicModule, FormsModule],
   templateUrl: './operations.component.html',
   styleUrls: ['./operations.component.scss'],
 })
