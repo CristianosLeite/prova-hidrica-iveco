@@ -23,6 +23,10 @@ export class AuthService {
     this.isAuthenticating.emit(false);
   }
 
+  hasPermission(permission: string): boolean {
+    return this.loggedUser.Permissions.includes(permission);
+  }
+
   getLoggedUser(): User {
     return this.loggedUser;
   }

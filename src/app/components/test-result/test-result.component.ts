@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Result, TestResult } from 'src/app/types/testResult.type';
 import { ActivatedRoute } from '@angular/router';
@@ -25,15 +25,15 @@ import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
   styleUrls: ['./test-result.component.scss'],
 })
 export class TestResultComponent implements OnInit {
-  @Input() testResult: TestResult = {} as TestResult;
-  @Input() operationId: string = '';
+  public testResult: TestResult = {} as TestResult;
+  public operationId: string = '';
 
   public tests: InfiltrationTest[] = [
     UpsideTestModel,
     FrontsideTestModel,
     BacksideTestModel,
     LeftsideTestModel,
-    RightsideTestModel
+    RightsideTestModel,
   ];
 
   constructor(
@@ -55,6 +55,31 @@ export class TestResultComponent implements OnInit {
    */
   async setTestResult() {
     if (this.operationId) {
+      //       const operation = await this.operationService.retrieveOperationById(
+      //         this.operationId
+      //       );
+      //       console.log('Operation:', operation);
+      //       const [recipe, user] = await Promise.all([
+      //         this.recipeService.retrieveRecipeById(operation.Recipe),
+      //         this.userService.getUserByBadgeNumber(operation.Operator),
+      //       ]);
+
+      //       const createdAt = new Date(operation.CreatedAt!);
+      //       this.testResult = {
+      //         operationId: operation.OperationId!,
+      //         van: operation.Van,
+      //         description: recipe.Description,
+      //         status: operation.Status,
+      //         date: createdAt.toLocaleDateString(),
+      //         time: createdAt.toLocaleTimeString(),
+      //         duration: operation.Duration!,
+      //         operator: `${user.BadgeNumber} - ${user.UserName}`,
+      //         upsideTestResult: this.getTestResult('upside', operation),
+      //         frontsideTestResult: this.getTestResult('frontside', operation),
+      //         backsideTestResult: this.getTestResult('backside', operation),
+      //         leftsideTestResult: this.getTestResult('leftside', operation),
+      //         rightsideTestResult: this.getTestResult('rightside', operation),
+      //       };
       Promise.all([
         await this.operationService.retrieveOperationById(this.operationId),
         await this.operationService.retrieveOperationById(this.operationId)

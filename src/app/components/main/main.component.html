@@ -10,21 +10,23 @@
 </ion-header>
 
 <ion-content>
-  @if (page === 'run') {
+  @if (page === 'run' && (authService.hasPermission('OA') || authService.hasPermission('OM'))) {
   <app-run></app-run>
-  } @else if (page === 'records') {
+  } @else if (page === 'records'&& authService.hasPermission('RO')) {
     <app-operations></app-operations>
-  } @else if(page === 'users') {
+  } @else if (page === 'test-result' && authService.hasPermission('RL')) {
+  <app-test-result></app-test-result>
+  } @else if(page === 'users' && authService.hasPermission('RU')) {
   <app-user></app-user>
-  } @else if (page === 'add-new-user' || page === 'edit-user') {
+  } @else if (page === 'add-new-user' || page === 'edit-user' && authService.hasPermission('WU')) {
   <app-edit-user></app-edit-user>
-  } @else if (page === 'recipes') {
+  } @else if (page === 'recipes' && authService.hasPermission('RR')) {
   <app-recipes></app-recipes>
-  } @else if (page === 'add-new-recipe' || page === 'edit-recipe') {
+  } @else if (page === 'add-new-recipe' || page === 'edit-recipe' && authService.hasPermission('WR')) {
   <app-edit-recipe></app-edit-recipe>
   } @else if (page === 'devices') {
   <app-devices></app-devices>
-  } @else if (page === 'settings') {
+  } @else if (page === 'settings' && authService.hasPermission('MS')) {
   <app-settings></app-settings>
   } @else if (page === 'server-config') {
   <app-server></app-server>
@@ -56,13 +58,9 @@
   <app-point-selection [testId]="'rightside'" [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos da lateral direita.'"
     [testPoints]="rightsidePoints">
   </app-point-selection>
-  } @else if (page === 'test-result') {
-  <app-test-result></app-test-result>
-  }
-
-  @else {
-  <div id="container">
-    <strong class="capitalize">{{ page }}</strong>
-  </div>
+  } @else {
+    <div id="container">
+      <strong class="capitalize">Você não tem permissão para acessar esta página.</strong>
+    </div>
   }
 </ion-content>

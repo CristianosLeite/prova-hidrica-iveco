@@ -22,6 +22,7 @@ import FrontsideTestModel from 'src/app/models/frontside-test.model';
 import BacksideTestModel from 'src/app/models/backside-test.model';
 import LeftsideTestModel from 'src/app/models/leftside-test.model';
 import RightsideTestModel from 'src/app/models/rightside-test.model';
+import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
   standalone: true,
@@ -58,6 +59,7 @@ export class MainComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    public authService: AuthService,
   ) { }
 
   ngOnInit() {
