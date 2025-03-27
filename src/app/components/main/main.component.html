@@ -13,7 +13,7 @@
   @if (page === 'run' && (authService.hasPermission('OA') || authService.hasPermission('OM'))) {
   <app-run></app-run>
   } @else if (page === 'records'&& authService.hasPermission('RO')) {
-    <app-operations></app-operations>
+  <app-operations></app-operations>
   } @else if (page === 'test-result' && authService.hasPermission('RL')) {
   <app-test-result></app-test-result>
   } @else if(page === 'users' && authService.hasPermission('RU')) {
@@ -28,6 +28,8 @@
   <app-devices></app-devices>
   } @else if (page === 'settings' && authService.hasPermission('MS')) {
   <app-settings></app-settings>
+  } @else if (page === 'add-new-device') {
+  <app-edit-device></app-edit-device>
   } @else if (page === 'server-config') {
   <app-server></app-server>
   } @else if (page === 'preferences') {
@@ -39,28 +41,33 @@
   } @else if (page === 'tests') {
   <app-infiltration-points></app-infiltration-points>
   } @else if (page === 'upside-test') {
-  <app-point-selection [testId]="'upside'" [testTitle]="'Selecione, se houver, pontos de infiltração na parte superior da cabine.'"
+  <app-point-selection [testId]="'upside'"
+    [testTitle]="'Selecione, se houver, pontos de infiltração na parte superior da cabine.'"
     [testPoints]="upsidePoints">
   </app-point-selection>
   } @else if (page === 'frontside-test') {
   <app-point-selection [testId]="'frontside'"
-    [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos do para-brisa e painel frontal.'" [testPoints]="frontsidePoints">
+    [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos do para-brisa e painel frontal.'"
+    [testPoints]="frontsidePoints">
   </app-point-selection>
   } @else if (page === 'backside-test') {
   <app-point-selection [testId]="'backside'"
-    [testTitle]="'Selecione, se houver, pontos de infiltração nos tampões do teto posterior.'" [testPoints]="backsidePoints">
+    [testTitle]="'Selecione, se houver, pontos de infiltração nos tampões do teto posterior.'"
+    [testPoints]="backsidePoints">
   </app-point-selection>
   } @else if (page === 'leftside-test') {
-  <app-point-selection [testId]="'leftside'" [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos da lateral esquerda.'"
+  <app-point-selection [testId]="'leftside'"
+    [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos da lateral esquerda.'"
     [testPoints]="leftsidePoints">
   </app-point-selection>
   } @else if (page === 'rightside-test') {
-  <app-point-selection [testId]="'rightside'" [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos da lateral direita.'"
+  <app-point-selection [testId]="'rightside'"
+    [testTitle]="'Selecione, se houver, pontos de infiltração nos vãos da lateral direita.'"
     [testPoints]="rightsidePoints">
   </app-point-selection>
   } @else {
-    <div id="container">
-      <strong class="capitalize">Você não tem permissão para acessar esta página.</strong>
-    </div>
+  <div id="container">
+    <strong class="capitalize">Você não tem permissão para acessar esta página.</strong>
+  </div>
   }
 </ion-content>

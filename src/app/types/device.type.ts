@@ -5,7 +5,7 @@ export enum DeviceStatus {
 }
 
 export enum DeviceType {
-  Palmer = 'palmer',
+  Mobile = 'mobile',
   Desktop = 'desktop',
 }
 

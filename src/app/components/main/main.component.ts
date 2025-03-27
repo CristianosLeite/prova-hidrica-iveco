@@ -23,6 +23,7 @@ import BacksideTestModel from 'src/app/models/backside-test.model';
 import LeftsideTestModel from 'src/app/models/leftside-test.model';
 import RightsideTestModel from 'src/app/models/rightside-test.model';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { EditDeviceComponent } from "../devices/edit-device/edit-device.component";
 
 @Component({
   standalone: true,
@@ -39,6 +40,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
     PreferencesComponent,
     ScannerComponent,
     DevicesComponent,
+    EditDeviceComponent,
     DeviceConfigComponent,
     InfiltrationPointsComponent,
     PointSelectionComponent,
