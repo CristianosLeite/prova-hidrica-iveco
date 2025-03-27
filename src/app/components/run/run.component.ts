@@ -73,7 +73,7 @@ export class RunComponent  implements OnInit {
     this.operation.Operator = this.authService.getLoggedUser().BadgeNumber;
   }
 
-  finishTest() {
+  async finishTest() {
     if (this.qtyVerifications < this.qtyTests) {
       return;
     }
@@ -90,7 +90,7 @@ export class RunComponent  implements OnInit {
     }, 50);
 
     this.isLoading = true;
-    this.mainService.stop('finish', this.operation).then(async (operation) => {
+    await this.mainService.stop('finish', this.operation).then(async (operation) => {
       if (operation) {
         this.progress = 1;
         this.isLoading = false;

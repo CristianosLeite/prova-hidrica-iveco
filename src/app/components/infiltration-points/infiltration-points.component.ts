@@ -27,11 +27,11 @@ export class InfiltrationPointsComponent implements OnInit {
     this.tests.set(this.mainService.tests());
   }
 
-  resetOperation() {
-    this.apiService.resetOperation();
+  async resetOperation() {
+    await this.apiService.resetOperation();
   }
 
-  stopOperation() {
-    this.apiService.stopOperation();
+  async stopOperation() {
+    await this.apiService.stopOperation();
   }
 }

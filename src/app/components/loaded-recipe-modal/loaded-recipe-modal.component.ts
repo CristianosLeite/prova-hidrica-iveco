@@ -47,8 +47,8 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
     return height === 1 ? 'Alta' : height === 2 ? 'Média' : 'Baixa';
   }
 
-  startOperation() {
+  async startOperation() {
     this.modal.dismiss();
-    this.apiService.enableOperation();
+    await this.apiService.enableOperation();
   }
 }
