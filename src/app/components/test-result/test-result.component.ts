@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Result, TestResult } from 'src/app/types/testResult.type';
 import { ActivatedRoute } from '@angular/router';
@@ -43,10 +43,7 @@ export class TestResultComponent implements OnInit {
     private userService: UserService,
     private printerService: PrinterService
   ) {
-    this.operationId = this.activatedRoute.snapshot.paramMap.get(
-      'id'
-    ) as string;
-    console.log('Operation ID:', this.operationId);
+    this.operationId = this.activatedRoute.snapshot.queryParamMap.get('id') as string;
   }
 
   ngOnInit() {
@@ -58,31 +55,31 @@ export class TestResultComponent implements OnInit {
    */
   async setTestResult() {
     if (this.operationId) {
-//       const operation = await this.operationService.retrieveOperationById(
-//         this.operationId
-//       );
-//       console.log('Operation:', operation);
-//       const [recipe, user] = await Promise.all([
-//         this.recipeService.retrieveRecipeById(operation.Recipe),
-//         this.userService.getUserByBadgeNumber(operation.Operator),
-//       ]);
+      //       const operation = await this.operationService.retrieveOperationById(
+      //         this.operationId
+      //       );
+      //       console.log('Operation:', operation);
+      //       const [recipe, user] = await Promise.all([
+      //         this.recipeService.retrieveRecipeById(operation.Recipe),
+      //         this.userService.getUserByBadgeNumber(operation.Operator),
+      //       ]);
 
-//       const createdAt = new Date(operation.CreatedAt!);
-//       this.testResult = {
-//         operationId: operation.OperationId!,
-//         van: operation.Van,
-//         description: recipe.Description,
-//         status: operation.Status,
-//         date: createdAt.toLocaleDateString(),
-//         time: createdAt.toLocaleTimeString(),
-//         duration: operation.Duration!,
-//         operator: `${user.BadgeNumber} - ${user.UserName}`,
-//         upsideTestResult: this.getTestResult('upside', operation),
-//         frontsideTestResult: this.getTestResult('frontside', operation),
-//         backsideTestResult: this.getTestResult('backside', operation),
-//         leftsideTestResult: this.getTestResult('leftside', operation),
-//         rightsideTestResult: this.getTestResult('rightside', operation),
-//       };
+      //       const createdAt = new Date(operation.CreatedAt!);
+      //       this.testResult = {
+      //         operationId: operation.OperationId!,
+      //         van: operation.Van,
+      //         description: recipe.Description,
+      //         status: operation.Status,
+      //         date: createdAt.toLocaleDateString(),
+      //         time: createdAt.toLocaleTimeString(),
+      //         duration: operation.Duration!,
+      //         operator: `${user.BadgeNumber} - ${user.UserName}`,
+      //         upsideTestResult: this.getTestResult('upside', operation),
+      //         frontsideTestResult: this.getTestResult('frontside', operation),
+      //         backsideTestResult: this.getTestResult('backside', operation),
+      //         leftsideTestResult: this.getTestResult('leftside', operation),
+      //         rightsideTestResult: this.getTestResult('rightside', operation),
+      //       };
       Promise.all([
         await this.operationService.retrieveOperationById(this.operationId),
         await this.operationService.retrieveOperationById(this.operationId)
@@ -144,7 +141,7 @@ export class TestResultComponent implements OnInit {
     }
 
     // Get the value of each infiltration point
-    const infPoints = points.map((point) => operation[`InfPoint${point.id}`]);
+    const infPoints = points.map(point => operation[`InfPoint${point.id}`]);
 
     // If at least one infiltration point is true, the test result is NOK. Otherwise, it is OK.
     return infPoints.includes(true) ? 'NOK' : 'OK';
