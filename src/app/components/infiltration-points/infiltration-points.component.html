@@ -1,3 +1,15 @@
+<div class="resend-operation-command">
+  <ion-label>
+    Reenviar comando de início
+  </ion-label>
+  <ion-button color="primary" expand="block" (click)="resetOperation()">
+    <ion-icon name="sync-outline"></ion-icon>
+  </ion-button>
+  <ion-button color="danger" expand="block" (click)="stopOperation()">
+    <ion-icon name="close-outline"></ion-icon>
+  </ion-button>
+</div>
+
 @for (t of tests(); track t; let i = $index ) {
 <ion-card>
   <img [alt]="t.altImg" [src]="t.img" />

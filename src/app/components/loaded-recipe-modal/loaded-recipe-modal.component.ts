@@ -5,6 +5,7 @@ import { IonModal } from '@ionic/angular';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { MainService } from 'src/app/services/main/main.service';
 import { DatePipe } from '@angular/common';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   imports: [
@@ -23,18 +24,19 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   public operator = '';
   public startTime = '';
-  public van = '';
+  public cis = '';
 
   constructor(
     private authService: AuthService,
-    private mainService: MainService
+    private mainService: MainService,
+    private apiService: ApiService
   ) { }
 
   ngOnInit() {
     this.presentingElement = document.querySelector('.ion-page');
     this.operator = this.authService.getLoggedUser().UserName;
     this.startTime = this.mainService.getStartTime();
-    this.van = this.mainService.getVan();
+    this.cis = this.mainService.getCis();
   }
 
   ngAfterViewInit() {
@@ -43,5 +45,10 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   handleSprinklerHeight(height: number): string {
     return height === 1 ? 'Alta' : height === 2 ? 'Média' : 'Baixa';
+  }
+
+  async startOperation() {
+    this.modal.dismiss();
+    await this.apiService.enableOperation();
   }
 }

@@ -5,6 +5,7 @@ import { User } from 'src/app/types/user.type';
 import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { StorageService } from '../storage/storage.service';
 import { AuthService } from '../auth/auth.service';
+import { Recipe } from 'src/app/types/recipe.type';
 
 @Injectable({
   providedIn: 'root'
@@ -116,8 +117,11 @@ export class ApiService {
 
   public BarcodeReader(): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
-      this.socket?.on('barcodeData', (data: SocketResponse) => {
+      this.socket?.on('barcodeData', (data: string) => {
         resolve({ type: 'success', payload: { message: 'Data read successfully', data } });
+      });
+      this.socket?.on('recipeLoaded', (recipe: Recipe) => {
+        resolve({ type: 'success', payload: { message: 'Recipe loaded successfully', recipe } });
       });
       this.socket?.on('error', (error: any) => {
         console.log('barcodeReader error:', error);
@@ -129,11 +133,50 @@ export class ApiService {
   public sendBarcodeData(barcode: string): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
       this.socket?.emit('sendingBarcode', barcode);
-      this.socket?.on('recipeLoaded', (recipe: SocketResponse) => {
+      this.socket?.on('recipeLoaded', (recipe: Recipe) => {
         resolve({ type: 'success', payload: { message: 'Recipe loaded successfully', recipe } });
       });
       this.socket?.on('error', (error: any) => {
         console.log('sendBarcodeData error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
+
+  public enableOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('enableOperation');
+      this.socket?.on('operationEnabled', () => {
+        resolve({ type: 'success', payload: { message: 'Operation enabled successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('startOperation error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
+
+  public resetOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('resetOperation');
+      this.socket?.on('operationReset', () => {
+        resolve({ type: 'success', payload: { message: 'Operation reset successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('resetOperation error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
+      });
+    });
+  }
+
+  public stopOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('stopOperation');
+      this.socket?.on('operationStopped', () => {
+        resolve({ type: 'success', payload: { message: 'Operation stopped successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('stopOperation error:', error);
         reject({ type: 'error', payload: { message: error['message'] } });
       });
     });

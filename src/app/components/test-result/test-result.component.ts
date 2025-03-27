@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Result, TestResult } from 'src/app/types/testResult.type';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { PrinterService } from 'src/app/services/printer/printer.service';
 import { OperationService } from 'src/app/services/operation/operation.service';
 import { RecipeService } from 'src/app/services/recipe/recipe.service';
@@ -41,8 +41,7 @@ export class TestResultComponent implements OnInit {
     private operationService: OperationService,
     private recipeService: RecipeService,
     private userService: UserService,
-    private printerService: PrinterService,
-    private router: Router
+    private printerService: PrinterService
   ) {
     this.operationId = this.activatedRoute.snapshot.paramMap.get(
       'id'
@@ -59,31 +58,61 @@ export class TestResultComponent implements OnInit {
    */
   async setTestResult() {
     if (this.operationId) {
-      const operation = await this.operationService.retrieveOperationById(
-        this.operationId
-      );
-      console.log('Operation:', operation);
-      const [recipe, user] = await Promise.all([
-        this.recipeService.retrieveRecipeById(operation.Recipe),
-        this.userService.getUserByBadgeNumber(operation.Operator),
-      ]);
+//       const operation = await this.operationService.retrieveOperationById(
+//         this.operationId
+//       );
+//       console.log('Operation:', operation);
+//       const [recipe, user] = await Promise.all([
+//         this.recipeService.retrieveRecipeById(operation.Recipe),
+//         this.userService.getUserByBadgeNumber(operation.Operator),
+//       ]);
 
-      const createdAt = new Date(operation.CreatedAt!);
-      this.testResult = {
-        operationId: operation.OperationId!,
-        van: operation.Van,
-        description: recipe.Description,
-        status: operation.Status,
-        date: createdAt.toLocaleDateString(),
-        time: createdAt.toLocaleTimeString(),
-        duration: operation.Duration!,
-        operator: `${user.BadgeNumber} - ${user.UserName}`,
-        upsideTestResult: this.getTestResult('upside', operation),
-        frontsideTestResult: this.getTestResult('frontside', operation),
-        backsideTestResult: this.getTestResult('backside', operation),
-        leftsideTestResult: this.getTestResult('leftside', operation),
-        rightsideTestResult: this.getTestResult('rightside', operation),
-      };
+//       const createdAt = new Date(operation.CreatedAt!);
+//       this.testResult = {
+//         operationId: operation.OperationId!,
+//         van: operation.Van,
+//         description: recipe.Description,
+//         status: operation.Status,
+//         date: createdAt.toLocaleDateString(),
+//         time: createdAt.toLocaleTimeString(),
+//         duration: operation.Duration!,
+//         operator: `${user.BadgeNumber} - ${user.UserName}`,
+//         upsideTestResult: this.getTestResult('upside', operation),
+//         frontsideTestResult: this.getTestResult('frontside', operation),
+//         backsideTestResult: this.getTestResult('backside', operation),
+//         leftsideTestResult: this.getTestResult('leftside', operation),
+//         rightsideTestResult: this.getTestResult('rightside', operation),
+//       };
+      Promise.all([
+        await this.operationService.retrieveOperationById(this.operationId),
+        await this.operationService.retrieveOperationById(this.operationId)
+          .then(async (operation) =>
+            await this.recipeService.retrieveRecipeById(operation.Recipe)),
+        await this.operationService.retrieveOperationById(this.operationId)
+          .then(async (operation) =>
+            // The operator is stored as a badge number in the operation object.
+            // We need to retrieve the user object to get the operator's name.
+            await this.userService.getUserByBadgeNumber(operation.Operator)),
+      ]).then(([operation, recipe, user]) => {
+        const createdAt = new Date(operation.CreatedAt!);
+        this.testResult = {
+          operationId: operation.OperationId!,
+          vp: operation.Vp || 'Não informado',
+          cis: operation.Cis || 'Não informado',
+          chassis: operation.Chassis || 'Não informado',
+          description: recipe.Description,
+          status: operation.Status,
+          date: createdAt.toLocaleDateString(),
+          time: createdAt.toLocaleTimeString(),
+          duration: operation.Duration!,
+          operator: `${user.BadgeNumber} - ${user.UserName}`,
+          upsideTestResult: this.getTestResult('upside', operation),
+          frontsideTestResult: this.getTestResult('frontside', operation),
+          backsideTestResult: this.getTestResult('backside', operation),
+          leftsideTestResult: this.getTestResult('leftside', operation),
+          rightsideTestResult: this.getTestResult('rightside', operation),
+        };
+      });
     }
   }
 

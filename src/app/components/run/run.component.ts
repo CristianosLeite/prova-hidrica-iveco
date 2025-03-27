@@ -8,6 +8,7 @@ import { ScannerComponent } from '../scanner/scanner.component';
 import { LoadedRecipeModalComponent } from "../loaded-recipe-modal/loaded-recipe-modal.component";
 import { Operation } from 'src/app/types/operation.type';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { ApiService } from 'src/app/services/api/api.service';
 
 @Component({
   imports: [
@@ -39,8 +40,8 @@ export class RunComponent  implements OnInit {
     {
       text: 'Sim',
       role: 'confirm',
-      handler: () => {
-        this.cancelTest();
+      handler: async () => {
+        await this.cancelTest();
       },
     },
     {
@@ -56,7 +57,8 @@ export class RunComponent  implements OnInit {
 
   constructor(
     private mainService: MainService,
-    private authService: AuthService
+    private authService: AuthService,
+    private apiService: ApiService
   ) { }
 
   ngOnInit() {
@@ -71,7 +73,7 @@ export class RunComponent  implements OnInit {
     this.operation.Operator = this.authService.getLoggedUser().BadgeNumber;
   }
 
-  finishTest() {
+  async finishTest() {
     if (this.qtyVerifications < this.qtyTests) {
       return;
     }
@@ -88,13 +90,14 @@ export class RunComponent  implements OnInit {
     }, 50);
 
     this.isLoading = true;
-    this.mainService.stop('finish', this.operation).then((operation) => {
+    await this.mainService.stop('finish', this.operation).then(async (operation) => {
       if (operation) {
         this.progress = 1;
         this.isLoading = false;
         this.toast = true;
         this.toastMessage = 'Operação finalizada com sucesso!';
       }
+      await this.apiService.stopOperation();
     }).catch((error) => {
       console.error(error);
       this.isLoading = false;
@@ -105,7 +108,8 @@ export class RunComponent  implements OnInit {
     this.toast = false;
   }
 
-  cancelTest() {
+  async cancelTest() {
     this.mainService.stop('cancel');
+    await this.apiService.stopOperation();
   }
 }

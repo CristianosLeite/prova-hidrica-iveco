@@ -68,11 +68,18 @@ export class MainService implements IMainApplication {
    */
   private startTime: string = new Date().toISOString();
   /**
-   * It is used to store the VAN code retrieved from the barcode scanner.
+   * It is used to store the cis code retrieved from the barcode scanner.
    * This data guarantees the traceability of the operation.
    * @type {string}
    */
-  private van: string = '';
+  private cis: string = '';
+
+  /**
+   * It is used to store the chassis code retrieved from the barcode scanner.
+   * This data guarantees the traceability of the operation.
+   * @type {string}
+   */
+  private chassis: string = '';
 
   /**
    * - Notify the {@link RunComponent} component that the quantity of verifications has changed.
@@ -100,19 +107,27 @@ export class MainService implements IMainApplication {
   }
 
   /**
-   * Retrieve the VAN code stored in the service.
-   * @returns The VAN code
+   * Retrieve the cis code stored in the service.
+   * @returns The cis code
    */
-  public getVan(): string {
-    return this.van;
+  public getCis(): string {
+    return this.cis;
   }
 
   /**
-   * Set the VAN code and store it in the service.
-   * @param van - The VAN code
+   * Set the cis code and store it in the service.
+   * @param cis - The cis code
    */
-  public setVan(van: string): void {
-    this.van = van;
+  public setCis(cis: string): void {
+    this.cis = cis;
+  }
+
+  /**
+   * Set the chassis code and store it in the service.
+   * @param chassis - The chassis code
+   */
+  public setChassis(chassis: string): void {
+    this.chassis = chassis;
   }
 
   /**
@@ -210,8 +225,11 @@ export class MainService implements IMainApplication {
     operation.StartTime = this.startTime;
     operation.EndTime = new Date().toISOString();
 
-    // Add the VAN to the operation before send to backend
-    operation.Van = this.van;
+    // Add the cis to the operation before send to backend
+    operation.Cis = this.cis;
+
+    // Add the chassis to the operation before send to backend
+    operation.Chassis = this.chassis;
 
     // Add the infiltration points to the operation before send to backend
     this.addInfiltrationPointsToOperation(operation);
@@ -251,7 +269,7 @@ export class MainService implements IMainApplication {
     return await this.usersService.getUserByBadgeNumber(operation.Operator).then((user) => {
       return {
         operationId: operation.OperationId!,
-        van: operation.Van,
+        cis: operation.Cis,
         description: this.recipe.Description,
         status: status,
         date: date,
@@ -345,7 +363,7 @@ export class MainService implements IMainApplication {
    */
   private cancelTest(): void {
     this.clearTestParams();
-    this.setVan('');
+    this.setCis('');
     this.recipeChanged.emit({} as Recipe);
   }
 

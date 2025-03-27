@@ -5,7 +5,7 @@
       <ion-toolbar>
         <ion-title>Receita carregada</ion-title>
         <ion-buttons slot="end">
-          <ion-button (click)="modal.dismiss()">Fechar</ion-button>
+          <ion-button (click)="startOperation()">Iniciar</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -35,8 +35,8 @@
           <ion-text>{{ startTime | date : 'dd/MM/yyyy HH:mm:ss' }}</ion-text>
         </ion-item>
         <ion-item>
-          <ion-label>VAN</ion-label>
-          <ion-text>{{ van }}</ion-text>
+          <ion-label>CIS</ion-label>
+          <ion-text>{{ cis }}</ion-text>
         </ion-item>
       </ion-list>
     </ion-content>

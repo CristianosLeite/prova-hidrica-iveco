@@ -1,7 +1,7 @@
 import { IonRefresherCustomEvent, RefresherEventDetail } from '@ionic/core';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { OperationService } from 'src/app/services/operation/operation.service';
 import { Operation } from 'src/app/types/operation.type';
@@ -9,14 +9,12 @@ import { Operation } from 'src/app/types/operation.type';
 @Component({
   selector: 'app-operations',
   standalone: true,
-  imports: [IonicModule, FormsModule, RouterLink],
+  imports: [IonicModule, FormsModule],
   templateUrl: './operations.component.html',
   styleUrls: ['./operations.component.scss'],
 })
 export class OperationsComponent implements OnInit {
   public operations: Operation[] = [];
-  public documentTextOutline = 'document-text-outline';
-  public documentTextSharp = 'document-text-sharp';
   public searchTerm: string = '';
   public hasError = false;
   public errorMessage = '';
@@ -24,7 +22,10 @@ export class OperationsComponent implements OnInit {
   public itemsPerPage = 6;
   public displayedOperations: Operation[] = [];
 
-  constructor(private operationService: OperationService) {}
+  constructor(
+    private operationService: OperationService,
+    private router: Router
+  ) {}
 
   ngOnInit() {
     this.loadAllOperations();
@@ -38,6 +39,10 @@ export class OperationsComponent implements OnInit {
       this.hasError = true;
       console.error('Erro ao carregar operações:', error);
     }
+  }
+
+  openOperation(operationId: string) {
+    this.router.navigate(['/main/test-result'], { queryParams: { id: operationId } });
   }
 
   updateDisplayedOperations() {
@@ -77,7 +82,7 @@ export class OperationsComponent implements OnInit {
     if (this.searchTerm) {
       this.displayedOperations = this.operations.filter(op =>
         op.Vp.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        op.Van.toLowerCase().includes(this.searchTerm.toLowerCase())
+        op.Cis.toLowerCase().includes(this.searchTerm.toLowerCase())
       ).slice(0, this.itemsPerPage);
       this.currentPage = 1;
     } else {

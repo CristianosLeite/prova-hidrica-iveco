@@ -18,10 +18,15 @@ Operation.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
-    Van: {
-      field: "van",
+    Cis: {
+      field: "cis",
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
+    },
+    Chassis: {
+      field: "chassis",
+      type: DataTypes.STRING,
+      allowNull: true,
     },
     Operator: {
       field: "operator",

@@ -12,17 +12,18 @@
 
 @if (displayedOperations.length > 0) {
   <div class="content-header">
-    <ion-label>VP</ion-label>
-    <ion-label>VAN</ion-label>
-    <ion-label>Data e hora</ion-label>
+    <div class="header-column">
+      <ion-label>VP ou CIS</ion-label>
+    </div>
+    <div class="header-column">
+      <ion-label>Data e hora</ion-label>
+    </div>
   </div>
 
   <ion-list class="operation-list">
     @for (operation of displayedOperations; track operation.OperationId; let index = $index) {
-      <ion-item [routerLink]="['/', 'main', 'test-result']" [queryParams]="{ id: operation.OperationId }">
-        <ion-icon slot="start" [ios]="documentTextOutline" [md]="documentTextSharp"></ion-icon>
-        <ion-label>{{ operation.Vp }}</ion-label>
-        <ion-label>{{ operation.Van }}</ion-label>
+      <ion-item (click)="openOperation(operation.OperationId!)">
+        <ion-label>{{ operation.Vp || operation.Cis }}</ion-label>
         <ion-label>{{ operation.StartTime }}</ion-label>
       </ion-item>
     }

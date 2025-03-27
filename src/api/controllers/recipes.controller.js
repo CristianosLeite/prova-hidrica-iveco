@@ -39,6 +39,11 @@ class RecipeController {
       return;
     }
 
+    if (!newRecipe.Vp && !newRecipe.Cis) {
+      res.status(400).send({ message: "Missing vp or cis" });
+      return;
+    }
+
     const recipe = new Recipe(newRecipe);
 
     await recipe.save().then(() => {
