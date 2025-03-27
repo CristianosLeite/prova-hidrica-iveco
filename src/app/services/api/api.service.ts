@@ -187,7 +187,6 @@ export class ApiService {
     return new Promise((resolve, reject) => {
       this.socket?.emit('sendDeviceData', device);
       this.socket?.on('deviceDataRecieved', (devices: Device[]) => {
-        console.log('Devices:', devices);
         resolve({ type: 'success', payload: { message: 'Device data sent successfully', devices } });
       });
       this.socket?.on('error', (error: any) => {

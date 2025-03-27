@@ -26,8 +26,6 @@ export class DeviceService implements OnInit {
     const batteryInfo = await Dv.getBatteryInfo();
     const networkStatus = await Network.getStatus();
 
-    console.log(networkStatus);
-
     return {
       deviceId: id.identifier || 'unknown',
       type: info.operatingSystem === 'ios' ||

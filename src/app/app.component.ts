@@ -62,7 +62,7 @@ export class AppComponent implements OnInit {
     private deviceService: DeviceService
   ) { }
 
-  async ngOnInit() {
+  ngOnInit() {
     this.checkScreenSize();
     this.storageService.storageCreated.subscribe(async () => {
       this.updateLastOperations();
