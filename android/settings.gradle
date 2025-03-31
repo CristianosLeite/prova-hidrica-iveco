@@ -1,6 +1,2 @@
 include ':app'
-include ':capacitor-cordova-android-plugins'
-include ':ipos-printer'
-project(':capacitor-cordova-android-plugins').projectDir = new File('./capacitor-cordova-android-plugins/')
-project(':ipos-printer').projectDir = new File('../node_modules/ipos-printer')
 apply from: 'capacitor.settings.gradle'

@@ -10,11 +10,6 @@ const config: CapacitorConfig = {
   plugins: {
     CapacitorHttp: {
       enabled: true
-    },
-    IposPrinterPlugin: {
-      android: {
-        class: 'com.conecsa.ipos.printer',
-      }
     }
   }
 }
