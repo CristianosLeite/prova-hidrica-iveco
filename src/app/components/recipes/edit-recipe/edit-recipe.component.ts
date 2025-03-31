@@ -18,7 +18,7 @@ import { AlertController } from '@ionic/angular';
   styleUrls: ['./edit-recipe.component.scss'],
 })
 export class EditRecipeComponent  implements OnInit {
-  public recipeId: string = '';
+  public recipeId: number = 0;
   public recipeKey = '';
   public recipe: Recipe = {} as Recipe;
   public saveOutline = 'save-outline';
@@ -57,14 +57,15 @@ export class EditRecipeComponent  implements OnInit {
     private router: Router,
     private alertController: AlertController
   ) {
-    this.recipeId = this.activatedRoute.snapshot.paramMap.get('id') as string;
+    this.recipeId = parseInt(this.activatedRoute.snapshot.paramMap.get('id')!);
   }
 
   ngOnInit() {
     if (this.recipeId) {
       this.context = 'edit';
-      this.recipeService.retrieveRecipeByVp(this.recipeId).then((recipe: Recipe) => {
+      this.recipeService.retrieveRecipeById(this.recipeId).then((recipe: Recipe) => {
         this.recipe = recipe;
+        this.recipeKey = recipe.Vp ? recipe.Vp : recipe.Cis ? recipe.Cis : '';
       });
     }
   }
