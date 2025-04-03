@@ -156,8 +156,8 @@ export class ScannerComponent implements OnInit {
     const recipeKey = this.vp ?? this.cis;
     console.log('Sending barcode data:', recipeKey);
     await this.apiService.sendBarcodeData(recipeKey).then(async (result) => {
-      console.log('Result', result);
       this.mainService.setRecipe(result.payload.recipe);
+      this.resetData();
     }).catch((error) => {
       console.error('Erro ao enviar código de barras:', error);
       this.updateUI('Erro ao carregar receita', error.payload.message, '', typeData);
@@ -165,6 +165,12 @@ export class ScannerComponent implements OnInit {
         this.resetUI(typeData);
       }, 5000);
     });
+  }
+
+  private resetData() {
+    this.vp = '';
+    this.chassis = '';
+    this.cis = '';
   }
 
   private updateUI(title: string, subtitle: string, content: string, typeData: string) {
