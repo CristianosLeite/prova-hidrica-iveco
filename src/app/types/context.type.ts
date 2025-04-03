@@ -1,1 +1,1 @@
-export type Context = 'create' | 'edit' | 'authenticate' | 'search';
+export type Context = 'create' | 'edit' | 'authenticate' | 'search' | 'login' | 'logout';
