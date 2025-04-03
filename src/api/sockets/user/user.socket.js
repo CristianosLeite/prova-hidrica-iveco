@@ -7,8 +7,12 @@ module.exports = function (io, socket) {
     io.emit("authenticated", data);
   });
 
-  socket.on("logout", () => {
-    io.emit("logout");
+  socket.on("unAuthenticate", () => {
+    io.emit("unAuthenticate");
+  });
+
+  socket.on("unAuthenticated", (data) => {
+    io.emit("unAuthenticated", data);
   });
 
   socket.on("createUser", (user) => {
