@@ -13,7 +13,7 @@
             <ion-row class="ion-justify-content-center">
               @for (p of appPages; track p; let i = $index) {
                 <ion-col size="6">
-                  <ion-button expand="full" [routerLink]="[p.url]" routerDirection="root" (click)="hideMobileContent()">
+                  <ion-button expand="full" [routerLink]="[p.url]" routerDirection="root" (click)="p.action(false)">
                     <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
                     {{ p.title }}
                   </ion-button>
@@ -60,10 +60,10 @@
       }
     </ion-app>
   } @else {
-    @if(! isAuthenticating && ! isUserAuthenticated) {
-      <app-unauthenticated-user [logo]="logo"></app-unauthenticated-user>
-    } @else {
+    @if (! isUserAuthenticated && context() === 'login') {
       <app-rfid [context]="'authenticate'"></app-rfid>
+    } @else {
+      <app-unauthenticated-user [logo]="logo" [context]="context()"></app-unauthenticated-user>
     }
   }
 }
