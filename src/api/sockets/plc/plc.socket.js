@@ -2,28 +2,28 @@ module.exports = function (io, socket, snap7Service) {
   async function setSprinklerHeight(height) {
     try {
       if (snap7Service.isPlcConnected()) {
-        const isSensorInPosition1 = (
-          await snap7Service.readBooleanFromMemory(11, 7)
-        ).value;
-        const isSensorInPosition2 = (
-          await snap7Service.readBooleanFromMemory(12, 0)
-        ).value;
-        const isSensorInPosition3 = (
-          await snap7Service.readBooleanFromMemory(12, 1)
-        ).value;
+        // const isSensorInPosition1 = (
+        //   await snap7Service.readBooleanFromMemory(11, 7)
+        // ).value;
+        // const isSensorInPosition2 = (
+        //   await snap7Service.readBooleanFromMemory(12, 0)
+        // ).value;
+        // const isSensorInPosition3 = (
+        //   await snap7Service.readBooleanFromMemory(12, 1)
+        // ).value;
         await Promise.all([
           snap7Service.writeBooleanToDb(7, 4, 1, true), // Active platform
           snap7Service.writeIntegerToDb(7, 2, height), // Set height
         ]).then(() => {
-          setTimeout(async () => {
-            if (
-              isSensorInPosition1 ||
-              isSensorInPosition2 ||
-              isSensorInPosition3
-            ) {
-              await snap7Service.writeBooleanToDb(7, 1, 0, false);
-            }
-          }, 15000);
+          // setTimeout(async () => {
+          //   if (
+          //     isSensorInPosition1 ||
+          //     isSensorInPosition2 ||
+          //     isSensorInPosition3
+          //   ) {
+          //     await snap7Service.writeBooleanToDb(7, 1, 0, false);
+          //   }
+          // }, 15000);
         });
       }
       io.emit("sprinklerHeightSet", height);
@@ -67,16 +67,16 @@ module.exports = function (io, socket, snap7Service) {
   socket.on("resetOperation", async () => {
     try {
       if (snap7Service.isPlcConnected()) {
-        await Promise.all([
-          snap7Service.writeBooleanToDb(7, 4, 2, true), // Stop auto
-          snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
-          snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
+        Promise.all([
+          await snap7Service.writeBooleanToDb(7, 4, 2, false), // Stop auto
+          await snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
+          await snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
         ]).then(() => {
           setTimeout(async () => {
-            await Promise.all([
-              snap7Service.writeBooleanToDb(7, 4, 2, false),
-              snap7Service.writeBooleanToDb(7, 4, 0, false),
-              snap7Service.writeBooleanToDb(7, 0, 0, false),
+            Promise.all([
+              await snap7Service.writeBooleanToDb(7, 4, 2, false),
+              await snap7Service.writeBooleanToDb(7, 4, 0, false),
+              await snap7Service.writeBooleanToDb(7, 0, 0, false),
             ]);
           }, 1000);
           io.emit("operationReset");
