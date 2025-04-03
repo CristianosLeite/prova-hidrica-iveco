@@ -89,14 +89,14 @@ async function run() {
   const settingsController = new SettingsController();
   expressApp.use("/api/settings", settingsController.getRouter());
 
-  // Setup sockets
-  setupSockets(io, snap7Service);
-
   try {
     await snap7Service.plcConnect("192.168.0.1");
   } catch (error) {
     console.log("Error connecting to PLC: ", error);
   }
+
+  // Setup sockets
+  setupSockets(io, snap7Service);
 
   server.listen(port, () => {
     console.log(
