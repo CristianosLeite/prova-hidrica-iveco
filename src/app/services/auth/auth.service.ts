@@ -1,4 +1,5 @@
 import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Context } from 'src/app/types/context.type';
 import { User } from 'src/app/types/user.type';
 
 @Injectable({
@@ -8,12 +9,13 @@ export class AuthService {
   @Output() public userAuthenticated = new EventEmitter<User>();
   @Output() public authenticationChanged: EventEmitter<boolean> = new EventEmitter();
   @Output() public isAuthenticating: EventEmitter<boolean> = new EventEmitter();
-  private loggedUser: User = {} as User;
+  @Output() public authContextChanged: EventEmitter<Context> = new EventEmitter();
 
-  constructor() { }
+  private loggedUser: User = {} as User;
 
   public authenticate() {
     this.isAuthenticating.emit(true);
+    this.authContextChanged.emit('login');
   }
 
   setLoggedUser(user: User) {
@@ -29,5 +31,13 @@ export class AuthService {
 
   getLoggedUser(): User {
     return this.loggedUser;
+  }
+
+  public logOut() {
+    this.loggedUser = {} as User;
+    this.authContextChanged.emit('logout');
+    this.isAuthenticating.emit(false);
+    this.userAuthenticated.emit(this.loggedUser);
+    this.authenticationChanged.emit(false);
   }
 }
