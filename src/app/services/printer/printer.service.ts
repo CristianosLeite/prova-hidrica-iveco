@@ -6,13 +6,17 @@ import { TestResult } from 'src/app/types/testResult.type';
   providedIn: 'root'
 })
 export class PrinterService {
-  public async printTestResult(testResult: TestResult): Promise<void> {
+  public async printTestResult(testResult: TestResult): Promise<boolean> {
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 1 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'TESTE PROVA HÍDRICA', typeface: 'ST', fontSize: 32 });
     await IPosPrinter.printBlankLines({ lines: 1, height: 32 });
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 0 });
+
+    await IPosPrinter.printSpecifiedTypeText({ text: 'VP:', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: testResult.vp || 'Não informado', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'CHASSI:', typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printSpecifiedTypeText({ text: testResult.chassis || 'Não informado', typeface: 'ST', fontSize: 24 });
@@ -56,5 +60,7 @@ export class PrinterService {
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 1 });
     await IPosPrinter.printBlankLines({ lines: 4, height: 32 });
+
+    return true;
   }
 }
