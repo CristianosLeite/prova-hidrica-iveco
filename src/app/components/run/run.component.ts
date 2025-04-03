@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { InfiltrationPointsComponent } from '../infiltration-points/infiltration-points.component';
@@ -9,6 +9,9 @@ import { LoadedRecipeModalComponent } from "../loaded-recipe-modal/loaded-recipe
 import { Operation } from 'src/app/types/operation.type';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { ApiService } from 'src/app/services/api/api.service';
+import { DeviceService } from 'src/app/services/device/device.service';
+import { DeviceSelectionComponent } from '../device-selection/device-selection.component';
+import { Platform } from 'src/app/types/device.type';
 
 @Component({
   imports: [
@@ -16,13 +19,14 @@ import { ApiService } from 'src/app/services/api/api.service';
     FormsModule,
     InfiltrationPointsComponent,
     ScannerComponent,
-    LoadedRecipeModalComponent
-],
+    LoadedRecipeModalComponent,
+    DeviceSelectionComponent
+  ],
   selector: 'app-run',
   templateUrl: './run.component.html',
   styleUrls: ['./run.component.scss'],
 })
-export class RunComponent  implements OnInit {
+export class RunComponent implements OnInit {
   public recipe: Recipe = {} as Recipe;
   public saveOutline = 'save-outline';
   public saveSharp = 'save-sharp';
@@ -35,6 +39,10 @@ export class RunComponent  implements OnInit {
 
   public toast = false;
   public toastMessage = '';
+
+  public isDeviceSelected = signal(false);
+  public selectedDevice = signal('none');
+  public activeDevice = signal('none');
 
   public alertButtons = [
     {
@@ -58,10 +66,11 @@ export class RunComponent  implements OnInit {
   constructor(
     private mainService: MainService,
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private deviceService: DeviceService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.mainService.qtyVerificationsChanged.subscribe((qty: number) => {
       this.qtyVerifications = qty;
     });
@@ -71,6 +80,13 @@ export class RunComponent  implements OnInit {
       this.operation.Vp = this.recipe.Vp;
     });
     this.operation.Operator = this.authService.getLoggedUser().BadgeNumber;
+    await this.deviceService.getDeviceInfo().then((deviceInfo) => {
+      this.activeDevice.set(deviceInfo.platform);
+    });
+    if (this,this.mainService.getPlatform() !== 'none') {
+      this.selectedDevice.set(this.mainService.getPlatform());
+      this.isDeviceSelected.set(true);
+    }
   }
 
   async finishTest() {
@@ -97,19 +113,42 @@ export class RunComponent  implements OnInit {
         this.toast = true;
         this.toastMessage = 'Operação finalizada com sucesso!';
       }
-      await this.apiService.stopOperation();
-    }).catch((error) => {
-      console.error(error);
+    }).catch(() => {
       this.isLoading = false;
       this.toast = true;
       this.toastMessage = 'Erro ao finalizar a operação!';
     });
 
+    await this.apiService.stopOperation();
+
+    const platform = (await this.deviceService.getDeviceInfo()).platform;
+    if (platform === 'mobile') this.apiService.openDoor();
+
+    await this.apiService.doorClosed();
     this.toast = false;
   }
 
   async cancelTest() {
     this.mainService.stop('cancel');
     await this.apiService.stopOperation();
+  }
+
+  setSelectedPlatform(platform: Platform) {
+    this.selectedDevice.set(platform);
+    this.isDeviceSelected.set(true);
+
+    if (platform === 'mobile') {
+      this.apiService.openDoor();
+    }
+
+    if (platform === 'none') {
+      this.deviceService.getDeviceInfo().then((deviceInfo) => {
+        this.activeDevice.set(deviceInfo.platform);
+        this.mainService.setPlatform(deviceInfo.platform as Platform);
+      });
+      return;
+    }
+
+    this.mainService.setPlatform(platform);
   }
 }

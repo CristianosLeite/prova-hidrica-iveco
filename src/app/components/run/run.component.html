@@ -1,27 +1,35 @@
 <ion-toast [isOpen]="toast" [message]="toastMessage" [duration]="5000"></ion-toast>
 
-@if(recipe.RecipeId) {
-  <ion-header style="position: fixed;">
-    @if(isLoading){
-      <ion-progress-bar [buffer]="buffer" [value]="progress" color="success"></ion-progress-bar>
-    }
-    <ion-toolbar>
-      <ion-title class="title">{{qtyVerifications + '/' + qtyTests + ' verificações concluídas'}}</ion-title>
-      <ion-buttons id="finish-button" slot="end" [class.disabled]="isLoading">
-        <ion-button (click)="finishTest()">
-          @if (qtyVerifications < qtyTests && !isLoading) {
-          <ion-alert trigger="finish-button" header="Atenção!"
-            subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
-            message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
-          }
-          Finalizar teste
-        </ion-button>
-      </ion-buttons>
-    </ion-toolbar>
-  </ion-header>
+@if(isDeviceSelected() && selectedDevice() === 'desktop' || activeDevice() === 'mobile') {
+  @if(recipe.RecipeId) {
+    <ion-header style="position: fixed;">
+      @if(isLoading){
+        <ion-progress-bar [buffer]="buffer" [value]="progress" color="success"></ion-progress-bar>
+      }
+      <ion-toolbar>
+        <ion-title class="title">{{qtyVerifications + '/' + qtyTests + ' verificações concluídas'}}</ion-title>
+        <ion-buttons id="finish-button" slot="end" [class.disabled]="isLoading">
+          <ion-button (click)="finishTest()">
+            @if (qtyVerifications < qtyTests && !isLoading) {
+            <ion-alert trigger="finish-button" header="Atenção!"
+              subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
+              message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
+            }
+            Finalizar teste
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
 
-  <app-loaded-recipe-modal [recipe]="recipe"></app-loaded-recipe-modal>
-  <app-infiltration-points></app-infiltration-points>
-} @else {
-  <app-scanner></app-scanner>
+    <app-loaded-recipe-modal [recipe]="recipe"></app-loaded-recipe-modal>
+    <app-infiltration-points></app-infiltration-points>
+  } @else {
+    <app-scanner></app-scanner>
+  }
+} @else if (!isDeviceSelected() && activeDevice() !== 'mobile') {
+  <app-device-selection (deviceSelected)="setSelectedPlatform($event)"></app-device-selection>
+} @else if (isDeviceSelected() && activeDevice() !== 'mobile') {
+  <div id="container">
+    <strong class="capitalize">Continue a operação no palmer.</strong>
+  </div>
 }
