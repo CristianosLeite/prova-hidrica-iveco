@@ -27,7 +27,7 @@ export class RfidComponent  implements OnInit {
     } else if (this.context === 'authenticate') {
       this.subtitle = 'Autenticar usuário';
       this.content = 'Aproxime o crachá do leitor RFID para autenticar-se.';
-      this.apiService.authenticate();
+      this.apiService.listenAuthentication();
     }
   }
 }
