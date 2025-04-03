@@ -24,7 +24,7 @@
     @for (operation of displayedOperations; track operation.OperationId; let index = $index) {
       <ion-item (click)="openOperation(operation.OperationId!)">
         <ion-label>{{ operation.Vp || operation.Cis }}</ion-label>
-        <ion-label>{{ operation.StartTime }}</ion-label>
+        <ion-label>{{ operation.StartTime | date :'dd/MM/yyyy HH:mm:ss' }}</ion-label>
       </ion-item>
     }
   </ion-list>

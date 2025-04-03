@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { IonRefresherCustomEvent, RefresherEventDetail } from '@ionic/core';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -9,7 +10,11 @@ import { Operation } from 'src/app/types/operation.type';
 @Component({
   selector: 'app-operations',
   standalone: true,
-  imports: [IonicModule, FormsModule],
+  imports: [
+    IonicModule,
+    FormsModule,
+    DatePipe
+  ],
   templateUrl: './operations.component.html',
   styleUrls: ['./operations.component.scss'],
 })
