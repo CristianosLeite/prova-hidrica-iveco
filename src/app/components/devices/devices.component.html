@@ -7,8 +7,8 @@
   <!-- Dispositivos -->
   @for(device of devices(); track device.deviceId; let index = $index) {
   <ion-item>
-    <ion-icon *ngIf="device.type === 'palmer'" slot="start" [ios]="phonePortraitOutline" [md]="phonePortraitSharp"></ion-icon>
-    <ion-icon *ngIf="device.type === 'desktop'" slot="start" [ios]="desktopOutline" [md]="desktopSharp"></ion-icon>
+    <ion-icon *ngIf="device.platform === 'palmer'" slot="start" [ios]="phonePortraitOutline" [md]="phonePortraitSharp"></ion-icon>
+    <ion-icon *ngIf="device.platform === 'desktop'" slot="start" [ios]="desktopOutline" [md]="desktopSharp"></ion-icon>
     <ion-label>{{ device.deviceId }}</ion-label>
     <div class="dynamic-icon icon-overlay">
       <ion-icon *ngIf="device.batteryStatus === 'full'" slot="end" class="battery-icon" [ios]="batteryFullOutline" [md]="batteryFullSharp"></ion-icon>
