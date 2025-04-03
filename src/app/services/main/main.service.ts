@@ -16,6 +16,8 @@ import FrontsideTestModel from 'src/app/models/frontside-test.model';
 import BacksideTestModel from 'src/app/models/backside-test.model';
 import LeftsideTestModel from 'src/app/models/leftside-test.model';
 import RightsideTestModel from 'src/app/models/rightside-test.model';
+import { Platform } from 'src/app/types/device.type';
+import { Router } from '@angular/router';
 
 /**
  * Main service class
@@ -81,6 +83,8 @@ export class MainService implements IMainApplication {
    */
   private chassis: string = '';
 
+  private platform: Platform = Platform.None;
+
   /**
    * - Notify the {@link RunComponent} component that the quantity of verifications has changed.
    */
@@ -94,7 +98,8 @@ export class MainService implements IMainApplication {
     private storage: Storage,
     private operationService: OperationService,
     private usersService: UserService,
-    private printerService: PrinterService
+    // private printerService: PrinterService
+    private router: Router
   ) { }
 
   /**
@@ -146,6 +151,14 @@ export class MainService implements IMainApplication {
    */
   public getStartTime(): string {
     return this.startTime;
+  }
+
+  public setPlatform(platform: Platform): void {
+    this.platform = platform;
+  }
+
+  public getPlatform(): Platform {
+    return this.platform;
   }
 
   /**
@@ -241,18 +254,25 @@ export class MainService implements IMainApplication {
     operation.Duration = this.calculateDuration(operation.StartTime, operation.EndTime);
 
     // Send the operation to the backend
-    const newOperation = await this.operationService.createOperation(operation).then(async (operation) => {
-      if (operation) this.clearTestParams();
+    try {
+      return await this.operationService.createOperation(operation).then(async (operation) => {
+        if (!operation) throw new Error('Operation not created!');
 
-      // Create and print the test result
-      await this.createTestResult(operation).then(async (testResult) => {
-        await this.printerService.printTestResult(testResult);
+        // // Create and print the test result
+        // await this.createTestResult(operation).then(async (testResult) => {
+        //   return await this.printerService.printTestResult(testResult);
+        // });
+
+        // Instead of printing, navigate to the test result page
+        this.router.navigate(['/main/test-result'], { queryParams: { id: operation.OperationId } });
+
+        this.clearTestParams();
+        return operation;
       });
-
-      return operation;
-    });
-
-    return newOperation;
+    } catch (error) {
+      console.error('Error while creating the operation:', error);
+      throw error;
+    }
   }
 
   /**
@@ -262,28 +282,31 @@ export class MainService implements IMainApplication {
    * @returns {TestResult} The test result object
    * @type {TestResult}
    */
-  private async createTestResult(operation: Operation): Promise<TestResult> {
-    const status = this.determineTestStatus();
-    const [date, time] = this.getFormattedDateTime(operation.CreatedAt!);
-    // Operation.Operator is the badge number of the user
-    return await this.usersService.getUserByBadgeNumber(operation.Operator).then((user) => {
-      return {
-        operationId: operation.OperationId!,
-        cis: operation.Cis,
-        description: this.recipe.Description,
-        status: status,
-        date: date,
-        time: time,
-        duration: this.calculateDuration(operation.StartTime, operation.EndTime),
-        operator: `${operation.Operator} - ${user.UserName}`,
-        upsideTestResult: this.getTestStatus('upside'),
-        frontsideTestResult: this.getTestStatus('frontside'),
-        backsideTestResult: this.getTestStatus('backside'),
-        leftsideTestResult: this.getTestStatus('leftside'),
-        rightsideTestResult: this.getTestStatus('rightside'),
-      };
-    });
-  }
+  // private async createTestResult(operation: Operation): Promise<TestResult> {
+  //   const status = this.determineTestStatus();
+  //   const [date, time] = this.getFormattedDateTime(operation.CreatedAt!);
+  //   // Operation.Operator is the badge number of the user
+  //   const testResult: TestResult = await this.usersService.getUserByBadgeNumber(operation.Operator).then((user) => {
+  //     return {
+  //       operationId: operation.OperationId!,
+  //       vp: operation.Vp,
+  //       chassis: operation.Chassis,
+  //       cis: operation.Cis,
+  //       description: this.recipe.Description,
+  //       status: status,
+  //       date: date,
+  //       time: time,
+  //       duration: this.calculateDuration(operation.StartTime, operation.EndTime),
+  //       operator: `${operation.Operator} - ${user.UserName}`,
+  //       upsideTestResult: this.getTestStatus('upside'),
+  //       frontsideTestResult: this.getTestStatus('frontside'),
+  //       backsideTestResult: this.getTestStatus('backside'),
+  //       leftsideTestResult: this.getTestStatus('leftside'),
+  //       rightsideTestResult: this.getTestStatus('rightside'),
+  //     };
+  //   });
+  //   return testResult;
+  // }
 
   /**
    * Determine the overall test status based on individual test results.
@@ -303,10 +326,10 @@ export class MainService implements IMainApplication {
    * @param endTime The end time string
    * @returns {[string, string]} An array containing the date and time
    */
-  private getFormattedDateTime(date: Date | string): [string, string] {
-    const dateObj = new Date(date);
-    return [dateObj.toLocaleDateString(), dateObj.toLocaleTimeString()];
-  }
+  // private getFormattedDateTime(date: Date | string): [string, string] {
+  //   const dateObj = new Date(date);
+  //   return [dateObj.toLocaleDateString(), dateObj.toLocaleTimeString()];
+  // }
 
   /**
    * Calculate the duration of the operation.
@@ -363,8 +386,6 @@ export class MainService implements IMainApplication {
    */
   private cancelTest(): void {
     this.clearTestParams();
-    this.setCis('');
-    this.recipeChanged.emit({} as Recipe);
   }
 
   /**
@@ -380,6 +401,9 @@ export class MainService implements IMainApplication {
       test.infiltrationPoints = {};
     });
 
+    this.setCis('');
+    this.setChassis('');
+    this.platform = Platform.None;
     this.infiltrationPoints = {};
     this.tests.set([...this.tests()]);
     this.qtyVerificationsChanged.emit(0);
