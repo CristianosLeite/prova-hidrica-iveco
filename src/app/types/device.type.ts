@@ -4,9 +4,10 @@ export enum DeviceStatus {
   Error = 'error',
 }
 
-export enum DeviceType {
+export enum Platform {
   Mobile = 'mobile',
   Desktop = 'desktop',
+  None = 'none',
 }
 
 export enum BatteryStatus {
@@ -17,7 +18,7 @@ export enum BatteryStatus {
 
 export type Device = {
   deviceId: string;
-  type: DeviceType | string;
+  platform: Platform | string;
   networkStatus: DeviceStatus | string;
   batteryStatus: BatteryStatus | string;
   isCharging: boolean;
