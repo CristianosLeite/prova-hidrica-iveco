@@ -46,6 +46,8 @@ class OperationController {
 
     await new Operation(newOperation).save().then((operation) => {
       res.json(operation);
+    }).catch((error) => {
+      res.status(500).send({ message: "Error creating operation" });
     });
   }
 
@@ -57,7 +59,10 @@ class OperationController {
    * @example /api/operation/all
    */
   async all(req, res) {
-    await Operation.findAll().then((operations) => {
+    await Operation.findAll({
+      order: [["createdAt", "DESC"]],
+      limit: 60,
+    }).then((operations) => {
       res.json(operations);
     });
   }
