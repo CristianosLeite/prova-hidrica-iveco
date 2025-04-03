@@ -20,7 +20,7 @@ export class DeviceService implements OnInit {
     this.syncDeviceInfo();
   }
 
-  private async getDeviceInfo(): Promise<Device> {
+  public async getDeviceInfo(): Promise<Device> {
     const id = await Dv.getId();
     const info = await Dv.getInfo();
     const batteryInfo = await Dv.getBatteryInfo();
@@ -28,7 +28,7 @@ export class DeviceService implements OnInit {
 
     return {
       deviceId: id.identifier || 'unknown',
-      type: info.operatingSystem === 'ios' ||
+      platform: info.operatingSystem === 'ios' ||
         info.operatingSystem === 'android' ?
         'mobile' :
         'desktop',
