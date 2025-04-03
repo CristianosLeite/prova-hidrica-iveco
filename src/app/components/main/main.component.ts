@@ -23,6 +23,7 @@ import BacksideTestModel from 'src/app/models/backside-test.model';
 import LeftsideTestModel from 'src/app/models/leftside-test.model';
 import RightsideTestModel from 'src/app/models/rightside-test.model';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { DeviceSelectionComponent } from '../device-selection/device-selection.component';
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
     FormsModule,
     IonicModule,
     RunComponent,
+    DeviceSelectionComponent,
     UserComponent,
     EditUserComponent,
     RecipesComponent,

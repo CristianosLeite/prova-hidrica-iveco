@@ -12,6 +12,8 @@
 <ion-content>
   @if (page === 'run' && (authService.hasPermission('OA') || authService.hasPermission('OM'))) {
   <app-run></app-run>
+  } @else if (page === 'select-device' && (authService.hasPermission('OA') || authService.hasPermission('OM'))) {
+  <app-device-selection></app-device-selection>
   } @else if (page === 'records'&& authService.hasPermission('RO')) {
   <app-operations></app-operations>
   } @else if (page === 'test-result' && authService.hasPermission('RL')) {
