@@ -2,7 +2,6 @@ import { Component, OnInit, Input, signal, WritableSignal } from '@angular/core'
 import { IonicModule } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Context } from 'src/app/types/context.type';
-import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { ScannerPlugin } from 'q2i-scanner-plugin';
 import { MainService } from 'src/app/services/main/main.service';
 import { Router } from '@angular/router';
@@ -24,7 +23,7 @@ export class ScannerComponent implements OnInit {
   public vpSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
   public vpContent: WritableSignal<string> = signal('Aguardando leitura...');
 
-  public cisTitle: WritableSignal<string> = signal('Aguardando leitura do CHASSI ou CIS');
+  public cisTitle: WritableSignal<string> = signal('Aguardando leitura do CHASSI ou CABINE');
   public cisSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
   public cisContent: WritableSignal<string> = signal('Aguardando leitura...');
 
@@ -137,6 +136,13 @@ export class ScannerComponent implements OnInit {
 
   private async scanVP() {
     await ScannerPlugin.scanBarcode().then(async (result) => {
+      if (result.value.length !== 14) {
+        this.updateUI('Erro ao ler o VP', 'Código de barras inválido', '', 'VP');
+        setTimeout(() => {
+          this.resetUI('VP');
+        }, 5000);
+        return;
+      }
       this.vp = result.value;
       this.updateUI('VP lido com sucesso', `VP: ${result.value}`, '', 'VP');
       if (this.vp !== '' && this.chassis !== '') await this.sendData('VP');
@@ -145,21 +151,26 @@ export class ScannerComponent implements OnInit {
 
   private async scanCIS() {
     await ScannerPlugin.scanBarcode().then(async (result) => {
+      if (result.value.length !== 8 && result.value.length !== 17) {
+        this.updateUI('Erro ao ler o CHASSI ou CABINE', 'Código de barras inválido', '', 'CIS');
+        setTimeout(() => {
+          this.resetUI('CIS');
+        }, 5000);
+        return;
+      }
       this.cis = result.value;
       this.mainService.setCis(result.value);
-      this.updateUI('cis lido com sucesso', `CIS: ${result.value}`, '', 'CIS');
+      this.updateUI('Cabine lida com sucesso', `CABINE: ${result.value}`, '', 'CIS');
       if (this.cis !== '') await this.sendData('CIS');
     });
   }
 
   private async sendData(typeData: string) {
-    const recipeKey = this.vp ?? this.cis;
-    console.log('Sending barcode data:', recipeKey);
+    const recipeKey = this.vp !== '' ? this.vp : this.cis;
     await this.apiService.sendBarcodeData(recipeKey).then(async (result) => {
       this.mainService.setRecipe(result.payload.recipe);
       this.resetData();
     }).catch((error) => {
-      console.error('Erro ao enviar código de barras:', error);
       this.updateUI('Erro ao carregar receita', error.payload.message, '', typeData);
       setTimeout(() => {
         this.resetUI(typeData);
@@ -174,26 +185,58 @@ export class ScannerComponent implements OnInit {
   }
 
   private updateUI(title: string, subtitle: string, content: string, typeData: string) {
-    if (typeData === 'VP') {
-      this.vpTitle.set(title);
-      this.vpSubtitle.set(subtitle);
-      this.vpContent.set(content);
-    } else if (typeData === 'CIS') {
-      this.cisTitle.set(title);
-      this.cisSubtitle.set(subtitle);
-      this.cisContent.set(content);
-    } else if (typeData === 'CHASSIS') {
-      this.cisTitle.set(title);
-      this.cisSubtitle.set(subtitle);
-      this.cisContent.set(content);
-    } else if (typeData === 'QR') {
-      this.qrTitle.set(title);
-      this.qrSubtitle.set(subtitle);
-      this.qrContent.set(content);
+    switch (typeData) {
+      case 'VP':
+        this.vpTitle.set(title);
+        this.vpSubtitle.set(subtitle);
+        this.vpContent.set(content);
+        break;
+      case 'CIS':
+        this.cisTitle.set(title);
+        this.cisSubtitle.set(subtitle);
+        this.cisContent.set(content);
+        break;
+      case 'CHASSIS':
+        this.cisTitle.set(title);
+        this.cisSubtitle.set(subtitle);
+        this.cisContent.set(content);
+        break;
+      case 'QR':
+        this.qrTitle.set(title);
+        this.qrSubtitle.set(subtitle);
+        this.qrContent.set(content);
+        break;
+      default:
+        console.error('Tipo de leitura não reconhecido.');
+        break;
     }
   }
 
   private resetUI(typeData: string) {
-    this.updateUI('Aguardando leitura do VP', 'Utilize o leitor de código de barras.', 'Aguardando leitura...', typeData);
+    switch (typeData) {
+      case 'VP':
+        this.vpTitle.set('Aguardando leitura do VP');
+        this.vpSubtitle.set('Utilize o leitor de código de barras.');
+        this.vpContent.set('Aguardando leitura...');
+        break;
+      case 'CIS':
+        this.cisTitle.set('Aguardando leitura do CHASSI ou CABINE');
+        this.cisSubtitle.set('Utilize o leitor de código de barras.');
+        this.cisContent.set('Aguardando leitura...');
+        break;
+      case 'CHASSIS':
+        this.cisTitle.set('Aguardando leitura do CHASSI ou CABINE');
+        this.cisSubtitle.set('Utilize o leitor de código de barras.');
+        this.cisContent.set('Aguardando leitura...');
+        break;
+      case 'QR':
+        this.qrTitle.set('Aguardando leitura do QR Code');
+        this.qrSubtitle.set('Utilize o leitor de código de barras.');
+        this.qrContent.set('Aguardando leitura...');
+        break;
+      default:
+        console.error('Tipo de leitura não reconhecido.');
+        break;
+    }
   }
 }
