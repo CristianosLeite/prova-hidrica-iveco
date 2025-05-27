@@ -71,6 +71,8 @@ export class RunComponent implements OnInit {
   ) { }
 
   async ngOnInit() {
+    this.isDeviceSelected.set(false);
+    this.selectedDevice.set('none');
     this.mainService.qtyVerificationsChanged.subscribe((qty: number) => {
       this.qtyVerifications = qty;
     });
@@ -124,13 +126,17 @@ export class RunComponent implements OnInit {
     const platform = (await this.deviceService.getDeviceInfo()).platform;
     if (platform === 'mobile') this.apiService.openDoor();
 
-    await this.apiService.doorClosed();
+    await this.apiService.doorClosed().then(() => {
+      this.isDeviceSelected.set(false);
+      this.selectedDevice.set('none');
+    });
     this.toast = false;
   }
 
   async cancelTest() {
     this.mainService.stop('cancel');
     await this.apiService.stopOperation();
+    await this.apiService.finishOperation();
   }
 
   setSelectedPlatform(platform: Platform) {
@@ -139,6 +145,7 @@ export class RunComponent implements OnInit {
 
     if (platform === 'mobile') {
       this.apiService.openDoor();
+      this.apiService.listenUnAuthentication(false);
     }
 
     if (platform === 'none') {
