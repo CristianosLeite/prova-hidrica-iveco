@@ -14,7 +14,7 @@ import { Context } from './types/context.type';
 
 declare type LastOperations = {
   id: string;
-  vp: string;
+  key: string;
   dateTime: string;
 };
 
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
     { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait', action: (value: boolean) => this.hideMobileContent(value) },
     { title: 'Configurações', url: '/main/settings', icon: 'settings', action: (value: boolean) => this.hideMobileContent(value) },
     { title: 'Buscar', url: '/main/search', icon: 'qr-code', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Sair', url: '', icon: 'log-out', action: (value: boolean) => { this.logout(); this.hideMobileContent(value) } },
+    { title: 'Sair', url: '', icon: 'log-out', action: async (value: boolean) => { this.hideMobileContent(value); await this.logout();} },
   ];
 
   public lastOperations = signal([] as LastOperations[]);
@@ -86,9 +86,10 @@ export class AppComponent implements OnInit {
     });
     this.apiService.isApiConnected.subscribe((isConnected: boolean) => {
       this.isApiServiceInitialized = isConnected;
-      this.apiService.listenAuthentication(false);
-      this.apiService.listenUnAuthentication(false).then(() => {
-        this.authService.logOut();
+      this.apiService.listenUnAuthentication(false).then(async () => {
+        await this.logout().then(() => {
+          window.location.reload();
+        });
       });
     });
     this.apiService.isBackgroundServiceInitialized.subscribe((isInitialized: boolean) => {
@@ -115,7 +116,7 @@ export class AppComponent implements OnInit {
       this.lastOperations.set(operations.map((operation) => {
         return {
           id: operation.OperationId!,
-          vp: operation.Vp,
+          key: operation.Vp || operation.Cis,
           dateTime: new Date(operation.StartTime).toLocaleString(),
         };
       }));
@@ -136,7 +137,8 @@ export class AppComponent implements OnInit {
   }
 
   async logout() {
-    this.authService.logOut();
-    await this.apiService.listenUnAuthentication();
+    await this.apiService.listenUnAuthentication().then(() => {
+      this.authService.logOut();
+    });
   }
 }
