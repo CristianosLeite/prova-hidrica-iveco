@@ -66,6 +66,11 @@ async function run() {
       allowedHeaders: ["Content-Type", "Authorization"],
     },
     transports: ["websocket", "polling"],
+    // pingTimeout: 60000, // Increase ping timeout to 60 seconds
+    pingInterval: 25000, // Increase ping interval to 25 seconds
+    reconnection: true, // Enable reconnection
+    reconnectionAttempts: Infinity, // Unlimited reconnection attempts
+    reconnectionDelay: 3000, // Delay between reconnection attempts
   });
 
   // Start listening and processing PLC data
@@ -91,8 +96,10 @@ async function run() {
 
   try {
     await snap7Service.plcConnect("192.168.0.1");
+    snap7Service.startConnectionMonitor(); // Start monitoring PLC connection
   } catch (error) {
     console.log("Error connecting to PLC: ", error);
+    setTimeout(() => snap7Service.plcConnect("192.168.0.1"), 5000);
   }
 
   // Setup sockets
@@ -102,6 +109,10 @@ async function run() {
     console.log(
       `Node Express server listening on https://localhost:${port}/api`
     );
+  });
+
+  server.on("connection", (socket) => {
+    socket.setKeepAlive(true, 60000);
   });
 
   server.on("error", (error) => {

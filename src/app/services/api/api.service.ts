@@ -39,6 +39,8 @@ export class ApiService {
    */
   @Output() public isBackgroundServiceInitialized: EventEmitter<boolean> = new EventEmitter();
 
+  private keepAliveInterval: any;
+
   constructor(
     private storage: StorageService,
     private authService: AuthService,
@@ -52,10 +54,10 @@ export class ApiService {
     try {
       // Get server connection parameters from storage
       this.storage.storageCreated.subscribe(async () => {
-        Promise.all([
-          await this.storage.get('serverProtocol'),
-          await this.storage.get('serverIp'),
-          await this.storage.get('serverPort')
+        await Promise.all([
+          this.storage.get('serverProtocol'),
+          this.storage.get('serverIp'),
+          this.storage.get('serverPort')
         ]).then(([protocol, serverIp, serverPort]) => {
           // Set default values if not provided
           this.protocol = protocol || 'https';
@@ -67,11 +69,37 @@ export class ApiService {
           this.socket = io(this.url, {
             transports: ['websocket'],
             withCredentials: true,
+            reconnection: true, // Enable automatic reconnection
+            reconnectionAttempts: Infinity, // Unlimited reconnection attempts
+            reconnectionDelay: 1000, // Initial delay between attempts
+            reconnectionDelayMax: 5000, // Maximum delay between attempts
           });
 
+          // Emit keep-alive events
+          this.keepAliveInterval = setInterval(() => {
+            this.socket?.emit("keep-alive-response", { status: "active" });
+          }, 15000);
+
+          // Handle connection events
           this.socket.on('connect', () => {
             console.log('Connected to API service');
             this.isApiConnected.emit(true);
+          });
+
+          this.socket.on('disconnect', () => {
+            this.isApiConnected.emit(false);
+            if (this.keepAliveInterval) {
+              clearInterval(this.keepAliveInterval);
+            }
+          });
+
+          // Handle reconnection errors
+          this.socket.on('connect_error', (error) => {
+            console.error('Connection error:', error);
+          });
+
+          this.socket.on('reconnect', (attemptNumber) => {
+            console.log(`Reconnected to API service after ${attemptNumber} attempts`);
           });
 
           this.socket.on('backgroundServiceInitialized', () => {
@@ -81,12 +109,10 @@ export class ApiService {
           this.socket.on("unauthenticated", () => {
             this.authService.logOut();
           });
-
-          this.socket.on('disconnect', () => {
-            console.log('Disconnected from API service');
-            this.isApiConnected.emit(false);
+        })
+          .catch((error) => {
+            console.error('Error retrieving server parameters:', error);
           });
-        });
       });
     } catch (error) {
       console.error('Error initializing API service:', error);
@@ -94,6 +120,13 @@ export class ApiService {
 
     console.log('API service initialized');
   }
+
+//   private handleSocketEvent<T>(event: string): Promise<T> {
+//   return new Promise((resolve, reject) => {
+//     this.socket?.on(event, (data: T) => resolve(data));
+//     this.socket?.on('error', (error: any) => reject(error));
+//   });
+// }
 
   /**
    * * Connects to the background service and emits an event to start it.
@@ -316,12 +349,31 @@ export class ApiService {
    */
   public doorClosed(): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
-      this.socket?.on('doorClosed', () => {
+      this.socket?.on('doorClosed', async () => {
         resolve({ type: 'success', payload: { message: 'Door closed successfully' } });
-        this.authService.logOut();
+        await this.listenUnAuthentication().then(() => {
+          this.authService.logOut();
+        });
       });
       this.socket?.on('error', (error: any) => {
         reject({ type: 'error', payload: { message: 'Door closing failed', error } });
+      });
+    });
+  }
+
+  /**
+ * * Stops the operation by emitting an event to the server and handling the response.
+ * @returns A promise that resolves with the socket response.
+ */
+  public finishOperation(): Promise<SocketResponse> {
+    return new Promise((resolve, reject) => {
+      this.socket?.emit('finishOperation');
+      this.socket?.on('operationFinished', async () => {
+        resolve({ type: 'success', payload: { message: 'Operation stopped successfully' } });
+      });
+      this.socket?.on('error', (error: any) => {
+        console.log('finishOperation error:', error);
+        reject({ type: 'error', payload: { message: error['message'] } });
       });
     });
   }

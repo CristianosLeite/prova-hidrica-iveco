@@ -5,6 +5,10 @@ const setupBackgroundSockets = require('./background/background.socket');
 const setupDeviceSockets = require('./device/device.socket');
 
 module.exports = function (io, snap7Service) {
+  setInterval(() => {
+    io.emit("keep-alive", { status: "active" });
+  }, 15000);
+
   io.on("connection", (socket) => {
     console.log("Client connected");
 
