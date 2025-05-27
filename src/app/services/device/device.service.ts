@@ -52,7 +52,7 @@ export class DeviceService implements OnInit {
   public startDeviceSync() {
     this.syncInterval = setInterval(async () => {
       await this.syncDeviceInfo();
-    }, 2000);
+    }, 5000);
   }
 
   ngOnDestroy() {
