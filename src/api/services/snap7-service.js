@@ -1,15 +1,13 @@
 const snap7 = require("node-snap7");
-const Operation = require("../models/operation.model.js");
-const s7client = new snap7.S7Client();
 
 /**
  * Snap7Service
  * @description :: Server-side logic for managing Snap7
  */
-
 class Snap7Service {
-  constructor(io) {
+  constructor(io, client = new snap7.S7Client()) {
     this.io = io;
+    this.client = client;
   }
 
   /**
@@ -20,30 +18,58 @@ class Snap7Service {
    * Connect to the PLC
    * @param ip
    */
-  async plcConnect(ip) {
-    return new Promise((resolve, reject) => {
-      s7client.ConnectTo(ip, 0, 1, function (err) {
-        if (err) {
-          console.log(
-            " >> Connection failed. Code #" +
-              err +
-              " - " +
-              s7client.ErrorText(err)
-          );
-          return reject(err);
-        }
-
-        console.log(" >> Connected");
-        resolve();
-      });
-    });
+  async plcConnect(ip, retries = 3, delay = 5000) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+      try {
+        await new Promise((resolve, reject) => {
+          this.client.ConnectTo(ip, 0, 1, (err) => {
+            if (err) reject(err);
+            else resolve();
+          });
+        });
+        console.log(" >> Connected to PLC");
+        return;
+      } catch (err) {
+        console.error(`Connection attempt ${attempt} failed:`, err);
+        if (attempt < retries)
+          await new Promise((res) => setTimeout(res, delay));
+      }
+    }
+    throw new Error("Failed to connect to PLC after multiple attempts");
   }
 
   /**
    * @description :: Check if the client is connected to the PLC
    */
-  isPlcConnected() {
-    return s7client.Connected();
+  async isPlcConnected() {
+    try {
+      // Attempt to read a known value from the PLC
+      const result = await this.readBooleanFromDb(7, 4, 4); // DB7, byte 4, bit 4
+      return result.value !== undefined; // If we can read the value, the PLC is connected
+    } catch (error) {
+      console.error("Error checking PLC connection:", error);
+      return false; // If an error occurs, assume the PLC is offline
+    }
+  }
+
+  /**
+   * Monitor the PLC connection status and attempt reconnection if disconnected
+   */
+  startConnectionMonitor(interval = 5000) {
+    setInterval(async () => {
+      try {
+        if (!(await this.isPlcConnected())) {
+          console.warn("PLC connection lost. Attempting to reconnect...");
+          await this.plcConnect("192.168.0.1");
+          console.log("Reconnected to PLC successfully.");
+          return;
+        }
+      } catch (error) {
+        console.error("Error during PLC reconnection attempt:", error);
+        return;
+      }
+    }, interval);
+    console.log("PLC connection is active.");
   }
 
   /**
@@ -53,40 +79,28 @@ class Snap7Service {
    * @param {number} bit - The bit number
    * @returns {Promise} - The boolean value
    */
-  readBooleanFromDb(dbNumber, byte, bit) {
-    return new Promise((resolve, reject) => {
-      s7client.DBRead(dbNumber, byte, 1, function (err, res) {
-        if (err) {
-          console.log(
-            " >> DBRead failed. Code #" + err + " - " + s7client.ErrorText(err)
-          );
-          return reject(err);
-        }
-        const value = (res[0] >> bit) & 1;
-        resolve({ value });
+  async readBooleanFromDb(dbNumber, byte, bit) {
+    try {
+      return new Promise((resolve, reject) => {
+        this.client.DBRead(dbNumber, byte, 1, function (err, res) {
+          // Alterado para arrow function
+          if (err) {
+            console.log(
+              " >> DBRead failed. Code #" +
+                err +
+                " - " +
+                this.client.ErrorText(err)
+            );
+            return reject(err);
+          }
+          const value = (res[0] >> bit) & 1;
+          resolve({ value });
+        });
       });
-    });
-  }
-
-  /**
-   * Read a boolean value from the PLC
-   * @param byte
-   * @param bit
-   * @returns
-   */
-  readBooleanFromMemory(byte, bit) {
-    return new Promise((resolve, reject) => {
-      s7client.MBRead(byte, 1, function (err, res) {
-        if (err) {
-          console.log(
-            " >> MBRead failed. Code #" + err + " - " + s7client.ErrorText(err)
-          );
-          return reject(err);
-        }
-        const value = (res[0] >> bit) & 1;
-        resolve({ value });
-      });
-    });
+    } catch (error) {
+      console.error("Error in readBooleanFromDb:", error);
+      throw error; // Rejects to let the caller handle the error.
+    }
   }
 
   /**
@@ -95,12 +109,18 @@ class Snap7Service {
    * @param byte
    * @returns
    */
-  readWordFromDb(dbNumber, byte) {
+  async readWordFromDb(dbNumber, byte) {
+    if (!(await this.isPlcConnected())) {
+      throw new Error("PLC client is not connected");
+    }
     return new Promise((resolve, reject) => {
-      s7client.DBRead(dbNumber, byte, 2, function (err, res) {
+      this.client.DBRead(dbNumber, byte, 2, function (err, res) {
         if (err) {
           console.log(
-            " >> DBRead failed. Code #" + err + " - " + s7client.ErrorText(err)
+            " >> DBRead failed. Code #" +
+              err +
+              " - " +
+              this.client.ErrorText(err)
           );
           return reject(err);
         }
@@ -115,12 +135,18 @@ class Snap7Service {
    * @param byte
    * @returns
    */
-  readWordFromMemory(byte) {
+  async readWordFromMemory(byte) {
+    if (!(await this.isPlcConnected())) {
+      throw new Error("PLC client is not connected");
+    }
     return new Promise((resolve, reject) => {
-      s7client.MBRead(byte, 2, function (err, res) {
+      this.client.MBRead(byte, 2, function (err, res) {
         if (err) {
           console.log(
-            " >> MBRead failed. Code #" + err + " - " + s7client.ErrorText(err)
+            " >> MBRead failed. Code #" +
+              err +
+              " - " +
+              this.client.ErrorText(err)
           );
           return reject(err);
         }
@@ -137,12 +163,18 @@ class Snap7Service {
    * @param length
    * @returns
    */
-  readStringFromDb(dbNumber, start, length) {
+  async readStringFromDb(dbNumber, start, length) {
+    if (!(await this.isPlcConnected())) {
+      throw new Error("PLC client is not connected");
+    }
     return new Promise((resolve, reject) => {
-      s7client.DBRead(dbNumber, start, length + 2, function (err, res) {
+      this.client.DBRead(dbNumber, start, length + 2, function (err, res) {
         if (err) {
           console.log(
-            " >> DBRead failed. Code #" + err + " - " + s7client.ErrorText(err)
+            " >> DBRead failed. Code #" +
+              err +
+              " - " +
+              this.client.ErrorText(err)
           );
           return reject(err);
         }
@@ -164,49 +196,37 @@ class Snap7Service {
    * @param value
    * @returns
    */
-  async writeBooleanToDb(dbNumber, start, bit, value) {
-    const buf = Buffer.alloc(1);
-    let byteValue = await new Promise((resolve, reject) => {
-      s7client.DBRead(dbNumber, start, 1, (err, res) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(res.readUInt8(0));
-        }
-      });
-    }).catch((err) => {
-      console.log("Error reading byte:", err);
-      throw err;
-    });
-
-    if (value) {
-      byteValue |= 1 << bit;
-    } else {
-      byteValue &= ~(1 << bit);
+async writeBooleanToDb(dbNumber, start, bit, value) {
+    if (!(await this.isPlcConnected())) {
+      throw new Error("PLC client is not connected");
     }
+    try {
+      const buf = Buffer.alloc(1);
+      let byteValue = await new Promise((resolve, reject) => {
+        this.client.DBRead(dbNumber, start, 1, (err, res) => {
+          if (err) reject(err);
+          else resolve(res.readUInt8(0));
+        });
+      });
 
-    buf.writeUInt8(byteValue, 0);
+      byteValue = value ? byteValue |= 1 << bit : byteValue &= ~(1 << bit);
+      buf.writeUInt8(byteValue, 0);
 
-    return new Promise((resolve, reject) => {
-      s7client.WriteArea(
-        s7client.S7AreaDB,
-        dbNumber,
-        start,
-        1,
-        s7client.S7WLByte,
-        buf,
-        (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
-      );
-    }).catch((err) => {
-      console.log("Error writing byte:", err);
-      throw err;
-    });
+      await new Promise((resolve, reject) => {
+        this.client.WriteArea(
+          this.client.S7AreaDB,
+          dbNumber,
+          start,
+          1,
+          this.client.S7WLByte,
+          buf,
+          (err) => (err ? reject(err) : resolve())
+        );
+      });
+    } catch (err) {
+      console.error("Error in writeBooleanToDb:", err);
+      throw err; // Rejects to let the caller handle the error.
+    }
   }
 
   /**
@@ -217,51 +237,37 @@ class Snap7Service {
    * @returns
    */
   async writeIntegerToDb(dbNumber, start, value) {
+    if (!(await this.isPlcConnected())) {
+      throw new Error("PLC client is not connected");
+    }
+    if (
+      typeof dbNumber !== "number" ||
+      typeof start !== "number" ||
+      typeof value !== "number"
+    ) {
+      throw new Error(
+        "Invalid parameters: dbNumber, start, and value must be numbers"
+      );
+    }
+
     const buf = Buffer.alloc(2);
     buf.writeUInt16BE(value, 0);
 
-    return new Promise((resolve, reject) => {
-      s7client.WriteArea(
-        s7client.S7AreaDB,
-        dbNumber,
-        start,
-        2,
-        s7client.S7WLWord,
-        buf,
-        (err) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve();
-          }
-        }
-      );
-    }).catch((err) => {
-      console.log("Error writing integer:", err);
+    try {
+      await new Promise((resolve, reject) => {
+        this.client.WriteArea(
+          this.client.S7AreaDB,
+          dbNumber,
+          start,
+          2,
+          this.client.S7WLWord,
+          buf,
+          (err) => (err ? reject(err) : resolve())
+        );
+      });
+    } catch (err) {
+      console.error("Error in writeIntegerToDb:", err);
       throw err;
-    });
-  }
-
-  /**
-   * Trigger for creating a new operation on database
-   */
-  async listenAndProcess() {
-    while (true) {
-      const { value } = await readBoolean(26, 120, 0);
-      if (value === 1) {
-        const isSensorInPosition1 = (await this.readBooleanFromMemory(11, 7)).value;
-        const isSensorInPosition2 = (await this.readBooleanFromMemory(12, 0)).value;
-        const isSensorInPosition3 = (await this.readBooleanFromMemory(12, 1)).value;
-
-        try {
-          if (isSensorInPosition1 || isSensorInPosition2 || isSensorInPosition3) {
-            await this.writeBooleanToDb(7, 1, 0, false);
-          }
-        } catch (error) {
-          console.log("Error reading sensor values:", error);
-        }
-      }
-      await new Promise((resolve) => setTimeout(resolve, 3000)); // Wait 3 second
     }
   }
 }
