@@ -10,7 +10,7 @@ import { Operation } from 'src/app/types/operation.type';
 import { OperationService } from '../operation/operation.service';
 import { Result, Status, TestResult } from 'src/app/types/testResult.type';
 import { UserService } from '../user/user.service';
-import { PrinterService } from '../printer/printer.service';
+// import { PrinterService } from '../printer/printer.service';
 import UpsideTestModel from 'src/app/models/upside-test.model';
 import FrontsideTestModel from 'src/app/models/frontside-test.model';
 import BacksideTestModel from 'src/app/models/backside-test.model';
@@ -18,6 +18,7 @@ import LeftsideTestModel from 'src/app/models/leftside-test.model';
 import RightsideTestModel from 'src/app/models/rightside-test.model';
 import { Platform } from 'src/app/types/device.type';
 import { Router } from '@angular/router';
+import { ApiService } from '../api/api.service';
 
 /**
  * Main service class
@@ -99,6 +100,7 @@ export class MainService implements IMainApplication {
     private operationService: OperationService,
     private usersService: UserService,
     // private printerService: PrinterService
+    private apiService: ApiService,
     private router: Router
   ) { }
 
@@ -267,6 +269,7 @@ export class MainService implements IMainApplication {
         this.router.navigate(['/main/test-result'], { queryParams: { id: operation.OperationId } });
 
         this.clearTestParams();
+        await this.apiService.finishOperation();
         return operation;
       });
     } catch (error) {
