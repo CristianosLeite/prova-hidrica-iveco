@@ -1,63 +1,70 @@
+// Description: This file contains the socket event handlers for PLC operations.
+// It handles operations such as setting the sprinkler height, starting and stopping operations, and resetting the operation.
+// The functions interact with the PLC through the snap7Service and emit events to the client using Socket.IO.
+
 module.exports = function (io, socket, snap7Service) {
   async function setSprinklerHeight(height) {
     try {
-      if (snap7Service.isPlcConnected()) {
-        // const isSensorInPosition1 = (
-        //   await snap7Service.readBooleanFromMemory(11, 7)
-        // ).value;
-        // const isSensorInPosition2 = (
-        //   await snap7Service.readBooleanFromMemory(12, 0)
-        // ).value;
-        // const isSensorInPosition3 = (
-        //   await snap7Service.readBooleanFromMemory(12, 1)
-        // ).value;
-        await Promise.all([
-          snap7Service.writeBooleanToDb(7, 4, 1, true), // Active platform
-          snap7Service.writeIntegerToDb(7, 2, height), // Set height
-        ]).then(() => {
-          // setTimeout(async () => {
-          //   if (
-          //     isSensorInPosition1 ||
-          //     isSensorInPosition2 ||
-          //     isSensorInPosition3
-          //   ) {
-          //     await snap7Service.writeBooleanToDb(7, 1, 0, false);
-          //   }
-          // }, 15000);
-        });
-      }
+      await Promise.all([
+        snap7Service.writeBooleanToDb(7, 4, 1, true), // Activate platform
+        snap7Service.writeIntegerToDb(7, 2, height), // Set height
+      ]);
       io.emit("sprinklerHeightSet", height);
     } catch (error) {
-      console.log("Error setting sprinkler height: ", error);
-      io.emit("plcError", error);
+      console.error("Error setting sprinkler height:", error);
+      io.emit("error", error);
+    }
+  }
+
+  async function startOperation() {
+    try {
+      // Set start auto
+      await snap7Service.writeBooleanToDb(7, 0, 0, true);
+      io.emit("operationEnabled");
+    } catch (error) {
+      console.error("Error starting operation:", error);
+      io.emit("error", error);
+    }
+  }
+
+  async function stopOperation() {
+    try {
+      // Set stop auto
+      await snap7Service.writeBooleanToDb(7, 4, 2, true);
+      // Set end cycle
+      await snap7Service.writeBooleanToDb(7, 4, 3, true);
+      // await setSprinklerHeight(1); // Reset sprinkler height
+      io.emit("operationStopped");
+    } catch (error) {
+      console.error("Error stopping operation:", error);
+      io.emit("error", error);
+    }
+  }
+
+  async function resetOperation() {
+    try {
+      // Reset alarms
+      await snap7Service.writeBooleanToDb(7, 4, 0, true);
+      await startOperation();
+      io.emit("operationReset");
+    } catch (error) {
+      console.error("Error resetting operation:", error);
+      io.emit("error", error);
     }
   }
 
   socket.on("recipeLoaded", async (data) => {
-    await setSprinklerHeight(data.SprinklerHeight);
-    io.emit("recipeLoaded", data);
+    try {
+      await setSprinklerHeight(data.SprinklerHeight);
+      io.emit("recipeLoaded", data);
+    } catch (error) {
+      console.error("Error loading recipe:", error);
+      io.emit("error", error);
+    }
   });
 
   socket.on("enableOperation", async () => {
-    try {
-      if (snap7Service.isPlcConnected()) {
-        await Promise.all([
-          snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
-          snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
-        ]).then(() => {
-          setTimeout(async () => {
-            await Promise.all([
-              snap7Service.writeBooleanToDb(7, 4, 0, false),
-              snap7Service.writeBooleanToDb(7, 0, 0, false),
-            ]);
-          }, 1000);
-          io.emit("operationEnabled");
-        });
-      }
-    } catch (error) {
-      console.log("Error enabling operation: ", error);
-      io.emit("plcError", error);
-    }
+    await startOperation();
   });
 
   socket.on("setSprinklerHeight", async (data) => {
@@ -65,49 +72,22 @@ module.exports = function (io, socket, snap7Service) {
   });
 
   socket.on("resetOperation", async () => {
-    try {
-      if (snap7Service.isPlcConnected()) {
-        Promise.all([
-          await snap7Service.writeBooleanToDb(7, 4, 2, false), // Stop auto
-          await snap7Service.writeBooleanToDb(7, 4, 0, true), // Reset alarms
-          await snap7Service.writeBooleanToDb(7, 0, 0, true), // Start auto
-        ]).then(() => {
-          setTimeout(async () => {
-            Promise.all([
-              await snap7Service.writeBooleanToDb(7, 4, 2, false),
-              await snap7Service.writeBooleanToDb(7, 4, 0, false),
-              await snap7Service.writeBooleanToDb(7, 0, 0, false),
-            ]);
-          }, 1000);
-          io.emit("operationReset");
-        });
-      }
-    } catch (error) {
-      console.log("Error resetting operation: ", error);
-      io.emit("plcError", error);
-    }
+    await resetOperation();
   });
 
   socket.on("stopOperation", async () => {
+    await stopOperation();
+  });
+
+  socket.on("finishOperation", async () => {
     try {
-      if (snap7Service.isPlcConnected()) {
-        await Promise.all([
-          snap7Service.writeBooleanToDb(7, 4, 2, true), // Stop auto
-          snap7Service.writeBooleanToDb(7, 4, 3, true), // End cycle
-          setSprinklerHeight(1), // Set sprinkler height to 1 (default)
-        ]).then(() => {
-          setTimeout(async () => {
-            await Promise.all([
-              snap7Service.writeBooleanToDb(7, 4, 2, false),
-              snap7Service.writeBooleanToDb(7, 4, 3, false),
-            ]);
-          }, 1000);
-          io.emit("operationStopped");
-        });
-      }
+      // setTimeout(async () => {
+      //   await snap7Service.writeBooleanToDb(7, 4, 1, false); // Deactivate platform
+      // }, 25000);
+      io.emit("operationFinished");
     } catch (error) {
-      console.log("Error stopping operation: ", error);
-      io.emit("plcError", error);
+      console.error("Error during finishOperation timeout:", error);
+      io.emit("error", error);
     }
   });
 };
