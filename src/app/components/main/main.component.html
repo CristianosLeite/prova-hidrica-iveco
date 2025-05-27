@@ -16,7 +16,7 @@
   <app-device-selection></app-device-selection>
   } @else if (page === 'records'&& authService.hasPermission('RO')) {
   <app-operations></app-operations>
-  } @else if (page === 'test-result' && authService.hasPermission('RL')) {
+  } @else if (page === 'test-result' && authService.hasPermission('RO')) {
   <app-test-result></app-test-result>
   } @else if(page === 'users' && authService.hasPermission('RU')) {
   <app-user></app-user>
