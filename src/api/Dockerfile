@@ -10,6 +10,10 @@ RUN npm install
 
 COPY . /usr/src/app
 
+# Environment variable with default to production
+# This can be overridden when running the container
+ENV NODE_ENV=production
+
 # Generate SSL certificates in the container
 
 # Copy the openssl configuration file

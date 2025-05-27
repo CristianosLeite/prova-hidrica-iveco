@@ -44,21 +44,48 @@ function app() {
 
 async function run() {
   const port = process.env["PORT"] || 4000;
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
   // Start up the Express server
   const { app: expressApp } = app();
 
-  // Load SSL certificate and key
-  const privateKey = fs.readFileSync("/usr/src/app/cert/client.key");
-  const certificate = fs.readFileSync("/usr/src/app/cert/client.crt");
+  // Certificate paths - Different paths for development and production
+  let certPath, keyPath;
 
-  const credentials = {
-    key: privateKey,
-    cert: certificate,
-  };
+  if (isDevelopment) {
+    // In development mode, look for certificates in ./cert directory
+    certPath = "./cert/client.crt";
+    keyPath = "./cert/client.key";
+    console.log("Development mode: Looking for certificates in local ./cert directory");
+  } else {
+    // In production mode, use container path
+    certPath = "/usr/src/app/cert/client.crt";
+    keyPath = "/usr/src/app/cert/client.key";
+    console.log("Production mode: Looking for certificates in container path");
+  }
 
-  // Create a HTTPS server instance with the Express app
-  const server = new HttpsServer(credentials, expressApp);
+  let server;
+
+  // Check if certificates exist for HTTPS
+  if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+    // Load SSL certificate and key
+    const privateKey = fs.readFileSync(keyPath);
+    const certificate = fs.readFileSync(certPath);
+
+    const credentials = {
+      key: privateKey,
+      cert: certificate,
+    };
+
+    // Create a HTTPS server instance with the Express app
+    server = new HttpsServer(credentials, expressApp);
+    console.log("Starting server with HTTPS");
+  } else {
+    // Fallback to HTTP in development
+    console.log("SSL certificates not found. Starting server with HTTP.");
+    server = require('http').createServer(expressApp);
+  }
+
   const io = new SocketIOServer(server, {
     cors: {
       origin: "*",
@@ -94,12 +121,19 @@ async function run() {
   const settingsController = new SettingsController();
   expressApp.use("/api/settings", settingsController.getRouter());
 
-  try {
-    await snap7Service.plcConnect("192.168.0.1");
-    snap7Service.startConnectionMonitor(); // Start monitoring PLC connection
-  } catch (error) {
-    console.log("Error connecting to PLC: ", error);
-    setTimeout(() => snap7Service.plcConnect("192.168.0.1"), 5000);
+  if (isDevelopment) {
+    console.log("Running in DEVELOPMENT mode - PLC connection bypassed");
+    // Create mock PLC connection for development
+    snap7Service.mockConnection();
+  } else {
+    try {
+      console.log("Running in PRODUCTION mode - Connecting to real PLC");
+      await snap7Service.plcConnect("192.168.0.1");
+      snap7Service.startConnectionMonitor(); // Start monitoring PLC connection
+    } catch (error) {
+      console.log("Error connecting to PLC: ", error);
+      setTimeout(() => snap7Service.plcConnect("192.168.0.1"), 5000);
+    }
   }
 
   // Setup sockets

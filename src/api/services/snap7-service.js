@@ -270,6 +270,34 @@ async writeBooleanToDb(dbNumber, start, bit, value) {
       throw err;
     }
   }
+
+  // Mock connection for development purposes
+   mockConnection() {
+    console.log("Using mock PLC connection");
+    this.connected = true;
+
+    // Simulate PLC data with periodic updates
+    this.mockTimer = setInterval(() => {
+      // Emit mock data through socket.io
+      this.io.emit('plcStatus', {
+        connected: true,
+        status: 'MOCK_CONNECTED',
+        mockData: {
+          timestamp: new Date().toISOString(),
+          // Add whatever mock data here
+        }
+      });
+    }, 2000);
+
+    return true;
+  }
+
+  stopMockConnection() {
+    if (this.mockTimer) {
+      clearInterval(this.mockTimer);
+      this.mockTimer = null;
+    }
+  }
 }
 
 module.exports = { Snap7Service };
