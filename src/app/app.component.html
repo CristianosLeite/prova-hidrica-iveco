@@ -35,7 +35,7 @@
                 @for (p of appPages; track p; let i = $index) {
                   <ion-menu-toggle auto-hide="false">
                     <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
-                      routerLinkActive="selected">
+                      routerLinkActive="selected" (click)="p.action(true)">
                       <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
                       <ion-label>{{ p.title }}</ion-label>
                     </ion-item>
@@ -49,7 +49,7 @@
                 @for (operation of lastOperations(); track operation) {
                   <ion-item class="link" lines="none" (click)="openOperation(operation.id)">
                     <ion-icon slot="start" ios="caret-forward-circle-outline" md="caret-forward-circle-outline"></ion-icon>
-                    <ion-label>{{ operation.vp + ' - ' + operation.dateTime }}</ion-label>
+                    <ion-label>{{ operation.key + ' - ' + operation.dateTime }}</ion-label>
                   </ion-item>
                 }
               </ion-list>
