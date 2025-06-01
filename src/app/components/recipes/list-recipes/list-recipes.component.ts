@@ -65,7 +65,7 @@ export class ListRecipesComponent implements OnInit {
       this.dataSource.recipes = recipes.filter((recipe) => {
         return recipe.Description.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
           recipe.Vp.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-          recipe.Cis.toLowerCase().includes(this.searchTerm.toLowerCase());
+          recipe.Cabin.toLowerCase().includes(this.searchTerm.toLowerCase());
       });
       this.updatePaginatedRecipes();
     });

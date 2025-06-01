@@ -24,7 +24,7 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
 
   public operator = '';
   public startTime = '';
-  public cis = '';
+  public cabin = '';
 
   constructor(
     private authService: AuthService,
@@ -36,7 +36,7 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
     this.presentingElement = document.querySelector('.ion-page');
     this.operator = this.authService.getLoggedUser().UserName;
     this.startTime = this.mainService.getStartTime();
-    this.cis = this.mainService.getCis();
+    this.cabin = this.mainService.getCabin();
   }
 
   ngAfterViewInit() {

@@ -65,14 +65,14 @@ export class EditRecipeComponent  implements OnInit {
       this.context = 'edit';
       this.recipeService.retrieveRecipeById(this.recipeId).then((recipe: Recipe) => {
         this.recipe = recipe;
-        this.recipeKey = recipe.Vp ? recipe.Vp : recipe.Cis ? recipe.Cis : '';
+        this.recipeKey = recipe.Vp ? recipe.Vp : recipe.Cabin ? recipe.Cabin : '';
       });
     }
   }
 
   async saveRecipe() {
-    this.setCisOrVp();
-    if (!this.recipe.Description || (!this.recipe.Vp && !this.recipe.Cis)) {
+    this.setCabinOrVp();
+    if (!this.recipe.Description || (!this.recipe.Vp && !this.recipe.Cabin)) {
       this.showAlert('Atenção!', 'Campos obrigatórios não preenchidos.', 'Por favor, preencha os campos obrigatórios.');
       return;
     }
@@ -93,9 +93,9 @@ export class EditRecipeComponent  implements OnInit {
     });
   }
 
-  private setCisOrVp() {
+  private setCabinOrVp() {
     if (this.recipeKey.length === 8) {
-      this.recipe.Cis = this.recipeKey;
+      this.recipe.Cabin = this.recipeKey;
     } else {
       this.recipe.Vp = this.recipeKey;
     }

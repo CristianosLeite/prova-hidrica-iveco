@@ -71,11 +71,11 @@ export class MainService implements IMainApplication {
    */
   private startTime: string = new Date().toISOString();
   /**
-   * It is used to store the cis code retrieved from the barcode scanner.
+   * It is used to store the cabin code retrieved from the barcode scanner.
    * This data guarantees the traceability of the operation.
    * @type {string}
    */
-  private cis: string = '';
+  private cabin: string = '';
 
   /**
    * It is used to store the chassis code retrieved from the barcode scanner.
@@ -114,19 +114,19 @@ export class MainService implements IMainApplication {
   }
 
   /**
-   * Retrieve the cis code stored in the service.
-   * @returns The cis code
+   * Retrieve the cabin code stored in the service.
+   * @returns The cabin code
    */
-  public getCis(): string {
-    return this.cis;
+  public getCabin(): string {
+    return this.cabin;
   }
 
   /**
-   * Set the cis code and store it in the service.
-   * @param cis - The cis code
+   * Set the cabin code and store it in the service.
+   * @param cabin - The cabin code
    */
-  public setCis(cis: string): void {
-    this.cis = cis;
+  public setCabin(cabin: string): void {
+    this.cabin = cabin;
   }
 
   /**
@@ -240,8 +240,8 @@ export class MainService implements IMainApplication {
     operation.StartTime = this.startTime;
     operation.EndTime = new Date().toISOString();
 
-    // Add the cis to the operation before send to backend
-    operation.Cis = this.cis;
+    // Add the cabin to the operation before send to backend
+    operation.Cabin = this.cabin;
 
     // Add the chassis to the operation before send to backend
     operation.Chassis = this.chassis;
@@ -294,7 +294,7 @@ export class MainService implements IMainApplication {
   //       operationId: operation.OperationId!,
   //       vp: operation.Vp,
   //       chassis: operation.Chassis,
-  //       cis: operation.Cis,
+  //       cabin: operation.Cabin,
   //       description: this.recipe.Description,
   //       status: status,
   //       date: date,
@@ -404,7 +404,7 @@ export class MainService implements IMainApplication {
       test.infiltrationPoints = {};
     });
 
-    this.setCis('');
+    this.setCabin('');
     this.setChassis('');
     this.platform = Platform.None;
     this.infiltrationPoints = {};

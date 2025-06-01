@@ -116,7 +116,7 @@ export class AppComponent implements OnInit {
       this.lastOperations.set(operations.map((operation) => {
         return {
           id: operation.OperationId!,
-          key: operation.Vp || operation.Cis,
+          key: operation.Vp || operation.Cabin,
           dateTime: new Date(operation.StartTime).toLocaleString(),
         };
       }));

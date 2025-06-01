@@ -22,8 +22,8 @@ export class PrinterService {
     await IPosPrinter.printSpecifiedTypeText({ text: testResult.chassis || 'Não informado', typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
-    await IPosPrinter.printSpecifiedTypeText({ text: 'CIS:', typeface: 'ST', fontSize: 24 });
-    await IPosPrinter.printSpecifiedTypeText({ text: testResult.cis || 'Não Informado', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: 'CABINE:', typeface: 'ST', fontSize: 24 });
+    await IPosPrinter.printSpecifiedTypeText({ text: testResult.cabin || 'Não Informado', typeface: 'ST', fontSize: 24 });
     await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
 
     await IPosPrinter.printSpecifiedTypeText({ text: 'DESCRIÇÃO:', typeface: 'ST', fontSize: 24 });

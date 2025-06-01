@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, signal, WritableSignal } from '@angular/core';
+import { Component, OnInit, Input, signal, WritableSignal, OnDestroy } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { ApiService } from 'src/app/services/api/api.service';
 import { Context } from 'src/app/types/context.type';
@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   templateUrl: './scanner.component.html',
   styleUrls: ['./scanner.component.scss']
 })
-export class ScannerComponent implements OnInit {
+export class ScannerComponent implements OnInit, OnDestroy {
   @Input() context: Context | undefined;
   public qrTitle: WritableSignal<string> = signal('Aguardando leitura do QR Code');
   public qrSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
@@ -23,13 +23,14 @@ export class ScannerComponent implements OnInit {
   public vpSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
   public vpContent: WritableSignal<string> = signal('Aguardando leitura...');
 
-  public cisTitle: WritableSignal<string> = signal('Aguardando leitura do CHASSI ou CABINE');
-  public cisSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
-  public cisContent: WritableSignal<string> = signal('Aguardando leitura...');
+  public cabinTitle: WritableSignal<string> = signal('Aguardando leitura do CHASSI ou CABINE');
+  public cabinSubtitle: WritableSignal<string> = signal('Utilize o leitor de código de barras.');
+  public cabinContent: WritableSignal<string> = signal('Aguardando leitura...');
 
   private vp: string = '';
-  private cis: string = '';
+  private cabin: string = '';
   private chassis: string = '';
+  private barcodeInterval: ReturnType<typeof setTimeout> = setTimeout(() => '', 5000);
 
   constructor(
     private apiService: ApiService,
@@ -38,9 +39,19 @@ export class ScannerComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    setInterval(async () => {
-      await this.readBarcode();
+    this.barcodeInterval = setInterval(() => {
+      this.readBarcode();
     }, 5000);
+  }
+
+  ngOnDestroy(): void {
+    // Stop listening for barcode scans when the component is destroyed
+    this.apiService.stopBarcodeReader();
+
+    // Clear the interval to stop calling readBarcode
+    if (this.barcodeInterval) {
+      clearInterval(this.barcodeInterval);
+    }
   }
 
   private async readBarcode() {
@@ -56,7 +67,7 @@ export class ScannerComponent implements OnInit {
         return;
       }
 
-      if ((this.vp && this.chassis) || this.cis) {
+      if ((this.vp && this.chassis) || this.cabin) {
         await this.sendData(typeData);
       } else {
         await this.apiService.BarcodeReader();
@@ -80,10 +91,10 @@ export class ScannerComponent implements OnInit {
       this.updateUI('VP lido com sucesso', `VP: ${this.vp}`, '', 'VP');
       this.updateUI('Aguardando leitura do CHASSI', 'Utilize o leitor de código de barras.', 'Aguardando leitura...', 'CHASSIS');
     } else if (data.length === 8) {
-      typeData = 'CIS';
-      this.cis = data;
-      this.mainService.setCis(this.cis);
-      this.updateUI('CIS lido com sucesso', `cis: ${this.cis}`, '', 'CIS');
+      typeData = 'CABIN';
+      this.cabin = data;
+      this.mainService.setCabin(this.cabin);
+      this.updateUI('CABINE lido com sucesso', `cabin: ${this.cabin}`, '', 'CABIN');
     } else if (data.length === 17) {
       typeData = 'CHASSIS';
       this.chassis = data;
@@ -110,8 +121,8 @@ export class ScannerComponent implements OnInit {
         case 'VP':
           await this.scanVP();
           break;
-        case 'CIS':
-          await this.scanCIS();
+        case 'CABIN':
+          await this.scanCabin();
           break;
         default:
           console.error('Tipo de leitura não reconhecido.');
@@ -149,24 +160,24 @@ export class ScannerComponent implements OnInit {
     });
   }
 
-  private async scanCIS() {
+  private async scanCabin() {
     await ScannerPlugin.scanBarcode().then(async (result) => {
       if (result.value.length !== 8 && result.value.length !== 17) {
-        this.updateUI('Erro ao ler o CHASSI ou CABINE', 'Código de barras inválido', '', 'CIS');
+        this.updateUI('Erro ao ler o CHASSI ou CABINE', 'Código de barras inválido', '', 'CABIN');
         setTimeout(() => {
-          this.resetUI('CIS');
+          this.resetUI('CABIN');
         }, 5000);
         return;
       }
-      this.cis = result.value;
-      this.mainService.setCis(result.value);
-      this.updateUI('Cabine lida com sucesso', `CABINE: ${result.value}`, '', 'CIS');
-      if (this.cis !== '') await this.sendData('CIS');
+      this.cabin = result.value;
+      this.mainService.setCabin(result.value);
+      this.updateUI('Cabine lida com sucesso', `CABINE: ${result.value}`, '', 'CABIN');
+      if (this.cabin !== '') await this.sendData('CABIN');
     });
   }
 
   private async sendData(typeData: string) {
-    const recipeKey = this.vp !== '' ? this.vp : this.cis;
+    const recipeKey = this.vp !== '' ? this.vp : this.cabin;
     await this.apiService.sendBarcodeData(recipeKey).then(async (result) => {
       this.mainService.setRecipe(result.payload.recipe);
       this.resetData();
@@ -181,7 +192,7 @@ export class ScannerComponent implements OnInit {
   private resetData() {
     this.vp = '';
     this.chassis = '';
-    this.cis = '';
+    this.cabin = '';
   }
 
   private updateUI(title: string, subtitle: string, content: string, typeData: string) {
@@ -191,15 +202,15 @@ export class ScannerComponent implements OnInit {
         this.vpSubtitle.set(subtitle);
         this.vpContent.set(content);
         break;
-      case 'CIS':
-        this.cisTitle.set(title);
-        this.cisSubtitle.set(subtitle);
-        this.cisContent.set(content);
+      case 'CABIN':
+        this.cabinTitle.set(title);
+        this.cabinSubtitle.set(subtitle);
+        this.cabinContent.set(content);
         break;
       case 'CHASSIS':
-        this.cisTitle.set(title);
-        this.cisSubtitle.set(subtitle);
-        this.cisContent.set(content);
+        this.cabinTitle.set(title);
+        this.cabinSubtitle.set(subtitle);
+        this.cabinContent.set(content);
         break;
       case 'QR':
         this.qrTitle.set(title);
@@ -219,15 +230,15 @@ export class ScannerComponent implements OnInit {
         this.vpSubtitle.set('Utilize o leitor de código de barras.');
         this.vpContent.set('Aguardando leitura...');
         break;
-      case 'CIS':
-        this.cisTitle.set('Aguardando leitura do CHASSI ou CABINE');
-        this.cisSubtitle.set('Utilize o leitor de código de barras.');
-        this.cisContent.set('Aguardando leitura...');
+      case 'CABIN':
+        this.cabinTitle.set('Aguardando leitura do CHASSI ou CABINE');
+        this.cabinSubtitle.set('Utilize o leitor de código de barras.');
+        this.cabinContent.set('Aguardando leitura...');
         break;
       case 'CHASSIS':
-        this.cisTitle.set('Aguardando leitura do CHASSI ou CABINE');
-        this.cisSubtitle.set('Utilize o leitor de código de barras.');
-        this.cisContent.set('Aguardando leitura...');
+        this.cabinTitle.set('Aguardando leitura do CHASSI ou CABINE');
+        this.cabinSubtitle.set('Utilize o leitor de código de barras.');
+        this.cabinContent.set('Aguardando leitura...');
         break;
       case 'QR':
         this.qrTitle.set('Aguardando leitura do QR Code');
