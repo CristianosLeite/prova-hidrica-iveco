@@ -95,7 +95,7 @@ export class TestResultComponent implements OnInit {
         this.testResult = {
           operationId: operation.OperationId!,
           vp: operation.Vp || 'Não informado',
-          cis: operation.Cis || 'Não informado',
+          cabin: operation.Cabin || 'Não informado',
           chassis: operation.Chassis || 'Não informado',
           description: recipe.Description,
           status: operation.Status,
