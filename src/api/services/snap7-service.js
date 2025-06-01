@@ -35,6 +35,7 @@ class Snap7Service {
           await new Promise((res) => setTimeout(res, delay));
       }
     }
+    this.io.emit("shutdown");
     throw new Error("Failed to connect to PLC after multiple attempts");
   }
 
@@ -65,16 +66,20 @@ class Snap7Service {
       try {
         if (!(await this.isPlcConnected())) {
           console.warn("PLC connection lost. Attempting to reconnect...");
+
           await this.plcConnect("192.168.0.1");
           console.log("Reconnected to PLC successfully.");
+          this.io.emit("mainPlcConnectionChanged", "RECONNECTED");
           return;
         }
       } catch (error) {
         console.error("Error during PLC reconnection attempt:", error);
+        this.io.emit("mainPlcConnectionChanged", "DISCONNECTED");
         return;
       }
     }, interval);
     console.log("PLC connection is active.");
+    this.io.emit("mainPlcConnectionChanged", "CONNECTED");
   }
 
   /**

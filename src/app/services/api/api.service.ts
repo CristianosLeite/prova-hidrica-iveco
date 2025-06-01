@@ -6,7 +6,7 @@ import { SocketResponse } from 'src/app/types/socketResponse.type';
 import { StorageService } from '../storage/storage.service';
 import { AuthService } from '../auth/auth.service';
 import { Recipe } from 'src/app/types/recipe.type';
-import { Device, Platform } from 'src/app/types/device.type';
+import { Device } from 'src/app/types/device.type';
 
 /**
  * * ApiService is responsible for managing the connection to the API service using Socket.IO.
@@ -121,12 +121,12 @@ export class ApiService {
     console.log('API service initialized');
   }
 
-//   private handleSocketEvent<T>(event: string): Promise<T> {
-//   return new Promise((resolve, reject) => {
-//     this.socket?.on(event, (data: T) => resolve(data));
-//     this.socket?.on('error', (error: any) => reject(error));
-//   });
-// }
+  //   private handleSocketEvent<T>(event: string): Promise<T> {
+  //   return new Promise((resolve, reject) => {
+  //     this.socket?.on(event, (data: T) => resolve(data));
+  //     this.socket?.on('error', (error: any) => reject(error));
+  //   });
+  // }
 
   /**
    * * Connects to the background service and emits an event to start it.
@@ -362,9 +362,9 @@ export class ApiService {
   }
 
   /**
- * * Stops the operation by emitting an event to the server and handling the response.
- * @returns A promise that resolves with the socket response.
- */
+   * * Stops the operation by emitting an event to the server and handling the response.
+   * @returns A promise that resolves with the socket response.
+   */
   public finishOperation(): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
       this.socket?.emit('finishOperation');
@@ -376,5 +376,15 @@ export class ApiService {
         reject({ type: 'error', payload: { message: error['message'] } });
       });
     });
+  }
+
+  /**
+   * Stops listening for barcode reader events by removing event listeners.
+   * Used when a component is destroyed to prevent memory leaks.
+   */
+  public stopBarcodeReader(): void {
+    this.socket?.removeAllListeners('barcodeData');
+    this.socket?.removeAllListeners('recipeLoaded');
+    console.log('Barcode reader listeners removed');
   }
 }

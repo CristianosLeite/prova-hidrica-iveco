@@ -1,8 +1,8 @@
-const setupPlcSockets = require('./plc/plc.socket');
-const setupUserSockets = require('./user/user.socket');
-const setupBarcodeSockets = require('./barcode/barcode.socket');
-const setupBackgroundSockets = require('./background/background.socket');
-const setupDeviceSockets = require('./device/device.socket');
+const setupPlcSockets = require("./plc/plc.socket");
+const setupUserSockets = require("./user/user.socket");
+const setupBarcodeSockets = require("./barcode/barcode.socket");
+const setupBackgroundSockets = require("./background/background.socket");
+const setupDeviceSockets = require("./device/device.socket");
 
 module.exports = function (io, snap7Service) {
   setInterval(() => {
@@ -11,6 +11,14 @@ module.exports = function (io, snap7Service) {
 
   io.on("connection", (socket) => {
     console.log("Client connected");
+
+    socket.on("mainPlcConnectionChanged", (data) => {
+      io.emit("mainPlcConnectionChanged", data);
+    });
+
+    socket.on("shutdown", () => {
+      io.emit("shutdown");
+    });
 
     socket.on("disconnect", () => {
       console.log("Client disconnected");
