@@ -1,38 +1,46 @@
 auth_enabled: false
 
 server:
+  http_listen_address: 0.0.0.0
   http_listen_port: 3100
   grpc_listen_port: 9096
 
-common:
-  path_prefix: /loki
-  storage:
-    filesystem:
-      chunks_directory: /loki/chunks
-      rules_directory: /loki/rules
-  replication_factor: 1
-  ring:
-    instance_addr: 127.0.0.1
-    kvstore:
-      store: inmemory
+memberlist:
+  join_members: ["read", "write", "backend"]
+  dead_node_reclaim_time: 30s
+  gossip_to_dead_nodes_time: 15s
+  left_ingesters_timeout: 30s
+  bind_addr: ['0.0.0.0']
+  bind_port: 7946
+  gossip_interval: 2s
 
 schema_config:
   configs:
-    - from: 2020-10-24
-      store: boltdb-shipper
+    - from: 2025-01-01
+      store: tsdb
       object_store: filesystem
-      schema: v11
+      schema: v13
       index:
         prefix: index_
         period: 24h
 
+common:
+  path_prefix: /loki
+  replication_factor: 1
+  compactor_address: http://backend:3100
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  ring:
+    kvstore:
+      store: memberlist
+
 ruler:
-  alertmanager_url: http://localhost:9093
+  storage:
+    type: local
+    local:
+      directory: /loki/rules
 
-limits_config:
-  enforce_metric_name: false
-  reject_old_samples: true
-  reject_old_samples_max_age: 168h
-
-analytics:
-  reporting_enabled: false
+compactor:
+  working_directory: /tmp/compactor
