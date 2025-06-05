@@ -1,0 +1,7 @@
+/node_modules
+/.angular
+/.git
+/.vscode
+/.idea
+/.mypy_cache
+adnoid

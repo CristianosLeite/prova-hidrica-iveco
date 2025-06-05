@@ -93,24 +93,28 @@ services:
         env: "production"
 
   loki:
-    image: grafana/loki:3.2.1
+    build:
+      context: ./
+      dockerfile: loki.Dockerfile
     container_name: prova-hidrica-loki
+    restart: always
     ports:
       - "3100:3100"
     volumes:
-      - ./config/loki/local-config.yaml:/etc/loki/local-config.yaml
       - loki-data:/loki
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - app-network
 
   promtail:
-    image: grafana/promtail:3.2.1
+    build:
+      context: ./
+      dockerfile: promtail.Dockerfile
     container_name: prova-hidrica-promtail
+    restart: always
     user: root
     volumes:
       - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./config/promtail/config.yml:/etc/promtail/config.yml
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - promtail-positions:/tmp
     command: -config.file=/etc/promtail/config.yml
@@ -120,8 +124,11 @@ services:
       - loki
 
   grafana:
-    image: grafana/grafana:latest
+    build:
+      context: ./
+      dockerfile: grafana.Dockerfile
     container_name: prova-hidrica-grafana
+    restart: always
     ports:
       - "3000:3000"
     environment:
@@ -130,7 +137,6 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./config/grafana/provisioning:/etc/grafana/provisioning
     networks:
       - app-network
     depends_on:
