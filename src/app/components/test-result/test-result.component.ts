@@ -27,6 +27,7 @@ import { InfiltrationTest } from 'src/app/types/infiltrationTest.type';
 export class TestResultComponent implements OnInit {
   public testResult: TestResult = {} as TestResult;
   public operationId: string = '';
+  private operation: Operation | undefined = undefined;
 
   public tests: InfiltrationTest[] = [
     UpsideTestModel,
@@ -91,6 +92,7 @@ export class TestResultComponent implements OnInit {
             // We need to retrieve the user object to get the operator's name.
             await this.userService.getUserByBadgeNumber(operation.Operator)),
       ]).then(([operation, recipe, user]) => {
+        this.operation = operation;
         const createdAt = new Date(operation.CreatedAt!);
         this.testResult = {
           operationId: operation.OperationId!,
@@ -159,6 +161,6 @@ export class TestResultComponent implements OnInit {
    * This method sends asynchronously the test result to the printer.
    */
   async sendToPrinter() {
-    await this.printerService.printTestResult(this.testResult);
+    await this.printerService.printTestResult(this.testResult, this.operation);
   }
 }
