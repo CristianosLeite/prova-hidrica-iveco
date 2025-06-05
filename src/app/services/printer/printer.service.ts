@@ -19,27 +19,27 @@ export class PrinterService {
 
     await IPosPrinter.setPrinterPrintAlignment({ alignment: 0 });
 
-    if (testResult.vp) {
+    if (testResult.vp && testResult.vp !== 'Não informado') {
       await IPosPrinter.printSpecifiedTypeText({ text: 'VP:', typeface: 'ST', fontSize: this.defaultFontSize });
-      await IPosPrinter.printSpecifiedTypeText({ text: testResult.vp || 'Não informado', typeface: 'ST', fontSize: this.defaultFontSize });
+      await IPosPrinter.printSpecifiedTypeText({ text: testResult.vp, typeface: 'ST', fontSize: this.defaultFontSize });
       await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
     }
 
-    if (testResult.chassis) {
+    if (testResult.chassis && testResult.chassis !== 'Não informado') {
       await IPosPrinter.printSpecifiedTypeText({ text: 'CHASSI:', typeface: 'ST', fontSize: this.defaultFontSize });
-      await IPosPrinter.printSpecifiedTypeText({ text: testResult.chassis || 'Não informado', typeface: 'ST', fontSize: this.defaultFontSize });
+      await IPosPrinter.printSpecifiedTypeText({ text: testResult.chassis, typeface: 'ST', fontSize: this.defaultFontSize });
       await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
     }
 
-    if (testResult.cabin) {
+    if (testResult.cabin && testResult.cabin !== 'Não informado') {
       await IPosPrinter.printSpecifiedTypeText({ text: 'CABINE:', typeface: 'ST', fontSize: this.defaultFontSize });
-      await IPosPrinter.printSpecifiedTypeText({ text: testResult.cabin || 'Não Informado', typeface: 'ST', fontSize: this.defaultFontSize });
+      await IPosPrinter.printSpecifiedTypeText({ text: testResult.cabin, typeface: 'ST', fontSize: this.defaultFontSize });
       await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
     }
 
-    if (testResult.cis) {
+    if (testResult.cis && testResult.cis !== 'Não informado') {
       await IPosPrinter.printSpecifiedTypeText({ text: 'CIS:', typeface: 'ST', fontSize: this.defaultFontSize });
-      await IPosPrinter.printSpecifiedTypeText({ text: testResult.cis || 'Não informado', typeface: 'ST', fontSize: this.defaultFontSize });
+      await IPosPrinter.printSpecifiedTypeText({ text: testResult.cis, typeface: 'ST', fontSize: this.defaultFontSize });
       await IPosPrinter.printBlankLines({ lines: 1, height: 24 });
     }
 
