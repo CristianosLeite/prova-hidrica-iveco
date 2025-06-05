@@ -4,6 +4,7 @@ export type Operation = {
   Vp: string;
   Cabin: string;
   Chassis: string;
+  Cis: string;
   Operator: string;
   Recipe: number;
   Status: Status;

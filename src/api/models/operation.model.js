@@ -28,6 +28,11 @@ Operation.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    Cis: {
+      field: "cis",
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
     Operator: {
       field: "operator",
       type: DataTypes.STRING,

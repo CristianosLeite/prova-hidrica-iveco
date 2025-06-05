@@ -1,4 +1,4 @@
-import { Component, signal, WritableSignal } from '@angular/core';
+import { Component, signal, WritableSignal, OnInit } from '@angular/core';
 import { IonicModule } from '@ionic/angular';
 import { Device } from 'src/app/types/device.type';
 import { DeviceService } from 'src/app/services/device/device.service';
@@ -10,7 +10,7 @@ import { NgIf } from '@angular/common';
   templateUrl: './devices.component.html',
   styleUrls: ['./devices.component.scss'],
 })
-export class DevicesComponent {
+export class DevicesComponent implements OnInit {
   public devices: WritableSignal<Device[]> = signal([]);
   public phonePortraitOutline = 'phone-portrait-outline';
   public phonePortraitSharp = 'phone-portrait-sharp';

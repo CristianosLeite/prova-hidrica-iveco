@@ -99,6 +99,7 @@ export class TestResultComponent implements OnInit {
           vp: operation.Vp || 'Não informado',
           cabin: operation.Cabin || 'Não informado',
           chassis: operation.Chassis || 'Não informado',
+          cis: operation.Cis || 'Não informado',
           description: recipe.Description,
           status: operation.Status,
           date: createdAt.toLocaleDateString(),

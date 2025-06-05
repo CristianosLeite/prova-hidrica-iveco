@@ -6,6 +6,7 @@ export type TestResult = {
   vp?: string;
   cabin?: string;
   chassis?: string;
+  cis?: string;
   description: string;
   status: Status;
   date: string;

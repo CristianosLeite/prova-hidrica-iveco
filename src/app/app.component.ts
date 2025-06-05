@@ -1,5 +1,5 @@
 import { Component, OnInit, signal, HostListener, WritableSignal } from '@angular/core';
-import { Router, RouterLink } from '@angular/router';
+import {Router, RouterLink, RouterLinkActive} from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { StorageService } from './services/storage/storage.service';
 import { SettingsService } from './services/settings/settings.service';
@@ -25,7 +25,8 @@ declare type LastOperations = {
     RouterLink,
     UnauthenticatedUserComponent,
     RfidComponent,
-    ServicesInitializationComponent
+    ServicesInitializationComponent,
+    RouterLinkActive
   ],
   selector: 'app-root',
   templateUrl: 'app.component.html',
