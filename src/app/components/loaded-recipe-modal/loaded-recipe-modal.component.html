@@ -16,8 +16,14 @@
           <ion-text>{{ recipe!.Description }}</ion-text>
         </ion-item>
         <ion-item>
-          <ion-label>VP</ion-label>
-          <ion-text>{{ recipe!.Vp }}</ion-text>
+          @if(recipe!.Vp) {
+            <ion-label>VP</ion-label>
+            <ion-text>{{ recipe!.Vp }}</ion-text>
+          }
+          @if(recipe!.Cabin) {
+            <ion-label>Cabine</ion-label>
+            <ion-text>{{ recipe!.Cabin }}</ion-text>
+          }
         </ion-item>
         <ion-item>
           <ion-label>Altura dos Aspersores</ion-label>
@@ -33,10 +39,6 @@
         <ion-item>
           <ion-label>Início do teste</ion-label>
           <ion-text>{{ startTime | date : 'dd/MM/yyyy HH:mm:ss' }}</ion-text>
-        </ion-item>
-        <ion-item>
-          <ion-label>Cabine</ion-label>
-          <ion-text>{{ cabin }}</ion-text>
         </ion-item>
       </ion-list>
     </ion-content>

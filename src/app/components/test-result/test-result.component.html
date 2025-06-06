@@ -17,7 +17,7 @@
     </ion-item>
     <ion-item>
       <ion-label><strong>Chassi ou CIS:</strong></ion-label>
-      <ion-text>{{ testResult.chassis || testResult.cis }}</ion-text>
+      <ion-text>{{ testResult.chassis !== 'Não informado' ? testResult.chassis : testResult.cis !== 'Não informado' ? testResult.cis : 'Não informado' }}</ion-text>
     </ion-item>
     <ion-item>
       <ion-label><strong>Descrição:</strong></ion-label>
