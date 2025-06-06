@@ -21,9 +21,9 @@ Recipe.init(
       field: "vp",
       allowNull: true,
     },
-    Cis: {
+    Cabin: {
       type: DataTypes.STRING,
-      field: "cis",
+      field: "cabin",
       allowNull: true,
     },
     SprinklerHeight: {

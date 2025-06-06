@@ -13,6 +13,13 @@ services:
       - postgres-data-new:/var/lib/postgresql/data
     networks:
       - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "prova-hidrica-db"
+        env: "production"
 
   backend:
     container_name: prova-hidrica-backend
@@ -33,6 +40,13 @@ services:
       - app-network
     depends_on:
       - db
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+        labels: "prova-hidrica-backend"
+        env: "production"
 
   frontend:
     container_name: prova-hidrica-frontend
@@ -49,6 +63,13 @@ services:
       - app-network
     depends_on:
       - backend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "prova-hidrica-frontend"
+        env: "production"
 
   pgadmin:
     image: dpage/pgadmin4
@@ -63,6 +84,63 @@ services:
       - db
     networks:
       - app-network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        labels: "prova-hidrica-pgadmin"
+        env: "production"
+
+  loki:
+    build:
+      context: ./
+      dockerfile: loki.Dockerfile
+    container_name: prova-hidrica-loki
+    restart: always
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki-data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - app-network
+
+  promtail:
+    build:
+      context: ./
+      dockerfile: promtail.Dockerfile
+    container_name: prova-hidrica-promtail
+    restart: always
+    user: root
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - promtail-positions:/tmp
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - app-network
+    depends_on:
+      - loki
+
+  grafana:
+    build:
+      context: ./
+      dockerfile: grafana.Dockerfile
+    container_name: prova-hidrica-grafana
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - app-network
+    depends_on:
+      - loki
 
 networks:
   app-network:
@@ -71,3 +149,6 @@ networks:
 volumes:
   postgres-data-new:
   cert:
+  loki-data:
+  grafana-data:
+  promtail-positions:

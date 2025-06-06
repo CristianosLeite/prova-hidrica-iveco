@@ -16,7 +16,7 @@
     <ion-label>Descrição</ion-label>
   </div>
   <div class="header-column">
-    <ion-label>VP ou CIS</ion-label>
+    <ion-label>VP ou CABINE</ion-label>
   </div>
   <div class="header-column">
     <ion-label>Altura dos aspersores</ion-label>
@@ -31,8 +31,8 @@
     <!-- Descrição -->
     <ion-label style="min-width: 110px;">{{ recipe.Description }}</ion-label>
 
-    <!-- Vp ou CIS -->
-    <ion-label>{{ recipe.Vp || recipe.Cis }}</ion-label>
+    <!-- Vp ou CABINE -->
+    <ion-label>{{ recipe.Vp || recipe.Cabin }}</ion-label>
 
     <!-- Altura dos aspersores -->
     <ion-label style="margin: 0 20px 0 20px;">{{ handleSprinklerHeight(recipe.SprinklerHeight) }}</ion-label>

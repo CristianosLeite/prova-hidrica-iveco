@@ -39,8 +39,8 @@ class RecipeController {
       return;
     }
 
-    if (!newRecipe.Vp && !newRecipe.Cis) {
-      res.status(400).send({ message: "Missing vp or cis" });
+    if (!newRecipe.Vp && !newRecipe.Cabin) {
+      res.status(400).send({ message: "Missing vp or cabin" });
       return;
     }
 

@@ -4,8 +4,9 @@ export type Result = 'OK' | 'NOK';
 export type TestResult = {
   operationId: string;
   vp?: string;
-  cis?: string;
+  cabin?: string;
   chassis?: string;
+  cis?: string;
   description: string;
   status: Status;
   date: string;

@@ -35,6 +35,7 @@ class Snap7Service {
           await new Promise((res) => setTimeout(res, delay));
       }
     }
+    this.io.emit("shutdown");
     throw new Error("Failed to connect to PLC after multiple attempts");
   }
 
@@ -42,6 +43,11 @@ class Snap7Service {
    * @description :: Check if the client is connected to the PLC
    */
   async isPlcConnected() {
+    // Se está em modo mock, considere conectado
+    if (this.connected && this.mockTimer) {
+      return true;
+    }
+
     try {
       // Attempt to read a known value from the PLC
       const result = await this.readBooleanFromDb(7, 4, 4); // DB7, byte 4, bit 4
@@ -60,16 +66,20 @@ class Snap7Service {
       try {
         if (!(await this.isPlcConnected())) {
           console.warn("PLC connection lost. Attempting to reconnect...");
+
           await this.plcConnect("192.168.0.1");
           console.log("Reconnected to PLC successfully.");
+          this.io.emit("mainPlcConnectionChanged", "RECONNECTED");
           return;
         }
       } catch (error) {
         console.error("Error during PLC reconnection attempt:", error);
+        this.io.emit("mainPlcConnectionChanged", "DISCONNECTED");
         return;
       }
     }, interval);
     console.log("PLC connection is active.");
+    this.io.emit("mainPlcConnectionChanged", "CONNECTED");
   }
 
   /**
@@ -80,10 +90,13 @@ class Snap7Service {
    * @returns {Promise} - The boolean value
    */
   async readBooleanFromDb(dbNumber, byte, bit) {
+    if (this.isPlcMock()) {
+      return this.useMockData("readBoolean", dbNumber, byte, bit);
+    }
+
     try {
       return new Promise((resolve, reject) => {
-        this.client.DBRead(dbNumber, byte, 1, function (err, res) {
-          // Alterado para arrow function
+        this.client.DBRead(dbNumber, byte, 1, (err, res) => {
           if (err) {
             console.log(
               " >> DBRead failed. Code #" +
@@ -110,17 +123,23 @@ class Snap7Service {
    * @returns
    */
   async readWordFromDb(dbNumber, byte) {
+    if (this.isPlcMock()) {
+      return this.useMockData("readWord", dbNumber, byte);
+    }
+
     if (!(await this.isPlcConnected())) {
       throw new Error("PLC client is not connected");
     }
+
+    const self = this;
     return new Promise((resolve, reject) => {
-      this.client.DBRead(dbNumber, byte, 2, function (err, res) {
+      this.client.DBRead(dbNumber, byte, 2, (err, res) => {
         if (err) {
           console.log(
             " >> DBRead failed. Code #" +
               err +
               " - " +
-              this.client.ErrorText(err)
+              self.client.ErrorText(err)
           );
           return reject(err);
         }
@@ -136,9 +155,14 @@ class Snap7Service {
    * @returns
    */
   async readWordFromMemory(byte) {
+    if (this.isPlcMock()) {
+      return this.useMockData("readWord", 7, byte);
+    }
+
     if (!(await this.isPlcConnected())) {
       throw new Error("PLC client is not connected");
     }
+
     return new Promise((resolve, reject) => {
       this.client.MBRead(byte, 2, function (err, res) {
         if (err) {
@@ -157,38 +181,6 @@ class Snap7Service {
   }
 
   /**
-   * Read a string value from the PLC
-   * @param dbNumber
-   * @param start
-   * @param length
-   * @returns
-   */
-  async readStringFromDb(dbNumber, start, length) {
-    if (!(await this.isPlcConnected())) {
-      throw new Error("PLC client is not connected");
-    }
-    return new Promise((resolve, reject) => {
-      this.client.DBRead(dbNumber, start, length + 2, function (err, res) {
-        if (err) {
-          console.log(
-            " >> DBRead failed. Code #" +
-              err +
-              " - " +
-              this.client.ErrorText(err)
-          );
-          return reject(err);
-        }
-        // Remove non-printable characters and trim whitespace
-        const value = res
-          .toString("utf8")
-          .replace(/[^\x20-\x7E]/g, "")
-          .trim();
-        resolve({ value });
-      });
-    });
-  }
-
-  /**
    * Write a boolean value to the PLC
    * @param dbNumber
    * @param byte
@@ -196,10 +188,15 @@ class Snap7Service {
    * @param value
    * @returns
    */
-async writeBooleanToDb(dbNumber, start, bit, value) {
+  async writeBooleanToDb(dbNumber, start, bit, value) {
+    if (this.isPlcMock()) {
+      return this.useMockData("writeBoolean", dbNumber, start, bit, value);
+    }
+
     if (!(await this.isPlcConnected())) {
       throw new Error("PLC client is not connected");
     }
+
     try {
       const buf = Buffer.alloc(1);
       let byteValue = await new Promise((resolve, reject) => {
@@ -209,7 +206,7 @@ async writeBooleanToDb(dbNumber, start, bit, value) {
         });
       });
 
-      byteValue = value ? byteValue |= 1 << bit : byteValue &= ~(1 << bit);
+      byteValue = value ? (byteValue |= 1 << bit) : (byteValue &= ~(1 << bit));
       buf.writeUInt8(byteValue, 0);
 
       await new Promise((resolve, reject) => {
@@ -237,9 +234,14 @@ async writeBooleanToDb(dbNumber, start, bit, value) {
    * @returns
    */
   async writeIntegerToDb(dbNumber, start, value) {
+    if (this.isPlcMock()) {
+      return this.useMockData("writeWord", dbNumber, start, null, value);
+    }
+
     if (!(await this.isPlcConnected())) {
       throw new Error("PLC client is not connected");
     }
+
     if (
       typeof dbNumber !== "number" ||
       typeof start !== "number" ||
@@ -272,24 +274,102 @@ async writeBooleanToDb(dbNumber, start, bit, value) {
   }
 
   // Mock connection for development purposes
-   mockConnection() {
+  mockConnection() {
     console.log("Using mock PLC connection");
     this.connected = true;
+
+    // Initialize the mockData object before using it
+    this.mockData = {
+      db7: {
+        bytes: new Array(100).fill(0), // Simulate 100 bytes of data
+        getBit: (byte, bit) => (this.mockData.db7.bytes[byte] >> bit) & 1,
+        setBit: (byte, bit, value) => {
+          if (value) {
+            this.mockData.db7.bytes[byte] |= 1 << bit;
+          } else {
+            this.mockData.db7.bytes[byte] &= ~(1 << bit);
+          }
+        },
+        setWord: (byte, value) => {
+          this.mockData.db7.bytes[byte] = value & 0xff;
+          this.mockData.db7.bytes[byte + 1] = (value >> 8) & 0xff;
+        },
+        getWord: (byte) => {
+          return (
+            (this.mockData.db7.bytes[byte + 1] << 8) |
+            this.mockData.db7.bytes[byte]
+          );
+        },
+      },
+    };
+
+    // Configure client mock methods
+    this.client.DBRead = (dbNumber, byte, size, callback) => {
+      if (dbNumber === 7) {
+        const buffer = Buffer.from(
+          this.mockData.db7.bytes.slice(byte, byte + size)
+        );
+        callback(null, buffer);
+      } else {
+        callback("DB not supported in mock mode", null);
+      }
+    };
+
+    // Configure client mock methods for WriteArea
+    this.client.WriteArea = (
+      area,
+      dbNumber,
+      start,
+      size,
+      wordLen,
+      buffer,
+      callback
+    ) => {
+      // Simulate writing to DB7
+      callback(null);
+    };
 
     // Simulate PLC data with periodic updates
     this.mockTimer = setInterval(() => {
       // Emit mock data through socket.io
-      this.io.emit('plcStatus', {
+      this.io.emit("plcStatus", {
         connected: true,
-        status: 'MOCK_CONNECTED',
+        status: "MOCK_CONNECTED",
         mockData: {
           timestamp: new Date().toISOString(),
-          // Add whatever mock data here
-        }
+          db7: {
+            sprinklerHeight: this.mockData.db7.getWord(2),
+            platformActive: this.mockData.db7.getBit(4, 1),
+            autoEnabled: this.mockData.db7.getBit(0, 0),
+          },
+        },
       });
     }, 2000);
 
     return true;
+  }
+
+  isPlcMock() {
+    return this.mockTimer !== undefined && this.connected === true;
+  }
+
+  useMockData(operation, dbNumber, start, bit, value) {
+    switch (operation) {
+      case "readBoolean":
+        return this.mockData.db7.getBit(start, bit);
+      case "readWord":
+        return this.mockData.db7.getWord(start);
+      case "writeBoolean":
+        this.mockData.db7.setBit(start, bit, value);
+        console.log(`MOCK: Set DB${dbNumber}.DBX${start}.${bit} = ${value}`);
+        return;
+      case "writeWord":
+        this.mockData.db7.setWord(start, value);
+        console.log(`MOCK: Set DB${dbNumber}.DBW${start} = ${value}`);
+        return;
+      default:
+        throw new Error("Invalid method for mock data");
+    }
   }
 
   stopMockConnection() {

@@ -12,12 +12,12 @@
 <ion-content>
   <ion-list>
     <ion-item>
-      <ion-label><strong>VP ou CIS</strong></ion-label>
-      <ion-text>{{ testResult.vp !== 'Não informado' ? testResult.vp : testResult.cis !== 'Não informado' ? testResult.cis : 'Não informado'  }}</ion-text>
+      <ion-label><strong>VP ou CABINE</strong></ion-label>
+      <ion-text>{{ testResult.vp !== 'Não informado' ? testResult.vp : testResult.cabin !== 'Não informado' ? testResult.cabin : 'Não informado'  }}</ion-text>
     </ion-item>
     <ion-item>
-      <ion-label><strong>Chassi:</strong></ion-label>
-      <ion-text>{{ testResult.chassis }}</ion-text>
+      <ion-label><strong>Chassi ou CIS:</strong></ion-label>
+      <ion-text>{{ testResult.chassis !== 'Não informado' ? testResult.chassis : testResult.cis !== 'Não informado' ? testResult.cis : 'Não informado' }}</ion-text>
     </ion-item>
     <ion-item>
       <ion-label><strong>Descrição:</strong></ion-label>

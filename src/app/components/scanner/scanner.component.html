@@ -15,6 +15,7 @@
     </ion-button>
   </ion-card>
 } @else {
+  <!-- VP ou CABINE (primeira leitura) -->
   <ion-card>
     <ion-icon class="card-icon" name="barcode-outline"></ion-icon>
     <ion-card-header>
@@ -31,18 +32,20 @@
     </ion-button>
   </ion-card>
 
-  <ion-card>
+  <!-- CHASSI ou CIS (segunda leitura) -->
+  <ion-card [class.disabled-card]="!isFirstScanComplete">
     <ion-icon class="card-icon" name="barcode-outline"></ion-icon>
     <ion-card-header>
-      <ion-card-title>{{ cisTitle() }}</ion-card-title>
-      <ion-card-subtitle>{{ cisSubtitle() }}</ion-card-subtitle>
+      <ion-card-title>{{ cabinTitle() }}</ion-card-title>
+      <ion-card-subtitle>{{ cabinSubtitle() }}</ion-card-subtitle>
     </ion-card-header>
 
     <ion-card-content>
-      {{ cisContent() }}
+      {{ cabinContent() }}
     </ion-card-content>
 
-    <ion-button class="camera-button" (click)="scan('CIS')" shape="round">
+    <ion-button class="camera-button" [disabled]="!isFirstScanComplete"
+      (click)="scan(testType === 'truck' ? 'CHASSIS' : 'CIS')" shape="round">
       <ion-icon name="camera-outline"></ion-icon>
     </ion-button>
   </ion-card>

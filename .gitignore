@@ -17,6 +17,9 @@ log.txt
 /.versions
 /coverage
 
+/.mypy_cache
+/.vscode
+
 # Ionic
 /.ionic
 /www
