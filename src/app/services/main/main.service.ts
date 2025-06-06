@@ -308,12 +308,52 @@ export class MainService implements IMainApplication {
    * @returns {Status} The overall test status
    */
   private determineTestStatus(): Status {
+    // Check if duration is less than minimum required (06:15:00)
+    const start = new Date(this.startTime);
+    const end = new Date();
+    const diff = end.getTime() - start.getTime();
+
+    if (this.hasInsufficientDuration()) {
+      console.log(`Test duration (${this.formatDurationInMs(diff)}) is less than minimum required (06:15:00)`);
+      return 'REPROVADO';
+    }
+
+    // Check individual test results
     for (const test of this.testKeys) {
       if (this.getTestStatus(test) === 'NOK') {
         return 'REPROVADO';
       }
     }
     return 'APROVADO';
+  }
+
+  /**
+ * Check if the test has sufficient duration (at least 06:15:00)
+ * @returns {boolean} True if the test has sufficient duration, false otherwise
+ */
+  public hasInsufficientDuration(): boolean {
+    const start = new Date(this.startTime);
+    const end = new Date();
+    const diff = end.getTime() - start.getTime();
+    const minTimeInMs = 6 * 60 * 1000 + 15 * 1000; // 6 min and 15 sec in milliseconds
+
+    if (diff < minTimeInMs) {
+      return true; // Duration is insufficient
+    }
+    return false;
+  }
+
+  /**
+   * Format duration in milliseconds to HH:MM:SS format
+   * @param durationMs Duration in milliseconds
+   * @returns {string} Formatted duration
+   */
+  private formatDurationInMs(durationMs: number): string {
+    const hours = Math.floor(durationMs / 3600000);
+    const minutes = Math.floor((durationMs % 3600000) / 60000);
+    const seconds = Math.floor((durationMs % 60000) / 1000);
+
+    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   }
 
   /**

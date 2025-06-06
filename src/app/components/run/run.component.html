@@ -11,9 +11,15 @@
         <ion-buttons id="finish-button" slot="end" [class.disabled]="isLoading">
           <ion-button (click)="finishTest()">
             @if (qtyVerifications < qtyTests && !isLoading) {
-            <ion-alert trigger="finish-button" header="Atenção!"
-              subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
-              message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
+              <ion-alert trigger="finish-button" header="Atenção!"
+                subHeader="O teste está incompleto e será cancelado, todos os dados serão perdidos."
+                message="Deseja realmente finalizar o teste?" [buttons]="alertButtons"></ion-alert>
+            }
+            @if (hasInsufficientDuration() && qtyVerifications === qtyTests) {
+              <ion-alert trigger="finish-button" header="Atenção!"
+                subHeader="A duração do teste é inferior a 06 minutos e 15 segundos."
+                message="O teste será reprovado devido à duração insuficiente. Deseja realmente finalizar o teste?"
+                [buttons]="alertButtons"></ion-alert>
             }
             Finalizar teste
           </ion-button>

@@ -49,7 +49,11 @@ export class RunComponent implements OnInit {
       text: 'Sim',
       role: 'confirm',
       handler: async () => {
-        await this.cancelTest();
+        if (this.qtyVerifications < this.qtyTests) {
+          await this.cancelTest();
+        } else {
+          await this.completeFinishTest();
+        }
       },
     },
     {
@@ -85,7 +89,7 @@ export class RunComponent implements OnInit {
     await this.deviceService.getDeviceInfo().then((deviceInfo) => {
       this.activeDevice.set(deviceInfo.platform);
     });
-    if (this,this.mainService.getPlatform() !== 'none') {
+    if (this, this.mainService.getPlatform() !== 'none') {
       this.selectedDevice.set(this.mainService.getPlatform());
       this.isDeviceSelected.set(true);
     }
@@ -95,6 +99,22 @@ export class RunComponent implements OnInit {
     if (this.qtyVerifications < this.qtyTests) {
       return;
     }
+
+    // Check for insufficient duration
+    if (this.hasInsufficientDuration()) {
+      // Show duration warning alert (handled by template)
+      return;
+    }
+
+    // If duration is ok, proceed with test completion
+    await this.completeFinishTest();
+  }
+
+  hasInsufficientDuration(): boolean {
+    return this.mainService.hasInsufficientDuration();
+  }
+
+  async completeFinishTest() {
     setInterval(() => {
       this.progress += 0.01;
 
