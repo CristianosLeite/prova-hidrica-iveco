@@ -149,7 +149,7 @@ export class ApiService implements OnDestroy {
     this.registerEventListener('operationEnabled');
     this.registerEventListener('operationReset');
     this.registerEventListener('operationStopped');
-    this.registerEventListener('deviceDataRecieved');
+    this.registerEventListener('deviceDataReceived');
     this.registerEventListener('doorOpened');
     this.registerEventListener('doorClosed');
     this.registerEventListener('operationFinished');
@@ -200,31 +200,39 @@ export class ApiService implements OnDestroy {
    */
   private emitAndListen<T>(emitEvent: string, listenEvent: string, data?: any): Promise<T> {
     return new Promise((resolve, reject) => {
+      let subscription: any;
+      let errorSubscription: any;
+      let timeout: any;
+
       // Get a single response from the listen event
-      const subscription = this.getEventObservable<T>(listenEvent)
+      subscription = this.getEventObservable<T>(listenEvent)
         .pipe(take(1))
         .subscribe({
           next: (response) => {
             resolve(response);
-            subscription.unsubscribe();
+            if (subscription) subscription.unsubscribe();
+            if (errorSubscription) errorSubscription.unsubscribe();
+            if (timeout) clearTimeout(timeout);
           }
         });
 
       // Listen for errors
-      const errorSubscription = this.getEventObservable<any>('error')
+      errorSubscription = this.getEventObservable<any>('error')
         .pipe(take(1))
         .subscribe({
           next: (error) => {
             console.error(`Error in ${emitEvent}:`, error);
             reject({ type: 'error', payload: { message: error?.message || 'Unknown error', error } });
-            errorSubscription.unsubscribe();
+            if (errorSubscription) errorSubscription.unsubscribe();
+            if (subscription) subscription.unsubscribe();
+            if (timeout) clearTimeout(timeout);
           }
         });
 
       // Set a timeout to avoid hanging promises
-      const timeout = setTimeout(() => {
-        subscription.unsubscribe();
-        errorSubscription.unsubscribe();
+      timeout = setTimeout(() => {
+        if (subscription) subscription.unsubscribe();
+        if (errorSubscription) errorSubscription.unsubscribe();
         reject({ type: 'error', payload: { message: `Timeout waiting for ${listenEvent}` } });
       }, 10000);
 
@@ -242,21 +250,20 @@ export class ApiService implements OnDestroy {
    * * It also handles the response from the background service.
    * * @returns A promise that resolves with the socket response.
    */
-  public connectBackgroundService(): Promise<SocketResponse> {
-    return this.emitAndListen<any>('startBackgroundService', 'startBackgroundService')
-      .then(() => {
-        window.location.href = 'provahidrica:';
-        return {
-          type: 'success',
-          payload: { message: 'Background service successfully launched' }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Background service launch failed', error }
-        };
-      });
+  public async connectBackgroundService(): Promise<SocketResponse> {
+    try {
+      await this.emitAndListen<any>('startBackgroundService', 'startBackgroundService');
+      window.location.href = 'provahidrica:';
+      return {
+        type: 'success',
+        payload: { message: 'Background service successfully launched' }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Background service launch failed', error }
+      };
+    }
   }
 
   /**
@@ -265,27 +272,26 @@ export class ApiService implements OnDestroy {
    * * @param sendMessage - Optional parameter to control whether to send the authentication message.
    * * @returns A promise that resolves with the socket response.
    */
-  public listenAuthentication(sendMessage: boolean = true): Promise<SocketResponse> {
+  public async listenAuthentication(sendMessage: boolean = true): Promise<SocketResponse> {
     if (sendMessage) {
       this.socket?.emit('authenticate');
     }
 
-    return firstValueFrom(
-      this.getEventObservable<User>('authenticated').pipe(take(1))
-    )
-      .then(user => {
-        this.authService.setLoggedUser(user);
-        return {
-          type: 'success',
-          payload: { message: 'Authenticated successfully', user }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Authentication failed', error }
-        };
-      });
+    try {
+      const user = await firstValueFrom(
+        this.getEventObservable<User>('authenticated').pipe(take(1))
+      );
+      this.authService.setLoggedUser(user);
+      return {
+        type: 'success',
+        payload: { message: 'Authenticated successfully', user }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Authentication failed', error }
+      };
+    }
   }
 
   /**
@@ -294,27 +300,26 @@ export class ApiService implements OnDestroy {
    * @param sendMessage - Optional parameter to control whether to send the unauthentication message.
    * @returns
    */
-  public listenUnAuthentication(sendMessage: boolean = true): Promise<SocketResponse> {
+  public async listenUnAuthentication(sendMessage: boolean = true): Promise<SocketResponse> {
     if (sendMessage) {
       this.socket?.emit('unAuthenticate');
     }
 
-    return firstValueFrom(
-      this.getEventObservable<any>('unAuthenticated').pipe(take(1))
-    )
-      .then(() => {
-        this.authService.logOut();
-        return {
-          type: 'success',
-          payload: { message: 'Unauthenticated successfully' }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Unauthentication failed', error }
-        };
-      });
+    try {
+      await firstValueFrom(
+        this.getEventObservable<any>('unAuthenticated').pipe(take(1))
+      );
+      this.authService.logOut();
+      return {
+        type: 'success',
+        payload: { message: 'Unauthenticated successfully' }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Unauthentication failed', error }
+      };
+    }
   }
 
   /**
@@ -323,20 +328,19 @@ export class ApiService implements OnDestroy {
    * @param user - The user object to be created.
    * @returns A promise that resolves with the socket response.
    */
-  public createUser(user: User): Promise<SocketResponse> {
-    return this.emitAndListen<User>('createUser', 'userCreated', user)
-      .then(createdUser => {
-        return {
-          type: 'success',
-          payload: { message: 'User created successfully', user: createdUser }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'User creation failed', error }
-        };
-      });
+  public async createUser(user: User): Promise<SocketResponse> {
+    try {
+      const createdUser = await this.emitAndListen<User>('createUser', 'userCreated', user);
+      return {
+        type: 'success',
+        payload: { message: 'User created successfully', user: createdUser }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'User creation failed', error }
+      };
+    }
   }
 
   /**
@@ -345,27 +349,25 @@ export class ApiService implements OnDestroy {
    * @param infiltrationTest The test data to send
    * @returns A promise that resolves with the socket response.
    */
-  public verficationCompleted(infiltrationTest: InfiltrationTest): Promise<SocketResponse> {
-    return this.emitAndListen<InfiltrationTest>(
-      'verificationCompleted',
-      'verificationCompleted',
-      infiltrationTest
-    )
-      .then(async (test) => {
-        await this.storage.set(test.id!, test)
-          .then(() => console.log('Verification completed and stored'));
-
-        return {
-          type: 'success',
-          payload: { message: 'Verification completed successfully', infiltrationTest: test }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Verification failed', error }
-        };
-      });
+  public async verficationCompleted(infiltrationTest: InfiltrationTest): Promise<SocketResponse> {
+    try {
+      const test = await this.emitAndListen<InfiltrationTest>(
+        'verificationCompleted',
+        'verificationCompleted',
+        infiltrationTest
+      );
+      await this.storage.set(test.id!, test)
+        .then(() => console.log('Verification completed and stored'));
+      return await {
+        type: 'success',
+        payload: { message: 'Verification completed successfully', infiltrationTest: test }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Verification failed', error }
+      };
+    }
   }
 
   /**
@@ -374,44 +376,53 @@ export class ApiService implements OnDestroy {
    */
   public BarcodeReader(): Promise<SocketResponse> {
     return new Promise((resolve, reject) => {
-      const barcodeSubscription = this.getEventObservable<string>('barcodeData')
+      let barcodeSubscription: any;
+      let recipeSubscription: any;
+      let errorSubscription: any;
+      let timeoutId: any;
+
+      barcodeSubscription = this.getEventObservable<string>('barcodeData')
         .pipe(take(1))
         .subscribe({
           next: (data) => {
-            recipeSubscription.unsubscribe();
-            errorSubscription.unsubscribe();
+            if (recipeSubscription) recipeSubscription.unsubscribe();
+            if (errorSubscription) errorSubscription.unsubscribe();
+            if (timeoutId) clearTimeout(timeoutId);
             resolve({ type: 'success', payload: { message: 'Data read successfully', data } });
           }
         });
 
-      const recipeSubscription = this.getEventObservable<Recipe>('recipeLoaded')
+      recipeSubscription = this.getEventObservable<Recipe>('recipeLoaded')
         .pipe(take(1))
         .subscribe({
           next: (recipe) => {
-            barcodeSubscription.unsubscribe();
-            errorSubscription.unsubscribe();
+            if (barcodeSubscription) barcodeSubscription.unsubscribe();
+            if (errorSubscription) errorSubscription.unsubscribe();
+            if (timeoutId) clearTimeout(timeoutId);
             resolve({ type: 'success', payload: { message: 'Recipe loaded successfully', recipe } });
           }
         });
 
-      const errorSubscription = this.getEventObservable<any>('error')
+      errorSubscription = this.getEventObservable<any>('error')
         .pipe(take(1))
         .subscribe({
           next: (error) => {
             console.log('barcodeReader error:', error);
-            barcodeSubscription.unsubscribe();
-            recipeSubscription.unsubscribe();
+            if (barcodeSubscription) barcodeSubscription.unsubscribe();
+            if (recipeSubscription) recipeSubscription.unsubscribe();
+            if (timeoutId) clearTimeout(timeoutId);
             reject({ type: 'error', payload: { message: error['message'] } });
           }
         });
 
       // Set a timeout to avoid hanging
-      setTimeout(() => {
-        if (!barcodeSubscription.closed) {
+      timeoutId = setTimeout(() => {
+        if (barcodeSubscription && !barcodeSubscription.closed) {
           barcodeSubscription.unsubscribe();
-          recipeSubscription.unsubscribe();
-          errorSubscription.unsubscribe();
         }
+        if (recipeSubscription) recipeSubscription.unsubscribe();
+        if (errorSubscription) errorSubscription.unsubscribe();
+        reject({ type: 'error', payload: { message: 'Timeout waiting for barcode data' } });
       }, 60000); // 60 seconds timeout for barcode reading
     });
   }
@@ -421,84 +432,80 @@ export class ApiService implements OnDestroy {
    * @param barcode - The barcode data to be sent.
    * @returns A promise that resolves with the socket response.
    */
-  public sendBarcodeData(barcode: string): Promise<SocketResponse> {
-    return this.emitAndListen<Recipe>('sendingBarcode', 'recipeLoaded', barcode)
-      .then(recipe => {
-        return {
-          type: 'success',
-          payload: { message: 'Recipe loaded successfully', recipe }
-        };
-      })
-      .catch(error => {
-        console.log('sendBarcodeData error:', error);
-        return {
-          type: 'error',
-          payload: { message: error?.message || 'Failed to load recipe' }
-        };
-      });
+  public async sendBarcodeData(barcode: string): Promise<SocketResponse> {
+    try {
+      const recipe = await this.emitAndListen<Recipe>('sendingBarcode', 'recipeLoaded', barcode);
+      return {
+        type: 'success',
+        payload: { message: 'Recipe loaded successfully', recipe }
+      };
+    } catch (error: any) {
+      console.log('sendBarcodeData error:', error);
+      return {
+        type: 'error',
+        payload: { message: error?.message || 'Failed to load recipe' }
+      };
+    }
   }
 
   /**
    * * Enables the operation by emitting an event to the server and handling the response.
    * @returns A promise that resolves with the socket response.
    */
-  public enableOperation(): Promise<SocketResponse> {
-    return this.emitAndListen<void>('enableOperation', 'operationEnabled')
-      .then(() => {
-        return {
-          type: 'success',
-          payload: { message: 'Operation enabled successfully' }
-        };
-      })
-      .catch(error => {
-        console.log('startOperation error:', error);
-        return {
-          type: 'error',
-          payload: { message: error?.message || 'Failed to enable operation' }
-        };
-      });
+  public async enableOperation(): Promise<SocketResponse> {
+    try {
+      await this.emitAndListen<void>('enableOperation', 'operationEnabled');
+      return {
+        type: 'success',
+        payload: { message: 'Operation enabled successfully' }
+      };
+    } catch (error: any) {
+      console.log('startOperation error:', error);
+      return {
+        type: 'error',
+        payload: { message: error?.message || 'Failed to enable operation' }
+      };
+    }
   }
 
   /**
    * * Reset alarms and start operation again.
    * @returns A promise that resolves with the socket response.
    */
-  public resetOperation(): Promise<SocketResponse> {
-    return this.emitAndListen<void>('resetOperation', 'operationReset')
-      .then(() => {
-        return {
-          type: 'success',
-          payload: { message: 'Operation reset successfully' }
-        };
-      })
-      .catch(error => {
-        console.log('resetOperation error:', error);
-        return {
-          type: 'error',
-          payload: { message: error?.message || 'Failed to reset operation' }
-        };
-      });
+  public async resetOperation(): Promise<SocketResponse> {
+    try {
+      await this.emitAndListen<void>('resetOperation', 'operationReset');
+      return {
+        type: 'success',
+        payload: { message: 'Operation reset successfully' }
+      };
+    } catch (error: any) {
+      console.log('resetOperation error:', error);
+      return {
+        type: 'error',
+        payload: { message: error?.message || 'Failed to reset operation' }
+      };
+    }
   }
 
   /**
    * * Stops the operation by emitting an event to the server and handling the response.
    * @returns A promise that resolves with the socket response.
    */
-  public stopOperation(): Promise<SocketResponse> {
-    return this.emitAndListen<void>('stopOperation', 'operationStopped')
-      .then(() => {
-        return {
-          type: 'success',
-          payload: { message: 'Operation stopped successfully' }
-        };
-      })
-      .catch(error => {
-        console.log('stopOperation error:', error);
-        return {
-          type: 'error',
-          payload: { message: error?.message || 'Failed to stop operation' }
-        };
-      });
+  public async stopOperation(): Promise<SocketResponse> {
+    try {
+      await this.emitAndListen<void>('stopOperation', 'operationStopped');
+      return {
+        type: 'success',
+        payload: { message: 'Operation stopped successfully' }
+      };
+    } catch (error: any) {
+      console.log('stopOperation error:', error);
+      return {
+        type: 'error',
+        payload: { message: error?.message || 'Failed to stop operation' }
+      };
+    }
   }
 
   /**
@@ -506,86 +513,82 @@ export class ApiService implements OnDestroy {
    * @param device - The device object to be sent.
    * @returns A promise that resolves with the socket response.
    */
-  public sendDeviceData(device: Device): Promise<SocketResponse> {
-    return this.emitAndListen<Device[]>('sendDeviceData', 'deviceDataRecieved', device)
-      .then(devices => {
-        return {
-          type: 'success',
-          payload: { message: 'Device data sent successfully', devices }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Device data send failed', error }
-        };
-      });
+  public async sendDeviceData(device: Device): Promise<SocketResponse> {
+    try {
+      const devices = await this.emitAndListen<Device[]>('sendDeviceData', 'deviceDataReceived', device);
+      return {
+        type: 'success',
+        payload: { message: 'Device data sent successfully', devices }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Device data send failed', error }
+      };
+    }
   }
 
   /**
    * * Send a command to open the pick-by-open door and handle the response.
    * @returns A promise that resolves with the socket response.
    */
-  public openDoor(): Promise<SocketResponse> {
-    return this.emitAndListen<void>('openDoor', 'doorOpened')
-      .then(() => {
-        return {
-          type: 'success',
-          payload: { message: 'Door opened successfully' }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Door opening failed', error }
-        };
-      });
+  public async openDoor(): Promise<SocketResponse> {
+    try {
+      await this.emitAndListen<void>('openDoor', 'doorOpened');
+      return {
+        type: 'success',
+        payload: { message: 'Door opened successfully' }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Door opening failed', error }
+      };
+    }
   }
 
   /**
    * Handles the door closed event and logs out the user.
    * @returns A promise that resolves with the socket response.
    */
-  public doorClosed(): Promise<SocketResponse> {
-    return firstValueFrom(
-      this.getEventObservable<any>('doorClosed').pipe(take(1))
-    )
-      .then(async () => {
-        await this.listenUnAuthentication().then(() => {
-          this.authService.logOut();
-        });
-        return {
-          type: 'success',
-          payload: { message: 'Door closed successfully' }
-        };
-      })
-      .catch(error => {
-        return {
-          type: 'error',
-          payload: { message: 'Door closing failed', error }
-        };
+  public async doorClosed(): Promise<SocketResponse> {
+    try {
+      await firstValueFrom(
+        this.getEventObservable<any>('doorClosed').pipe(take(1))
+      );
+      await this.listenUnAuthentication().then(() => {
+        this.authService.logOut();
       });
+      return await {
+        type: 'success',
+        payload: { message: 'Door closed successfully' }
+      };
+    } catch (error) {
+      return {
+        type: 'error',
+        payload: { message: 'Door closing failed', error }
+      };
+    }
   }
 
   /**
    * * Stops the operation by emitting an event to the server and handling the response.
    * @returns A promise that resolves with the socket response.
    */
-  public finishOperation(): Promise<SocketResponse> {
-    return this.emitAndListen<void>('finishOperation', 'operationFinished')
-      .then(() => {
-        return {
-          type: 'success',
-          payload: { message: 'Operation stopped successfully' }
-        };
-      })
-      .catch(error => {
-        console.log('finishOperation error:', error);
-        return {
-          type: 'error',
-          payload: { message: error?.message || 'Failed to finish operation' }
-        };
-      });
+  public async finishOperation(): Promise<SocketResponse> {
+    try {
+      await this.emitAndListen<void>('finishOperation', 'operationFinished');
+      return {
+        type: 'success',
+        payload: { message: 'Operation stopped successfully' }
+      };
+    } catch (error: any) {
+      console.log('finishOperation error:', error);
+      return {
+        type: 'error',
+        payload: { message: error?.message || 'Failed to finish operation' }
+      };
+    }
   }
 
   /**
