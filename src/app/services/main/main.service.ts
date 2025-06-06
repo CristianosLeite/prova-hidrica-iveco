@@ -8,9 +8,8 @@ import { Storage } from '@ionic/storage';
 import { Recipe } from 'src/app/types/recipe.type';
 import { Operation } from 'src/app/types/operation.type';
 import { OperationService } from '../operation/operation.service';
-import { Result, Status, TestResult } from 'src/app/types/testResult.type';
+import { Result, Status } from 'src/app/types/testResult.type';
 import { UserService } from '../user/user.service';
-// import { PrinterService } from '../printer/printer.service';
 import UpsideTestModel from 'src/app/models/upside-test.model';
 import FrontsideTestModel from 'src/app/models/frontside-test.model';
 import BacksideTestModel from 'src/app/models/backside-test.model';
@@ -78,6 +77,13 @@ export class MainService implements IMainApplication {
   private cabin: string = '';
 
   /**
+ * It is used to store the CIS code retrieved from the barcode scanner.
+ * This data guarantees the traceability of the operation.
+ * @type {string}
+ */
+  private cis: string = '';
+
+  /**
    * It is used to store the chassis code retrieved from the barcode scanner.
    * This data guarantees the traceability of the operation.
    * @type {string}
@@ -135,6 +141,22 @@ export class MainService implements IMainApplication {
    */
   public setChassis(chassis: string): void {
     this.chassis = chassis;
+  }
+
+  /**
+ * Set the CIS code and store it in the service.
+ * @param cis - The CIS code
+ */
+  public setCis(cis: string): void {
+    this.cis = cis;
+  }
+
+  /**
+   * Retrieve the CIS code stored in the service.
+   * @returns The CIS code
+   */
+  public getCis(): string {
+    return this.cis;
   }
 
   /**
@@ -246,6 +268,9 @@ export class MainService implements IMainApplication {
     // Add the chassis to the operation before send to backend
     operation.Chassis = this.chassis;
 
+    // Add the CIS to the operation before send to backend
+    operation.Cis = this.cis;
+
     // Add the infiltration points to the operation before send to backend
     this.addInfiltrationPointsToOperation(operation);
 
@@ -279,39 +304,6 @@ export class MainService implements IMainApplication {
   }
 
   /**
-   * - Create and return a test result object based on the operation.
-   * - Object will be used to print the test result.
-   * @param operation
-   * @returns {TestResult} The test result object
-   * @type {TestResult}
-   */
-  // private async createTestResult(operation: Operation): Promise<TestResult> {
-  //   const status = this.determineTestStatus();
-  //   const [date, time] = this.getFormattedDateTime(operation.CreatedAt!);
-  //   // Operation.Operator is the badge number of the user
-  //   const testResult: TestResult = await this.usersService.getUserByBadgeNumber(operation.Operator).then((user) => {
-  //     return {
-  //       operationId: operation.OperationId!,
-  //       vp: operation.Vp,
-  //       chassis: operation.Chassis,
-  //       cabin: operation.Cabin,
-  //       description: this.recipe.Description,
-  //       status: status,
-  //       date: date,
-  //       time: time,
-  //       duration: this.calculateDuration(operation.StartTime, operation.EndTime),
-  //       operator: `${operation.Operator} - ${user.UserName}`,
-  //       upsideTestResult: this.getTestStatus('upside'),
-  //       frontsideTestResult: this.getTestStatus('frontside'),
-  //       backsideTestResult: this.getTestStatus('backside'),
-  //       leftsideTestResult: this.getTestStatus('leftside'),
-  //       rightsideTestResult: this.getTestStatus('rightside'),
-  //     };
-  //   });
-  //   return testResult;
-  // }
-
-  /**
    * Determine the overall test status based on individual test results.
    * @returns {Status} The overall test status
    */
@@ -323,16 +315,6 @@ export class MainService implements IMainApplication {
     }
     return 'APROVADO';
   }
-
-  /**
-   * Split the date and time string into an array.
-   * @param endTime The end time string
-   * @returns {[string, string]} An array containing the date and time
-   */
-  // private getFormattedDateTime(date: Date | string): [string, string] {
-  //   const dateObj = new Date(date);
-  //   return [dateObj.toLocaleDateString(), dateObj.toLocaleTimeString()];
-  // }
 
   /**
    * Calculate the duration of the operation.
