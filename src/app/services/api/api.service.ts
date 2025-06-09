@@ -1,4 +1,4 @@
-import { InfiltrationTest } from './../../types/infiltrationTest.type';
+import { InfiltrationTest } from '../../types/infiltrationTest.type';
 import { Injectable, Output, EventEmitter, OnDestroy } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { User } from 'src/app/types/user.type';
@@ -102,8 +102,8 @@ export class ApiService implements OnDestroy {
       withCredentials: true,
       reconnection: true,
       reconnectionAttempts: Infinity,
-      reconnectionDelay: 1000,
-      reconnectionDelayMax: 5000,
+      reconnectionDelay: 5000,
+      reconnectionDelayMax: 30000,
     });
 
     // Setup keep-alive ping
@@ -358,9 +358,9 @@ export class ApiService implements OnDestroy {
       );
       await this.storage.set(test.id!, test)
         .then(() => console.log('Verification completed and stored'));
-      return await {
+      return {
         type: 'success',
-        payload: { message: 'Verification completed successfully', infiltrationTest: test }
+        payload: {message: 'Verification completed successfully', infiltrationTest: test}
       };
     } catch (error) {
       return {
@@ -559,9 +559,9 @@ export class ApiService implements OnDestroy {
       await this.listenUnAuthentication().then(() => {
         this.authService.logOut();
       });
-      return await {
+      return {
         type: 'success',
-        payload: { message: 'Door closed successfully' }
+        payload: {message: 'Door closed successfully'}
       };
     } catch (error) {
       return {
