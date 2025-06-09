@@ -17,6 +17,8 @@ class Snap7Service {
   /**
    * Connect to the PLC
    * @param ip
+   * @param retries
+   * @param delay
    */
   async plcConnect(ip, retries = 3, delay = 5000) {
     for (let attempt = 1; attempt <= retries; attempt++) {
