@@ -1,5 +1,5 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
-import { Storage } from '@ionic/storage-angular';
+import {EventEmitter, Injectable, Output} from '@angular/core';
+import {Storage} from '@ionic/storage-angular';
 
 @Injectable({
   providedIn: 'root'
@@ -14,8 +14,7 @@ export class StorageService {
 
   private async init() {
     // If using, define drivers here: await this.storage.defineDriver(/*...*/);
-    const storage = await this.storage.create();
-    this._storage = storage;
+    this._storage = await this.storage.create();
     this.storageCreated.emit(true);
   }
 
@@ -34,6 +33,6 @@ export class StorageService {
    * @returns
    */
   public async get(key: string) {
-    return await this._storage?.get(key);
+    return this._storage?.get(key);
   }
 }
