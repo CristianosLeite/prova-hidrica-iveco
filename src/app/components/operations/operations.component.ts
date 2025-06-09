@@ -22,7 +22,6 @@ export class OperationsComponent implements OnInit {
   public operations: Operation[] = [];
   public searchTerm: string = '';
   public hasError = false;
-  public errorMessage = '';
   public currentPage = 1;
   public itemsPerPage = 6;
   public displayedOperations: Operation[] = [];
