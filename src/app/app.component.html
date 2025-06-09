@@ -4,6 +4,7 @@
   @if(isUserAuthenticated) {
     <ion-app>
       @if(isMobile && showMobileContent) {
+        <!-- Menu mobile content -->
         <ion-content class="ion-padding-top">
           <ion-img class="logo" [src]="logo" alt="Conecsa logo" style="margin-top: 20px;"/>
           <ion-list-header>Sistema de controle</ion-list-header>
@@ -13,7 +14,7 @@
             <ion-row class="ion-justify-content-center">
               @for (p of appPages; track p; let i = $index) {
                 <ion-col size="6">
-                  <ion-button expand="full" [routerLink]="[p.url]" routerDirection="root" (click)="p.action(false)">
+                  <ion-button expand="full" (click)="p.action()">
                     <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
                     {{ p.title }}
                   </ion-button>
@@ -23,7 +24,21 @@
           </ion-grid>
           <ion-img class="logo iveco" src="assets/img/iveco-logo.webp"/>
         </ion-content>
+      } @else if (isMobile && !showMobileContent) {
+        <!-- Content view with back button -->
+        <ion-header>
+          <ion-toolbar>
+            <ion-buttons slot="start">
+              <ion-button (click)="backToMobileMenu()">
+                <ion-icon slot="icon-only" name="menu-outline"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+            <ion-title>Sistema de controle</ion-title>
+          </ion-toolbar>
+        </ion-header>
+        <ion-router-outlet id="mobile-content"></ion-router-outlet>
       } @else {
+        <!-- Desktop view with side menu -->
         <ion-split-pane contentId="main-content">
           <ion-menu contentId="main-content" type="overlay">
             <ion-content>
@@ -35,7 +50,7 @@
                 @for (p of appPages; track p; let i = $index) {
                   <ion-menu-toggle auto-hide="false">
                     <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
-                      routerLinkActive="selected" (click)="p.action(true)">
+                      routerLinkActive="selected" (click)="p.action()">
                       <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
                       <ion-label>{{ p.title }}</ion-label>
                     </ion-item>

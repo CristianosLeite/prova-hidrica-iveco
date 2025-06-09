@@ -1,5 +1,5 @@
-import { Component, OnInit, signal, HostListener, WritableSignal } from '@angular/core';
-import {Router, RouterLink, RouterLinkActive} from '@angular/router';
+import { Component, OnInit, signal, HostListener, WritableSignal, AfterViewInit } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { StorageService } from './services/storage/storage.service';
 import { SettingsService } from './services/settings/settings.service';
@@ -32,7 +32,7 @@ declare type LastOperations = {
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
   private isDark = false;
   public context: WritableSignal<Context> = signal('login');
   public logo = 'assets/img/conecsa-light.webp';
@@ -44,14 +44,14 @@ export class AppComponent implements OnInit {
   public showMobileContent = true;
 
   public appPages = [
-    { title: 'Iniciar', url: '/main/run', icon: 'play', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Registros', url: '/main/records', icon: 'server', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Usuários', url: '/main/users', icon: 'people', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Receitas', url: '/main/recipes', icon: 'cube', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Configurações', url: '/main/settings', icon: 'settings', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Buscar', url: '/main/search', icon: 'qr-code', action: (value: boolean) => this.hideMobileContent(value) },
-    { title: 'Sair', url: '', icon: 'log-out', action: async (value: boolean) => { this.hideMobileContent(value); await this.logout();} },
+    { title: 'Iniciar', url: '/main/run', icon: 'play', action: () => this.handleMenuAction('/main/run') },
+    { title: 'Registros', url: '/main/records', icon: 'server', action: () => this.handleMenuAction('/main/records') },
+    { title: 'Usuários', url: '/main/users', icon: 'people', action: () => this.handleMenuAction('/main/users') },
+    { title: 'Receitas', url: '/main/recipes', icon: 'cube', action: () => this.handleMenuAction('/main/recipes') },
+    { title: 'Dispositivos', url: '/main/devices', icon: 'phone-portrait', action: () => this.handleMenuAction('/main/devices') },
+    { title: 'Configurações', url: '/main/settings', icon: 'settings', action: () => this.handleMenuAction('/main/settings') },
+    { title: 'Buscar', url: '/main/search', icon: 'qr-code', action: () => this.handleMenuAction('/main/search') },
+    { title: 'Sair', url: '', icon: 'log-out', action: async () => { this.handleMenuAction(''); await this.logout(); } },
   ];
 
   public lastOperations = signal([] as LastOperations[]);
@@ -69,7 +69,7 @@ export class AppComponent implements OnInit {
   ngOnInit() {
     this.checkScreenSize();
     this.storageService.storageCreated.subscribe(async () => {
-      this.updateLastOperations();
+      await this.updateLastOperations();
     });
     this.settingsService.themeChanged.subscribe((isDark: boolean) => {
       this.isDark = isDark;
@@ -103,9 +103,46 @@ export class AppComponent implements OnInit {
     this.deviceService.startDeviceSync();
   }
 
+  ngAfterViewInit() {
+    // Give the view a moment to render
+    setTimeout(() => {
+      const routerOutlet = document.querySelector('ion-router-outlet#main-content');
+      if (routerOutlet) {
+        // Create a mutation observer to detect when aria-hidden is added
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'aria-hidden') {
+              // Remove the aria-hidden attribute when detected
+              routerOutlet.removeAttribute('aria-hidden');
+            }
+          });
+        });
+
+        // Start observing the router outlet for attribute changes
+        observer.observe(routerOutlet, { attributes: true });
+
+        // Initial cleanup
+        routerOutlet.removeAttribute('aria-hidden');
+      }
+    }, 100);
+  }
+
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
+  onResize(_: any) {
     this.checkScreenSize();
+  }
+
+  handleMenuAction(url: string) {
+    if (this.isMobile) {
+      this.showMobileContent = false;
+
+      if (url) this.router.navigate([url]);
+    }
+  }
+
+  // Add a method to handle back navigation in mobile view
+  backToMobileMenu() {
+    this.showMobileContent = true;
   }
 
   checkScreenSize() {
