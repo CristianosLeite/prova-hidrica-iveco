@@ -1,5 +1,5 @@
-import { RunComponent } from './../../components/run/run.component';
-import { InfiltrationPointsComponent } from './../../components/infiltration-points/infiltration-points.component';
+import { RunComponent } from '../../components/run/run.component';
+import { InfiltrationPointsComponent } from '../../components/infiltration-points/infiltration-points.component';
 import { EventEmitter, Injectable, Output, signal, WritableSignal } from '@angular/core';
 import { IMainApplication, StopOptions } from 'src/app/interfaces/IMainApplication.inteface';
 import { InfiltrationPoints } from 'src/app/types/infiltrationPoints.type';
@@ -285,13 +285,7 @@ export class MainService implements IMainApplication {
       return await this.operationService.createOperation(operation).then(async (operation) => {
         if (!operation) throw new Error('Operation not created!');
 
-        // // Create and print the test result
-        // await this.createTestResult(operation).then(async (testResult) => {
-        //   return await this.printerService.printTestResult(testResult);
-        // });
-
-        // Instead of printing, navigate to the test result page
-        this.router.navigate(['/main/test-result'], { queryParams: { id: operation.OperationId } });
+        await this.router.navigate(['/main/test-result'], {queryParams: {id: operation.OperationId}});
 
         this.clearTestParams();
         await this.apiService.finishOperation();
@@ -337,10 +331,8 @@ export class MainService implements IMainApplication {
     const diff = end.getTime() - start.getTime();
     const minTimeInMs = 6 * 60 * 1000 + 15 * 1000; // 6 min and 15 sec in milliseconds
 
-    if (diff < minTimeInMs) {
-      return true; // Duration is insufficient
-    }
-    return false;
+    return diff < minTimeInMs;
+
   }
 
   /**
