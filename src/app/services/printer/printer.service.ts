@@ -120,7 +120,7 @@ export class PrinterService {
 
     for (const group of groups) {
       const groupData = this.infiltrationGroups[group.key];
-      const hasFailure = groupData.points.some(point => point.value === true);
+      const hasFailure = groupData.points.some(point => point.value);
       const result = hasFailure ? 'NOK' : 'OK';
 
       // Print group header
@@ -131,7 +131,7 @@ export class PrinterService {
         // await IPosPrinter.printBlankLines({ lines: 1, height: 16 });
         await IPosPrinter.printSpecifiedTypeText({ text: 'Pontos de infiltração:', typeface: 'ST', fontSize: this.defaultFontSize });
 
-        const failedPoints = groupData.points.filter(point => point.value === true);
+        const failedPoints = groupData.points.filter(point => point.value);
         for (const point of failedPoints) {
           await IPosPrinter.printSpecifiedTypeText({ text: `- ${point.name}`, typeface: 'ST', fontSize: this.defaultFontSize });
         }
