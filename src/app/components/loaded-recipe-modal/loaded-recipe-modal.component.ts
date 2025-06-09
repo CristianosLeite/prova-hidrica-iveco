@@ -48,7 +48,7 @@ export class LoadedRecipeModalComponent  implements OnInit, AfterViewInit {
   }
 
   async startOperation() {
-    this.modal.dismiss();
+    await this.modal.dismiss();
     await this.apiService.enableOperation();
   }
 }
