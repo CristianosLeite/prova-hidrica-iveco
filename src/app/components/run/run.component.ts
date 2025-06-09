@@ -28,8 +28,6 @@ import { Platform } from 'src/app/types/device.type';
 })
 export class RunComponent implements OnInit {
   public recipe: Recipe = {} as Recipe;
-  public saveOutline = 'save-outline';
-  public saveSharp = 'save-sharp';
   public qtyVerifications: number = 0;
   public qtyTests: number = this.mainService.getQtyTests();
 
@@ -89,7 +87,7 @@ export class RunComponent implements OnInit {
     await this.deviceService.getDeviceInfo().then((deviceInfo) => {
       this.activeDevice.set(deviceInfo.platform);
     });
-    if (this, this.mainService.getPlatform() !== 'none') {
+    if (this.mainService.getPlatform() !== 'none') {
       this.selectedDevice.set(this.mainService.getPlatform());
       this.isDeviceSelected.set(true);
     }
@@ -144,7 +142,7 @@ export class RunComponent implements OnInit {
     await this.apiService.stopOperation();
 
     const platform = (await this.deviceService.getDeviceInfo()).platform;
-    if (platform === 'mobile') this.apiService.openDoor();
+    if (platform === 'mobile') await this.apiService.openDoor();
 
     await this.apiService.doorClosed().then(() => {
       this.isDeviceSelected.set(false);
@@ -154,7 +152,7 @@ export class RunComponent implements OnInit {
   }
 
   async cancelTest() {
-    this.mainService.stop('cancel');
+    await this.mainService.stop('cancel');
     await this.apiService.stopOperation();
     await this.apiService.finishOperation();
   }
