@@ -11,7 +11,6 @@ import { NgIf } from '@angular/common';
   styleUrls: ['./devices.component.scss'],
 })
 export class DevicesComponent implements OnInit {
-  public devices: WritableSignal<Device[]> = signal([]);
   public phonePortraitOutline = 'phone-portrait-outline';
   public phonePortraitSharp = 'phone-portrait-sharp';
   public desktopOutline = 'desktop-outline';
@@ -30,6 +29,8 @@ export class DevicesComponent implements OnInit {
   public alertSharp = 'alert-sharp';
   public addOutline = 'add-outline';
   public addSharp = 'add-sharp';
+
+  public devices: WritableSignal<Device[]> = signal([]);
 
   constructor(
     private deviceService: DeviceService

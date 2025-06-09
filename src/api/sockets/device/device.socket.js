@@ -15,6 +15,6 @@ module.exports = function (io, socket) {
     }
 
     // Emit updated devices list to all clients
-    io.emit("deviceDataRecieved", devices);
+    io.emit("deviceDataReceived", devices);
   });
 };

@@ -5,7 +5,7 @@
 @if (devices().length > 0) {
 <ion-list class="devices-list">
   <!-- Dispositivos -->
-  @for(device of devices(); track device.deviceId; let index = $index) {
+  @for(device of devices(); track device.deviceId;) {
   <ion-item>
     <ion-icon *ngIf="device.platform === 'palmer'" slot="start" [ios]="phonePortraitOutline" [md]="phonePortraitSharp"></ion-icon>
     <ion-icon *ngIf="device.platform === 'desktop'" slot="start" [ios]="desktopOutline" [md]="desktopSharp"></ion-icon>

@@ -1,4 +1,4 @@
-import { Injectable, OnInit, Output, EventEmitter } from '@angular/core';
+import { Injectable, OnDestroy, Output, EventEmitter } from '@angular/core';
 import { Device } from 'src/app/types/device.type';
 import { Device as Dv } from '@capacitor/device';
 import { Network } from '@capacitor/network';
@@ -7,7 +7,7 @@ import { ApiService } from '../api/api.service';
 @Injectable({
   providedIn: 'root'
 })
-export class DeviceService implements OnInit {
+export class DeviceService implements OnDestroy {
 
   private syncInterval: any;
   @Output() public connectedDevices: EventEmitter<Device[]> = new EventEmitter();
@@ -15,10 +15,6 @@ export class DeviceService implements OnInit {
   constructor(
     private apiService: ApiService
   ) { }
-
-  async ngOnInit() {
-    this.syncDeviceInfo();
-  }
 
   public async getDeviceInfo(): Promise<Device> {
     const id = await Dv.getId();
