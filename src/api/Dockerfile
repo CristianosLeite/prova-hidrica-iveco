@@ -1,6 +1,6 @@
 FROM node:22-slim AS build
 
-RUN apt-get update && apt-get install -y python3 make g++
+RUN apt-get update && apt-get upgrade -y && apt-get install -y python3 make g++
 
 WORKDIR /usr/src/app
 
